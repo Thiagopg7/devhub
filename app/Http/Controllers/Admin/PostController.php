@@ -33,7 +33,9 @@ class PostController extends Controller
 
     public function create()
     {
-        return view('posts.create');
+        return Inertia::render('Admin/Posts/Form', [
+            'toast' => session('toast'),
+        ]);
     }
 
     public function store(Request $request)
