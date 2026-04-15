@@ -23,6 +23,7 @@ export default function Form({ post = {} }) {
     } = useForm({
         id: post?.id ?? "",
         title: post?.title ?? "",
+        description: post?.description ?? "",
         content: post?.content ?? "",
         meta_title: post?.meta_title ?? "",
         meta_description: post?.meta_description ?? "",
@@ -37,7 +38,7 @@ export default function Form({ post = {} }) {
 
         const request = isEditing
             ? send(
-                  route("admin.posts.update", post.id),
+                  route("posts.update", post.id),
                   transform((data) => {
                       return {
                           ...data,
@@ -54,7 +55,7 @@ export default function Form({ post = {} }) {
                       },
                   },
               )
-            : send(route("admin.posts.store"), data, {
+            : send(route("posts.store"), data, {
                   forceFormData: true,
                   onSuccess: () => {
                       toast.success("Post criado com sucesso!");
@@ -94,17 +95,37 @@ export default function Form({ post = {} }) {
                                     className="flex flex-col gap-4"
                                 >
                                     <div>
-                                        <Label htmlFor="name" value="Nome" />
+                                        <Label htmlFor="title" value="Título" />
                                         <Input
-                                            id="name"
+                                            id="title"
                                             type="text"
-                                            value={data.name}
+                                            value={data.title}
                                             className="mt-1 block w-full"
                                             onChange={(e) =>
-                                                setData("name", e.target.value)
+                                                setData("title", e.target.value)
                                             }
                                             disabled={processing}
                                             autoFocus
+                                        />
+                                    </div>
+                                    <div>
+                                        <Label
+                                            htmlFor="description"
+                                            value="Descrição"
+                                        />
+                                        <TextareaAutosize
+                                            id="description"
+                                            value={data.description}
+                                            className="mt-1 block w-full"
+                                            minRows={2}
+                                            maxRows={8}
+                                            onChange={(e) =>
+                                                setData(
+                                                    "description",
+                                                    e.target.value,
+                                                )
+                                            }
+                                            disabled={processing}
                                         />
                                     </div>
 
@@ -159,7 +180,7 @@ export default function Form({ post = {} }) {
                                                 id="meta_description"
                                                 value={data.meta_description}
                                                 className="mt-1 block w-full"
-                                                minRows={3}
+                                                minRows={2}
                                                 maxRows={8}
                                                 onChange={(e) =>
                                                     setData(
@@ -232,7 +253,7 @@ export default function Form({ post = {} }) {
                                         {processing && <LoadingForm />}
 
                                         <NavButton
-                                            href={route("admin.posts.index")}
+                                            href={route("posts.index")}
                                             className={`ml-8 bg-gray-50 text-grey-800 rounded-md ${
                                                 processing ? "opacity-40" : ""
                                             }`}
