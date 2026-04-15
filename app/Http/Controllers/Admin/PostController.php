@@ -40,22 +40,27 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required',
-        ]);
+        try {
+            $data = $request->validate($this->rules($request));
 
-        Post::create($data);
+            if ($request->hasFile('banner_image')) {
+                $data['banner_image'] = $request->file('banner_image')->store('posts', 'public');
+            }
 
-        return redirect()->route('posts.index');
-    }
+            Post::create($data);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        //
+            return redirect()->route('admin.post.index')->with('toast', [
+                'title' => 'Sucesso!',
+                'message' => 'Página criada com sucesso.',
+                'type' => 'success',
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('toast', [
+                'title' => 'Erro!',
+                'message' => 'Erro ao criar página: ' . $e->getMessage(),
+                'type' => 'error',
+            ]);
+        }
     }
 
     /**
@@ -63,7 +68,10 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return Inertia::render('Admin/Post/Form', [
+            'post' => $post,
+            'toast' => session('toast'),
+        ]);
     }
 
     /**
@@ -71,7 +79,29 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        try {
+            $data = $request->validate($this->rules($request));
+
+            if ($request->hasFile('banner_image') && $request->file('banner_image')->isValid()) {
+                $data['banner_image'] = $request->file('banner_image')->store('posts', 'public');
+            } else {
+                $data['banner_image'] = $post->banner_image;
+            }
+
+            $post->update($data);
+
+            return redirect()->route('admin.post.index')->with('toast', [
+                'title' => 'Sucesso!',
+                'message' => 'Post atualizado com sucesso.',
+                'type' => 'success',
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('toast', [
+                'title' => 'Erro!',
+                'message' => 'Erro ao atualizar Post: ' . $e->getMessage(),
+                'type' => 'error',
+            ]);
+        }
     }
 
     /**
@@ -79,6 +109,33 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        try {
+            $post->delete();
+
+            return redirect()->route('admin.post.index')->with('toast', [
+                'title' => 'Sucesso!',
+                'message' => 'Post excluído com sucesso.',
+                'type' => 'success',
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('toast', [
+                'title' => 'Erro!',
+                'message' => 'Erro ao excluir Post: ' . $e->getMessage(),
+                'type' => 'error',
+            ]);
+        }
+    }
+
+    private function rules()
+    {
+        return [
+            'title'             => 'required|string|max:150',
+            'description'       => 'required|string|max:255',
+            'content'           => 'nullable|string',
+            'banner_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:8192',
+            'is_active'         => 'boolean',
+            'meta_title'        => 'nullable|string|max:150',
+            'meta_description'  => 'nullable|string|max:255',
+        ];
     }
 }

@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title', 150);
-            $table->string('image')->nullable();
-            $table->text('content');
+            $table->string('description', 255)->nullable();
+            $table->string('slug')->unique();
+            $table->string('banner_image')->nullable();
+            $table->longText('content')->nullable();
+            $table->string('meta_title', 150)->nullable();
+            $table->string('meta_description', 255)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
