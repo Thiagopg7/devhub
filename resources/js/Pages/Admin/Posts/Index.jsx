@@ -88,13 +88,10 @@ export default function Index({ auth, posts, filter }) {
                                             <thead className="bg-gray-50">
                                                 <tr>
                                                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 uppercase">
-                                                        Ícone
+                                                        Capa
                                                     </th>
                                                     <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 uppercase">
-                                                        Name
-                                                    </th>
-                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 uppercase">
-                                                        Ordem
+                                                        Título
                                                     </th>
                                                     <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 uppercase">
                                                         Ativo
@@ -110,23 +107,17 @@ export default function Index({ auth, posts, filter }) {
                                                         <tr key={post.id}>
                                                             <td className="pt-4 px-6">
                                                                 <div>
-                                                                    {post.icon && (
+                                                                    {post.banner_image && (
                                                                         <img
-                                                                            src={`/storage/${post.icon}`}
-                                                                            alt="Ícone"
+                                                                            src={`/storage/${post.banner_image}`}
+                                                                            alt="Imagem"
                                                                             className="max-h-30 max-w-24 bg-slate-200"
                                                                         />
                                                                     )}
                                                                 </div>
                                                             </td>
                                                             <td className="pt-4 px-6">
-                                                                {post.name}
-                                                            </td>
-
-                                                            <td className="pt-4 px-6 text-center">
-                                                                {
-                                                                    post.sort_order
-                                                                }
+                                                                {post.title}
                                                             </td>
                                                             <td className="pt-4 px-6 text-center">
                                                                 <ToggleActive

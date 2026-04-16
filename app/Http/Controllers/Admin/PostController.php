@@ -49,15 +49,15 @@ class PostController extends Controller
 
             Post::create($data);
 
-            return redirect()->route('admin.post.index')->with('toast', [
+            return redirect()->route('admin.posts.index')->with('toast', [
                 'title' => 'Sucesso!',
-                'message' => 'Página criada com sucesso.',
+                'message' => 'Post criado com sucesso.',
                 'type' => 'success',
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('toast', [
                 'title' => 'Erro!',
-                'message' => 'Erro ao criar página: ' . $e->getMessage(),
+                'message' => 'Erro ao criar post: ' . $e->getMessage(),
                 'type' => 'error',
             ]);
         }
@@ -68,7 +68,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return Inertia::render('Admin/Post/Form', [
+        return Inertia::render('Admin/Posts/Form', [
             'post' => $post,
             'toast' => session('toast'),
         ]);
@@ -90,7 +90,7 @@ class PostController extends Controller
 
             $post->update($data);
 
-            return redirect()->route('admin.post.index')->with('toast', [
+            return redirect()->route('admin.posts.index')->with('toast', [
                 'title' => 'Sucesso!',
                 'message' => 'Post atualizado com sucesso.',
                 'type' => 'success',
@@ -112,7 +112,7 @@ class PostController extends Controller
         try {
             $post->delete();
 
-            return redirect()->route('admin.post.index')->with('toast', [
+            return redirect()->route('admin.posts.index')->with('toast', [
                 'title' => 'Sucesso!',
                 'message' => 'Post excluído com sucesso.',
                 'type' => 'success',
