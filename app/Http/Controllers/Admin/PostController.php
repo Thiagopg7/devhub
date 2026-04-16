@@ -40,8 +40,9 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        $data = $request->validate($this->rules($request));
+
         try {
-            $data = $request->validate($this->rules($request));
 
             if ($request->hasFile('banner_image')) {
                 $data['banner_image'] = $request->file('banner_image')->store('posts', 'public');
@@ -79,8 +80,9 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        $data = $request->validate($this->rules($request));
+
         try {
-            $data = $request->validate($this->rules($request));
 
             if ($request->hasFile('banner_image') && $request->file('banner_image')->isValid()) {
                 $data['banner_image'] = $request->file('banner_image')->store('posts', 'public');
