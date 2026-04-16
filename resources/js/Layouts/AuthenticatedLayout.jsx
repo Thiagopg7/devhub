@@ -3,10 +3,18 @@ import Dropdown from '@/Components/Admin/Dropdown';
 import NavLink from '@/Components/Admin/NavLink';
 import ResponsiveNavLink from '@/Components/Admin/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-hot-toast';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
+    const { toast: toastProps } = usePage().props;
+
+    useEffect(() => {
+        if (toastProps) {
+            toast[toastProps.type](`${toastProps.title} - ${toastProps.message}`);
+        }
+    }, [toastProps]);
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
