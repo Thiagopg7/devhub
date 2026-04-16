@@ -38,7 +38,7 @@ export default function Form({ post = {} }) {
 
         const request = isEditing
             ? send(
-                  route("posts.update", post.id),
+                  route("admin.posts.update", post.id),
                   transform((data) => {
                       return {
                           ...data,
@@ -55,7 +55,7 @@ export default function Form({ post = {} }) {
                       },
                   },
               )
-            : send(route("posts.store"), data, {
+            : send(route("admin.posts.store"), data, {
                   forceFormData: true,
                   onSuccess: () => {
                       toast.success("Post criado com sucesso!");
@@ -253,7 +253,7 @@ export default function Form({ post = {} }) {
                                         {processing && <LoadingForm />}
 
                                         <NavButton
-                                            href={route("posts.index")}
+                                            href={route("admin.posts.index")}
                                             className={`ml-8 bg-gray-50 text-grey-800 rounded-md ${
                                                 processing ? "opacity-40" : ""
                                             }`}
