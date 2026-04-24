@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
+use App\Services\FileUploadService;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class PostController extends Controller
 {
+    public function __construct(
+        private FileUploadService $uploadService
+    ) {}
+
     public function index(Request $request)
     {
         $query = Post::orderBy('id', 'ASC');
@@ -38,14 +44,16 @@ class PostController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        $data = $request->validate($this->rules($request));
+        $data = $request->validated();
 
         try {
-
             if ($request->hasFile('banner_image')) {
-                $data['banner_image'] = $request->file('banner_image')->store('posts', 'public');
+                $data['banner_image'] = $this->uploadService->upload(
+                    $request->file('banner_image'),
+                    'posts'
+                );
             }
 
             Post::create($data);
@@ -78,16 +86,24 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, Post $post)
     {
-        $data = $request->validate($this->rules($request));
+        $data = $request->validated();
 
         try {
+            $file = $request->file('banner_image');
 
-            if ($request->hasFile('banner_image') && $request->file('banner_image')->isValid()) {
-                $data['banner_image'] = $request->file('banner_image')->store('posts', 'public');
+            if ($file && $file->isValid()) {
+                if ($post->banner_image) {
+                    $this->uploadService->delete($post->banner_image);
+                }
+
+                $data['banner_image'] = $this->uploadService->upload(
+                    $file,
+                    'posts'
+                );
             } else {
-                $data['banner_image'] = $post->banner_image;
+                unset($data['banner_image']);
             }
 
             $post->update($data);
@@ -126,18 +142,5 @@ class PostController extends Controller
                 'type' => 'error',
             ]);
         }
-    }
-
-    private function rules()
-    {
-        return [
-            'title'             => 'required|string|max:150',
-            'description'       => 'required|string|max:255',
-            'content'           => 'nullable|string',
-            'banner_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:8192',
-            'is_active'         => 'boolean',
-            'meta_title'        => 'nullable|string|max:150',
-            'meta_description'  => 'nullable|string|max:255',
-        ];
     }
 }
