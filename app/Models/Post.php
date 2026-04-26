@@ -23,6 +23,8 @@ class Post extends Model
         'meta_description',
     ];
 
+    protected $hidden = ['deleted_at', 'updated_at'];
+
     public function sluggable(): array
     {
         return [
