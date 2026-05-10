@@ -4,10 +4,18 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Str;
 
 class ToggleController extends Controller
 {
+    private const ALLOWED_MODELS = [
+        'post' => \App\Models\Post::class,
+    ];
+
+    private function resolveModel(string $model): ?string
+    {
+        return self::ALLOWED_MODELS[strtolower($model)] ?? null;
+    }
+
     public function update(Request $request)
     {
         $request->validate([
@@ -16,9 +24,9 @@ class ToggleController extends Controller
             'is_active' => 'required|boolean',
         ]);
 
-        $modelClass = "App\\Models\\" . Str::studly($request->model);
+        $modelClass = $this->resolveModel($request->model);
 
-        if (!class_exists($modelClass)) {
+        if (!$modelClass) {
             return back()->withErrors(['model' => 'Módulo inválido.']);
         }
 
@@ -29,58 +37,6 @@ class ToggleController extends Controller
         }
 
         $item->is_active = $request->is_active;
-        $item->save();
-
-        return back();
-    }
-
-    public function updateSearchable(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-            'model' => 'required|string',
-            'is_searchable' => 'required|boolean',
-        ]);
-
-        $modelClass = "App\\Models\\" . Str::studly($request->model);
-
-        if (!class_exists($modelClass)) {
-            return back()->withErrors(['model' => 'Módulo inválido.']);
-        }
-
-        $item = $modelClass::find($request->id);
-
-        if (!$item) {
-            return back()->withErrors(['item' => 'Item não encontrado.']);
-        }
-
-        $item->is_searchable = $request->is_searchable;
-        $item->save();
-
-        return back();
-    }
-
-    public function updateInclusive(Request $request)
-    {
-        $request->validate([
-            'id' => 'required',
-            'model' => 'required|string',
-            'is_inclusive' => 'required|boolean',
-        ]);
-
-        $modelClass = "App\\Models\\" . Str::studly($request->model);
-
-        if (!class_exists($modelClass)) {
-            return back()->withErrors(['model' => 'Módulo inválido.']);
-        }
-
-        $item = $modelClass::find($request->id);
-
-        if (!$item) {
-            return back()->withErrors(['item' => 'Item não encontrado.']);
-        }
-
-        $item->is_inclusive = $request->is_inclusive;
         $item->save();
 
         return back();
