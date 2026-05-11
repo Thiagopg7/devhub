@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
@@ -12,6 +13,7 @@ class Post extends Model
     use HasFactory, Sluggable, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'title',
         'description',
         'slug',
@@ -21,6 +23,11 @@ class Post extends Model
         'meta_title',
         'meta_description',
     ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected $hidden = ['deleted_at', 'updated_at'];
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Services\FileUploadService;
+use App\Services\PostService;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,28 +13,16 @@ use Inertia\Inertia;
 class PostController extends Controller
 {
     public function __construct(
-        private FileUploadService $uploadService
+        private readonly PostService $postService,
+        private readonly FileUploadService $uploadService,
     ) {}
 
     public function index(Request $request)
     {
-        $query = Post::orderBy('id', 'ASC');
-
-        if ($request->filled('q')) {
-            $search = $request->input('q');
-
-            $query->where(function ($q) use ($search) {
-                $q->when(is_numeric($search), function ($q) use ($search) {
-                    $q->where('id', $search);
-                })
-                    ->orWhere('name', 'like', "%{$search}%");
-            });
-        }
-
         return Inertia::render('Admin/Posts/Index', [
-            'posts' => $query->paginate(20),
+            'posts'  => $this->postService->getPaginated(20, $request->input('q')),
             'filter' => $request->only('q'),
-            'toast' => session('toast'),
+            'toast'  => session('toast'),
         ]);
     }
 
@@ -56,36 +45,30 @@ class PostController extends Controller
                 );
             }
 
-            Post::create($data);
+            $this->postService->create($data);
 
             return redirect()->route('admin.posts.index')->with('toast', [
-                'title' => 'Sucesso!',
+                'title'   => 'Sucesso!',
                 'message' => 'Post criado com sucesso.',
-                'type' => 'success',
+                'type'    => 'success',
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('toast', [
-                'title' => 'Erro!',
+                'title'   => 'Erro!',
                 'message' => 'Erro ao criar post: ' . $e->getMessage(),
-                'type' => 'error',
+                'type'    => 'error',
             ]);
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Post $post)
     {
         return Inertia::render('Admin/Posts/Form', [
-            'post' => $post,
+            'post'  => $post,
             'toast' => session('toast'),
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(PostRequest $request, Post $post)
     {
         $data = $request->validated();
@@ -98,48 +81,42 @@ class PostController extends Controller
                     $this->uploadService->delete($post->banner_image);
                 }
 
-                $data['banner_image'] = $this->uploadService->upload(
-                    $file,
-                    'posts'
-                );
+                $data['banner_image'] = $this->uploadService->upload($file, 'posts');
             } else {
                 unset($data['banner_image']);
             }
 
-            $post->update($data);
+            $this->postService->update($post, $data);
 
             return redirect()->route('admin.posts.index')->with('toast', [
-                'title' => 'Sucesso!',
+                'title'   => 'Sucesso!',
                 'message' => 'Post atualizado com sucesso.',
-                'type' => 'success',
+                'type'    => 'success',
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('toast', [
-                'title' => 'Erro!',
-                'message' => 'Erro ao atualizar Post: ' . $e->getMessage(),
-                'type' => 'error',
+                'title'   => 'Erro!',
+                'message' => 'Erro ao atualizar post: ' . $e->getMessage(),
+                'type'    => 'error',
             ]);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Post $post)
     {
         try {
-            $post->delete();
+            $this->postService->delete($post);
 
             return redirect()->route('admin.posts.index')->with('toast', [
-                'title' => 'Sucesso!',
+                'title'   => 'Sucesso!',
                 'message' => 'Post excluído com sucesso.',
-                'type' => 'success',
+                'type'    => 'success',
             ]);
         } catch (\Exception $e) {
             return redirect()->back()->with('toast', [
-                'title' => 'Erro!',
-                'message' => 'Erro ao excluir Post: ' . $e->getMessage(),
-                'type' => 'error',
+                'title'   => 'Erro!',
+                'message' => 'Erro ao excluir post: ' . $e->getMessage(),
+                'type'    => 'error',
             ]);
         }
     }

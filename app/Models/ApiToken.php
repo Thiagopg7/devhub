@@ -4,12 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ApiToken extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'token_hash', 'expires_at', 'last_used_at'];
+    protected $fillable = ['user_id', 'name', 'token_hash', 'expires_at', 'last_used_at'];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected $casts = [
         'expires_at'   => 'datetime',
