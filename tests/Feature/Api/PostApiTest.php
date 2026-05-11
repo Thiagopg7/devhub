@@ -50,9 +50,8 @@ class PostApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'data',
-                'current_page',
-                'per_page',
-                'total',
+                'links',
+                'meta' => ['current_page', 'per_page', 'total'],
             ]);
     }
 
