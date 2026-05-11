@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostService
@@ -12,6 +13,14 @@ class PostService
         return Post::active()
             ->orderByDesc('created_at')
             ->paginate($perPage);
+    }
+
+    public function getLatest(int $count = 3): Collection
+    {
+        return Post::active()
+            ->orderByDesc('created_at')
+            ->limit($count)
+            ->get();
     }
 
     public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
