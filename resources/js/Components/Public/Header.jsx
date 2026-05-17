@@ -9,15 +9,16 @@ const navLinks = [
 ];
 
 export default function Header() {
-    const { auth } = usePage().props;
+    const { auth, siteConfig = {} } = usePage().props;
     const [mobileOpen, setMobileOpen] = useState(false);
+    const siteName = siteConfig.site_name || 'DevHub';
 
     return (
         <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur border-b border-slate-800">
             <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <Link href="/">
-                        <Logo />
+                        <Logo name={siteName} />
                     </Link>
 
                     {/* Desktop nav */}

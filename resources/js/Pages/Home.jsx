@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import HeroBanner from '@/Components/Public/HeroBanner';
 import PostCard from '@/Components/Public/PostCard';
@@ -6,9 +6,12 @@ import Newsletter from '@/Components/Public/Newsletter';
 import { ArrowRight } from 'lucide-react';
 
 export default function Home({ featuredPosts = [] }) {
+    const { siteConfig = {} } = usePage().props;
+    const siteName = siteConfig.site_name || 'DevHub';
+
     return (
         <PublicLayout>
-            <Head title="DevHub — Hub de Inovação e Tecnologia" />
+            <Head title={`${siteName} — Hub de Inovação e Tecnologia`} />
 
             <HeroBanner />
 

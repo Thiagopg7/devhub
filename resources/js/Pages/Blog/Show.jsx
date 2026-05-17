@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { ArrowLeft, Calendar, Clock } from 'lucide-react';
 
@@ -17,9 +17,12 @@ function estimateReadTime(content) {
 }
 
 export default function BlogShow({ post }) {
+    const { siteConfig = {} } = usePage().props;
+    const siteName = siteConfig.site_name || 'DevHub';
+
     return (
         <PublicLayout>
-            <Head title={`${post.meta_title || post.title} — DevHub`}>
+            <Head title={`${post.meta_title || post.title} — ${siteName}`}>
                 {post.meta_description && (
                     <meta name="description" content={post.meta_description} />
                 )}

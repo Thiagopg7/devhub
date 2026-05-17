@@ -1,15 +1,17 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PostCard from '@/Components/Public/PostCard';
 import Newsletter from '@/Components/Public/Newsletter';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function BlogIndex({ posts }) {
+    const { siteConfig = {} } = usePage().props;
+    const siteName = siteConfig.site_name || 'DevHub';
     const { data, current_page, last_page, prev_page_url, next_page_url } = posts;
 
     return (
         <PublicLayout>
-            <Head title="Blog — DevHub" />
+            <Head title={`Blog — ${siteName}`} />
 
             {/* Page header */}
             <div className="bg-slate-900 border-b border-slate-800">

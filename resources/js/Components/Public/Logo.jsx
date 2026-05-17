@@ -1,4 +1,4 @@
-export default function Logo({ className = '' }) {
+export default function Logo({ name = 'DevHub', className = '' }) {
     return (
         <div className={`flex items-center gap-2.5 ${className}`}>
             <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -17,7 +17,7 @@ export default function Logo({ className = '' }) {
                 <circle cx="65" cy="24" r="4" fill="#7DD3FC" />
             </svg>
             <span className="text-xl font-bold text-white tracking-tight">
-                Dev<span className="text-sky-400">Hub</span>
+                {name}
             </span>
         </div>
     );

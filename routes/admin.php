@@ -12,7 +12,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
 
     Route::resource('/posts', PostController::class);
     Route::resource('/categories', CategoryController::class);
-    Route::resource('/configs', ConfigController::class)->except(['show']);
+    Route::get('/configs', [ConfigController::class, 'edit'])->name('configs.edit');
+    Route::put('/configs', [ConfigController::class, 'update'])->name('configs.update');
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])
         ->name('toggle.active');
