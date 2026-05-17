@@ -10,8 +10,9 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
+import ImageSlot from "@/Components/Admin/ImageSlot";
 import TextareaAutosize from "react-textarea-autosize";
-import { Trash2, Upload, ImageOff } from "lucide-react";
+import { Trash2, Upload } from "lucide-react";
 
 const TABS = [
     { id: "content", label: "Conteúdo" },
@@ -36,69 +37,6 @@ function TabBar({ active, onChange }) {
                     {tab.label}
                 </button>
             ))}
-        </div>
-    );
-}
-
-function ImageSlot({ label, currentUrl, onDelete, fieldName, onChange, processing }) {
-    const inputRef = useRef();
-    const [preview, setPreview] = useState(null);
-
-    const handleFile = (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        setPreview(URL.createObjectURL(file));
-        onChange(fieldName, file);
-    };
-
-    const displayed = preview || currentUrl;
-
-    return (
-        <div>
-            <Label value={label} />
-            <div className="mt-2 flex flex-col gap-3">
-                {displayed ? (
-                    <div className="relative w-full rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
-                        <img
-                            src={displayed}
-                            alt={label}
-                            className="w-full max-h-48 object-cover"
-                        />
-                        {currentUrl && !preview && (
-                            <button
-                                type="button"
-                                onClick={onDelete}
-                                disabled={processing}
-                                className="absolute top-2 right-2 p-1.5 rounded-full bg-red-600 text-white hover:bg-red-700 transition-colors"
-                                title="Remover imagem"
-                            >
-                                <Trash2 size={14} />
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="w-full h-32 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-400 dark:text-gray-500">
-                        <ImageOff size={28} />
-                    </div>
-                )}
-
-                <button
-                    type="button"
-                    onClick={() => inputRef.current?.click()}
-                    disabled={processing}
-                    className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                    <Upload size={14} />
-                    {displayed ? "Trocar imagem" : "Selecionar imagem"}
-                </button>
-                <input
-                    ref={inputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFile}
-                />
-            </div>
         </div>
     );
 }
@@ -150,16 +88,11 @@ function GallerySection({ page, processing }) {
         <div>
             <Label value="Galeria de imagens" />
 
-            {/* Grid de imagens existentes */}
             {gallery.length > 0 ? (
                 <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {gallery.map((img) => (
                         <div key={img.id} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-square bg-gray-100 dark:bg-gray-900">
-                            <img
-                                src={img.image_url}
-                                alt=""
-                                className="w-full h-full object-cover"
-                            />
+                            <img src={img.image_url} alt="" className="w-full h-full object-cover" />
                             <button
                                 type="button"
                                 onClick={() => deleteImage(img.id)}
@@ -172,12 +105,9 @@ function GallerySection({ page, processing }) {
                     ))}
                 </div>
             ) : (
-                <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
-                    Nenhuma imagem na galeria.
-                </p>
+                <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">Nenhuma imagem na galeria.</p>
             )}
 
-            {/* Upload de novas imagens */}
             <div className="mt-4 flex items-center gap-3">
                 <input
                     ref={inputRef}
@@ -244,19 +174,13 @@ export default function Form({ page = null }) {
         }
     };
 
-    const deleteBanner = () => {
-        if (!confirm("Remover o banner?")) return;
-        router.delete(route("admin.pages.banner.destroy", page.id), {
-            preserveScroll: true,
-            onSuccess: () => toast.success("Banner removido!"),
-        });
-    };
-
-    const deleteMainImage = () => {
-        if (!confirm("Remover a imagem principal?")) return;
-        router.delete(route("admin.pages.main-image.destroy", page.id), {
+    const deleteImage = (field, label) => {
+        if (!confirm(`Remover ${label}?`)) return;
+        router.delete(route("admin.image.destroy"), {
+            data: { model: "page", id: page.id, field },
             preserveScroll: true,
             onSuccess: () => toast.success("Imagem removida!"),
+            onError:   () => toast.error("Erro ao remover imagem."),
         });
     };
 
@@ -345,7 +269,7 @@ export default function Form({ page = null }) {
                                             <ImageSlot
                                                 label="Banner"
                                                 currentUrl={page?.banner_image_url}
-                                                onDelete={deleteBanner}
+                                                onDelete={() => deleteImage("banner_image", "o banner")}
                                                 fieldName="banner_image"
                                                 onChange={setData}
                                                 processing={processing}
@@ -354,7 +278,7 @@ export default function Form({ page = null }) {
                                             <ImageSlot
                                                 label="Imagem principal"
                                                 currentUrl={page?.main_image_url}
-                                                onDelete={deleteMainImage}
+                                                onDelete={() => deleteImage("main_image", "a imagem principal")}
                                                 fieldName="main_image"
                                                 onChange={setData}
                                                 processing={processing}
@@ -373,7 +297,7 @@ export default function Form({ page = null }) {
                                                 <div>
                                                     <Label value="Slug (gerado automaticamente)" />
                                                     <p className="mt-1 font-mono text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700">
-                                                        /paginas/{page.slug}
+                                                        /{page.slug}
                                                     </p>
                                                 </div>
                                             )}

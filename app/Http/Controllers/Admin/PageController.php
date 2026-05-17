@@ -7,6 +7,7 @@ use App\Http\Requests\PageRequest;
 use App\Models\Page;
 use App\Services\PageService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,10 +15,11 @@ class PageController extends Controller
 {
     public function __construct(private readonly PageService $pageService) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Admin/Pages/Index', [
-            'pages' => $this->pageService->getPaginated(),
+            'pages'  => $this->pageService->getPaginated(20, $request->input('q')),
+            'filter' => $request->only('q'),
         ]);
     }
 
@@ -68,19 +70,5 @@ class PageController extends Controller
 
         return redirect()->route('admin.pages.index')
             ->with('success', 'Página excluída com sucesso.');
-    }
-
-    public function deleteBanner(Page $page): RedirectResponse
-    {
-        $this->pageService->deleteBanner($page);
-
-        return back();
-    }
-
-    public function deleteMainImage(Page $page): RedirectResponse
-    {
-        $this->pageService->deleteMainImage($page);
-
-        return back();
     }
 }

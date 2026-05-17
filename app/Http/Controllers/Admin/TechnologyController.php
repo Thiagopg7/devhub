@@ -7,6 +7,7 @@ use App\Http\Requests\TechnologyRequest;
 use App\Models\Technology;
 use App\Services\TechnologyService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,10 +15,11 @@ class TechnologyController extends Controller
 {
     public function __construct(private readonly TechnologyService $service) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Admin/Technologies/Index', [
-            'technologies' => $this->service->getPaginated(),
+            'technologies' => $this->service->getPaginated(20, $request->input('q')),
+            'filter'       => $request->only('q'),
         ]);
     }
 

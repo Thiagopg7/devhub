@@ -17,11 +17,15 @@ class TechnologyService
             ->get();
     }
 
-    public function getPaginated(int $perPage = 20): LengthAwarePaginator
+    public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
     {
-        return Technology::orderBy('order')
-            ->orderBy('name')
-            ->paginate($perPage);
+        $query = Technology::orderBy('order')->orderBy('name');
+
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        return $query->paginate($perPage);
     }
 
     public function create(array $data): Technology
