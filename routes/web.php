@@ -6,7 +6,6 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/categoria/{slug}', [BlogController::class, 'byCategory'])->name('blog.category');
@@ -23,3 +22,6 @@ require __DIR__.'/auth.php';
 require __DIR__.'/api.php';
 
 require __DIR__.'/admin.php';
+
+// Catch-all para páginas cadastradas — deve ficar por último
+Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
