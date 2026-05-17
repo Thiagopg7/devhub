@@ -1,58 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DevHub
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Hub de publicação de conteúdo sobre tecnologia e inovação. Projeto de portfólio que demonstra uma aplicação full-stack completa com painel administrativo, API RESTful autenticada e frontend público.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| Camada | Tecnologia |
+|--------|-----------|
+| Backend | PHP 8.3 + Laravel 13 |
+| Frontend | React 18 + Inertia.js |
+| Editor de texto | TipTap |
+| Estilização | Tailwind CSS 3 |
+| Build | Vite 8 |
+| Banco de dados | MySQL 8 |
+| Infra | Docker + Nginx |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Funcionalidades
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Frontend público** — homepage com posts em destaque, listagem paginada, página individual de post com prose rendering
+- **Painel administrativo** — CRUD completo de posts e categorias, editor rich-text (TipTap), upload de banner, toggle de status ativo/inativo
+- **API RESTful** — endpoints autenticados via token para consulta de posts
+- **Autenticação** — login/registro via Laravel Breeze
 
-## Learning Laravel
+## Arquitetura
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── Admin/          # PostController, CategoryController, ToggleController
+│   │   ├── Api/            # PostController (API pública)
+│   │   └── BlogController  # Rotas públicas do blog
+│   ├── Middleware/
+│   │   └── ValidateApiToken.php
+│   ├── Requests/           # Form Requests com validação
+│   └── Resources/
+│       └── PostResource.php
+├── Models/                 # User, Post, Category, ApiToken
+└── Services/               # PostService, CategoryService, FileUploadService
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+O projeto segue o padrão **Controller → Service → Eloquent**: controllers são finos e delegam lógica de negócio para services. Dados expostos pela API passam por API Resources para serialização consistente.
 
-## Contributing
+## Pré-requisitos
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Docker e Docker Compose
+- Node.js 20+ (para rodar `npm` no host, se preferir)
 
-## Code of Conduct
+## Setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1. Clone e configure o ambiente
 
-## Security Vulnerabilities
+```bash
+git clone <url-do-repo>
+cd devhub
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Edite o `.env` e confirme as variáveis do banco:
 
-## License
+```env
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=app_db
+DB_USERNAME=user
+DB_PASSWORD=secret
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 2. Suba os containers
+
+```bash
+docker compose up -d
+```
+
+### 3. Instale dependências e prepare o banco
+
+```bash
+docker exec app composer install
+docker exec app php artisan key:generate
+docker exec app php artisan migrate
+docker exec app npm install
+docker exec app npm run build
+```
+
+### 4. (Opcional) Popule com dados de exemplo
+
+```bash
+docker exec app php artisan db:seed
+```
+
+Isso cria 6 categorias e 6 posts de exemplo, além de um usuário admin.
+
+### 5. Configure o host local
+
+Adicione ao seu `/etc/hosts`:
+
+```
+127.0.0.1   devhub.local
+```
+
+Acesse em **http://devhub.local**
+
+## Containers
+
+| Container | Função | Porta |
+|-----------|--------|-------|
+| `app` | PHP-FPM (Laravel) | — |
+| `webserver` | Nginx | 80 |
+| `db` | MySQL 8 | 3307 (host) |
+
+## Comandos úteis
+
+```bash
+# Rodar migrations
+docker exec app php artisan migrate
+
+# Acessar o banco pelo host
+mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
+
+# Build dos assets
+docker exec app npm run build
+
+# Rodar em modo desenvolvimento (com hot reload)
+docker exec app npm run dev
+```
+
+## API
+
+A API requer um token Bearer no header `Authorization`. Tokens são gerenciados pelo painel administrativo em `/admin`.
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `GET` | `/api/posts` | Lista posts ativos (paginado) |
+| `GET` | `/api/posts/{slug}` | Retorna um post pelo slug |
+
+**Exemplo:**
+
+```bash
+curl -H "Authorization: Bearer SEU_TOKEN" http://devhub.local/api/posts
+```
+
+**Resposta:**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Título do post",
+      "slug": "titulo-do-post",
+      "description": "...",
+      "banner_image": "http://devhub.local/storage/...",
+      "published_at": "2026-05-16T00:00:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "per_page": 15,
+    "total": 6
+  }
+}
+```
+
+## Testes
+
+Os testes usam SQLite in-memory e não afetam o banco de desenvolvimento.
+
+```bash
+docker exec app php artisan test
+```
+
+Os testes cobrem:
+
+- Endpoints da API (autenticação, listagem, filtro de posts inativos, busca por slug)
+- Rotas de autenticação (login, registro, logout)
+- Perfil do usuário (atualização, exclusão)
+
+## Variáveis de ambiente relevantes
+
+| Variável | Descrição |
+|----------|-----------|
+| `APP_URL` | URL base da aplicação |
+| `DB_*` | Conexão com MySQL |
+| `FILESYSTEM_DISK` | Disco para upload de arquivos (padrão: `public`) |
