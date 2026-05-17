@@ -2,10 +2,11 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import HeroBanner from '@/Components/Public/HeroBanner';
 import PostCard from '@/Components/Public/PostCard';
+import TechCarousel from '@/Components/Public/TechCarousel';
 import Newsletter from '@/Components/Public/Newsletter';
 import { ArrowRight } from 'lucide-react';
 
-export default function Home({ featuredPosts = [] }) {
+export default function Home({ featuredPosts = [], technologies = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
 
@@ -54,6 +55,11 @@ export default function Home({ featuredPosts = [] }) {
                     </Link>
                 </div>
             </section>
+
+            {/* Divider */}
+            <div className="border-t border-slate-800" />
+
+            <TechCarousel technologies={technologies} />
 
             <Newsletter />
         </PublicLayout>
