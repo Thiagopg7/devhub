@@ -8,7 +8,8 @@ use App\Http\Controllers\Controller;
 class ToggleController extends Controller
 {
     private const ALLOWED_MODELS = [
-        'post' => \App\Models\Post::class,
+        'post'     => \App\Models\Post::class,
+        'category' => \App\Models\Category::class,
     ];
 
     private function resolveModel(string $model): ?string

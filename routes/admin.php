@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ToggleController;
@@ -10,6 +11,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('/posts', PostController::class);
+    Route::resource('/categories', CategoryController::class);
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])
         ->name('toggle.active');

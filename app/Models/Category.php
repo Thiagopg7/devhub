@@ -5,35 +5,20 @@ namespace App\Models;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Post extends Model
+class Category extends Model
 {
     use HasFactory, Sluggable, SoftDeletes;
 
     protected $fillable = [
-        'user_id',
-        'category_id',
-        'title',
-        'description',
+        'name',
         'slug',
-        'banner_image',
-        'content',
+        'color',
+        'description',
         'is_active',
-        'meta_title',
-        'meta_description',
     ];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(Category::class);
-    }
 
     protected $hidden = ['deleted_at', 'updated_at'];
 
@@ -41,15 +26,17 @@ class Post extends Model
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => 'name',
                 'onUpdate' => true,
             ],
         ];
     }
 
-    /**
-     * Escopo para buscar apenas ativas.
-     */
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

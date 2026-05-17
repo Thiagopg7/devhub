@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
+use App\Models\Category;
+use App\Models\Post;
 use App\Services\FileUploadService;
 use App\Services\PostService;
-use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,7 +30,8 @@ class PostController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Posts/Form', [
-            'toast' => session('toast'),
+            'categories' => Category::active()->orderBy('name')->get(['id', 'name', 'color']),
+            'toast'      => session('toast'),
         ]);
     }
 
@@ -64,8 +66,9 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         return Inertia::render('Admin/Posts/Form', [
-            'post'  => $post,
-            'toast' => session('toast'),
+            'post'       => $post,
+            'categories' => Category::active()->orderBy('name')->get(['id', 'name', 'color']),
+            'toast'      => session('toast'),
         ]);
     }
 

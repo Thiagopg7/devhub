@@ -44,6 +44,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Posts
                                 </NavLink>
+                                <NavLink
+                                    href={route('admin.categories.index')}
+                                    active={route().current('admin.categories.*')}
+                                >
+                                    Categorias
+                                </NavLink>
                             </div>
                         </div>
 

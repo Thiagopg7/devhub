@@ -12,7 +12,7 @@ import TextareaAutosize from "react-textarea-autosize";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
 import { CircleHelp } from "lucide-react";
 
-export default function Form({ post = {} }) {
+export default function Form({ post = {}, categories = [] }) {
     const {
         data,
         setData,
@@ -22,6 +22,7 @@ export default function Form({ post = {} }) {
         transform,
     } = useForm({
         id: post?.id ?? "",
+        category_id: post?.category_id ?? "",
         title: post?.title ?? "",
         description: post?.description ?? "",
         content: post?.content ?? "",
@@ -107,6 +108,54 @@ export default function Form({ post = {} }) {
                                             disabled={processing}
                                             autoFocus
                                         />
+                                    </div>
+
+                                    <div>
+                                        <Label
+                                            htmlFor="category_id"
+                                            value="Categoria"
+                                        />
+                                        <div className="flex items-center gap-2 mt-1">
+                                            {data.category_id && (
+                                                <span
+                                                    className="inline-block w-4 h-4 rounded-full shrink-0 border border-gray-200"
+                                                    style={{
+                                                        backgroundColor:
+                                                            categories.find(
+                                                                (c) =>
+                                                                    c.id ===
+                                                                    Number(
+                                                                        data.category_id,
+                                                                    ),
+                                                            )?.color,
+                                                    }}
+                                                />
+                                            )}
+                                            <select
+                                                id="category_id"
+                                                value={data.category_id}
+                                                onChange={(e) =>
+                                                    setData(
+                                                        "category_id",
+                                                        e.target.value,
+                                                    )
+                                                }
+                                                disabled={processing}
+                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
+                                            >
+                                                <option value="">
+                                                    — Sem categoria —
+                                                </option>
+                                                {categories.map((cat) => (
+                                                    <option
+                                                        key={cat.id}
+                                                        value={cat.id}
+                                                    >
+                                                        {cat.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
                                     </div>
                                     <div>
                                         <Label
