@@ -52,6 +52,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Categorias
                                 </NavLink>
+                                <NavLink
+                                    href={route('admin.configs.index')}
+                                    active={route().current('admin.configs.*')}
+                                >
+                                    Configurações
+                                </NavLink>
                             </div>
                         </div>
 
@@ -166,6 +172,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('admin.categories.*')}
                         >
                             Categorias
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('admin.configs.index')}
+                            active={route().current('admin.configs.*')}
+                        >
+                            Configurações
                         </ResponsiveNavLink>
                     </div>
 
