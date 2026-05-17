@@ -9,13 +9,13 @@ export default function Pagination({ links = [] }) {
                 <div key={key} className="text-base">
                     {link.url === null ? (
                         <span
-                            className="px-4 py-2 text-gray-400 border rounded-md cursor-not-allowed"
+                            className="px-4 py-2 text-gray-400 dark:text-gray-600 border dark:border-gray-700 rounded-md cursor-not-allowed"
                             dangerouslySetInnerHTML={{ __html: link.label }}
                         />
                     ) : (
                         <Link
                             href={link.url}
-                            className={`px-4 py-2 border rounded-md hover:border-gray-600 ${
+                            className={`px-4 py-2 border dark:border-gray-600 rounded-md hover:border-gray-600 dark:text-gray-300 ${
                                 link.active ? 'bg-purple-bg text-white' : ''
                             }`}
                             as="button"

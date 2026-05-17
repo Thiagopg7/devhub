@@ -14,9 +14,9 @@ export default function PostCard({ post }) {
         <article className="group bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:border-sky-400/50 transition-all duration-300 hover:-translate-y-1 flex flex-col">
             {/* Banner */}
             <div className="aspect-video overflow-hidden bg-slate-700">
-                {post.banner_image ? (
+                {post.banner_image_url ? (
                     <img
-                        src={post.banner_image}
+                        src={post.banner_image_url}
                         alt={post.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />

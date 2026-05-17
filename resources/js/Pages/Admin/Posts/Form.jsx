@@ -84,7 +84,7 @@ export default function Form({ post = {}, categories = [] }) {
             >
                 <div className="py-12">
                     <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors
                                     errors={errors}
@@ -141,7 +141,7 @@ export default function Form({ post = {}, categories = [] }) {
                                                     )
                                                 }
                                                 disabled={processing}
-                                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
+                                                className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
                                             >
                                                 <option value="">
                                                     — Sem categoria —
@@ -165,7 +165,7 @@ export default function Form({ post = {}, categories = [] }) {
                                         <TextareaAutosize
                                             id="description"
                                             value={data.description}
-                                            className="mt-1 block w-full"
+                                            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
                                             minRows={2}
                                             maxRows={8}
                                             onChange={(e) =>
@@ -180,7 +180,7 @@ export default function Form({ post = {}, categories = [] }) {
 
                                     <div>
                                         <div className="relative flex items-center gap-2">
-                                            <h2 className="text-lg font-semibold">
+                                            <h2 className="text-lg font-semibold dark:text-gray-100">
                                                 Tags SEO (Otimização para
                                                 Mecanismos de Busca)
                                             </h2>
@@ -228,7 +228,7 @@ export default function Form({ post = {}, categories = [] }) {
                                             <TextareaAutosize
                                                 id="meta_description"
                                                 value={data.meta_description}
-                                                className="mt-1 block w-full"
+                                                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
                                                 minRows={2}
                                                 maxRows={8}
                                                 onChange={(e) =>
@@ -271,9 +271,9 @@ export default function Form({ post = {}, categories = [] }) {
                                             disabled={processing}
                                         />
                                         <div>
-                                            {post.banner_image && (
+                                            {post.banner_image_url && (
                                                 <img
-                                                    src={`/storage/${post.banner_image}`}
+                                                    src={post.banner_image_url}
                                                     alt="Imagem de capa"
                                                     className="max-h-50 max-w-36 bg-slate-200"
                                                 />
@@ -303,7 +303,8 @@ export default function Form({ post = {}, categories = [] }) {
 
                                         <NavButton
                                             href={route("admin.posts.index")}
-                                            className={`ml-8 bg-gray-50 text-grey-800 rounded-md ${
+                                            variant="secondary"
+                                            className={`ml-8 ${
                                                 processing ? "opacity-40" : ""
                                             }`}
                                         >

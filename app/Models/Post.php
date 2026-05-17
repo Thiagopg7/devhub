@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,15 @@ class Post extends Model
     }
 
     protected $hidden = ['deleted_at', 'updated_at'];
+
+    protected $appends = ['banner_image_url'];
+
+    protected function bannerImageUrl(): Attribute
+    {
+        return Attribute::get(
+            fn () => $this->banner_image ? asset('storage/' . $this->banner_image) : null
+        );
+    }
 
     public function sluggable(): array
     {

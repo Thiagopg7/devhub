@@ -53,8 +53,8 @@ export default function Index({ auth, posts, filter }) {
             >
                 <div className="py-12">
                     <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                            <div className="p-6 bg-white border-b border-gray-200">
+                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
                                 <form onSubmit={submit} className="mb-4">
                                     <div className="w-full mb-4">
                                         <Label
@@ -84,42 +84,42 @@ export default function Index({ auth, posts, filter }) {
 
                                 <div className="w-full">
                                     {posts.data.length > 0 ? (
-                                        <table className="w-full min-w-full divide-y divide-gray-200">
-                                            <thead className="bg-gray-50">
+                                        <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                            <thead className="bg-gray-50 dark:bg-gray-700">
                                                 <tr>
-                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 uppercase">
+                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Imagem de Capa
                                                     </th>
-                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 uppercase">
+                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Título
                                                     </th>
-                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 uppercase">
+                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ativo
                                                     </th>
-                                                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 uppercase">
+                                                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ações
                                                     </th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                                 {posts.data.map(
                                                     (post) => (
                                                         <tr key={post.id}>
-                                                            <td className="pt-4 px-6">
+                                                            <td className="py-4 px-6">
                                                                 <div>
-                                                                    {post.banner_image && (
+                                                                    {post.banner_image_url && (
                                                                         <img
-                                                                            src={`/storage/${post.banner_image}`}
+                                                                            src={post.banner_image_url}
                                                                             alt="Imagem"
                                                                             className="max-h-30 max-w-24 bg-slate-200"
                                                                         />
                                                                     )}
                                                                 </div>
                                                             </td>
-                                                            <td className="pt-4 px-6">
+                                                            <td className="py-4 px-6 font-medium dark:text-gray-100">
                                                                 {post.title}
                                                             </td>
-                                                            <td className="pt-4 px-6 text-center">
+                                                            <td className="py-4 px-6 text-center">
                                                                 <ToggleActive
                                                                     id={
                                                                         post.id
@@ -130,7 +130,7 @@ export default function Index({ auth, posts, filter }) {
                                                                     }
                                                                 />
                                                             </td>
-                                                            <td className="pt-8 px-6 flex gap-3 justify-end">
+                                                            <td className="py-4 px-6 flex gap-3 justify-end">
                                                                 <NavButton
                                                                     href={route(
                                                                         "admin.posts.edit",
@@ -161,7 +161,7 @@ export default function Index({ auth, posts, filter }) {
                                             </tbody>
                                         </table>
                                     ) : (
-                                        <div className="text-center py-8 text-sm text-gray-500">
+                                        <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
                                             Nenhum Post encontrado.
                                         </div>
                                     )}
