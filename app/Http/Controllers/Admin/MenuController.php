@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MenuRequest;
 use App\Models\MenuItem;
 use App\Services\MenuService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,16 +28,9 @@ class MenuController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(MenuRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'label'           => ['required', 'string', 'max:100'],
-            'url'             => ['required', 'string', 'max:500'],
-            'parent_id'       => ['nullable', 'exists:menu_items,id'],
-            'order'           => ['integer', 'min:0'],
-            'is_active'       => ['boolean'],
-            'open_in_new_tab' => ['boolean'],
-        ]);
+        $data = $request->validated();
 
         if ($data['parent_id'] ?? null) {
             $parent = MenuItem::find($data['parent_id']);
@@ -60,16 +53,9 @@ class MenuController extends Controller
         ]);
     }
 
-    public function update(Request $request, MenuItem $menu): RedirectResponse
+    public function update(MenuRequest $request, MenuItem $menu): RedirectResponse
     {
-        $data = $request->validate([
-            'label'           => ['required', 'string', 'max:100'],
-            'url'             => ['required', 'string', 'max:500'],
-            'parent_id'       => ['nullable', 'exists:menu_items,id'],
-            'order'           => ['integer', 'min:0'],
-            'is_active'       => ['boolean'],
-            'open_in_new_tab' => ['boolean'],
-        ]);
+        $data = $request->validated();
 
         if ($data['parent_id'] ?? null) {
             $parent = MenuItem::find($data['parent_id']);
