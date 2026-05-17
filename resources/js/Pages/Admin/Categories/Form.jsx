@@ -64,7 +64,7 @@ export default function Form({ category = {} }) {
             >
                 <div className="py-12">
                     <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
-                        <div className="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />
 
@@ -91,7 +91,7 @@ export default function Form({ category = {} }) {
                                                 value={data.color}
                                                 onChange={(e) => setData("color", e.target.value)}
                                                 disabled={processing}
-                                                className="h-10 w-14 cursor-pointer rounded border border-gray-300 p-0.5"
+                                                className="h-10 w-14 cursor-pointer rounded border border-gray-300 dark:border-gray-600 p-0.5 dark:bg-gray-700"
                                             />
                                             <Input
                                                 type="text"
@@ -109,7 +109,7 @@ export default function Form({ category = {} }) {
                                         <TextareaAutosize
                                             id="description"
                                             value={data.description}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
+                                            className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
                                             minRows={2}
                                             maxRows={6}
                                             onChange={(e) => setData("description", e.target.value)}
@@ -130,7 +130,8 @@ export default function Form({ category = {} }) {
 
                                         <NavButton
                                             href={route("admin.categories.index")}
-                                            className={`ml-8 bg-gray-50 text-grey-800 rounded-md ${processing ? "opacity-40" : ""}`}
+                                            variant="secondary"
+                                            className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
                                             Cancelar
                                         </NavButton>

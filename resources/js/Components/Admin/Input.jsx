@@ -12,7 +12,7 @@ export default function Input({ value, onChange, ...props }) {
     return (
         <input
             {...props}
-            className={`text-base rounded-md py-2 bg-slate-50 text-smt ${props.className || ''}`}
+            className={`text-base rounded-md py-2 bg-slate-50 dark:bg-gray-700 dark:text-gray-100 dark:border-gray-600 text-smt ${props.className || ''}`}
             value={value}
             onChange={(e) => onChange(e)}
             ref={input}
