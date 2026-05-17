@@ -29,4 +29,18 @@ class BlogController extends Controller
             'post' => $post,
         ]);
     }
+
+    public function byCategory(string $slug)
+    {
+        ['category' => $category, 'posts' => $posts] = $this->postService->getByCategory($slug);
+
+        if (!$category) {
+            abort(404);
+        }
+
+        return Inertia::render('Blog/Category', [
+            'category' => $category,
+            'posts'    => $posts,
+        ]);
+    }
 }

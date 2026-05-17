@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight, Calendar, Tag } from 'lucide-react';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -31,9 +31,21 @@ export default function PostCard({ post }) {
 
             {/* Content */}
             <div className="p-5 flex flex-col flex-1">
-                <div className="flex items-center gap-1.5 text-slate-500 text-xs mb-3">
-                    <Calendar size={12} />
-                    <time dateTime={post.created_at}>{formatDate(post.created_at)}</time>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-1.5 text-slate-500 text-xs">
+                        <Calendar size={12} />
+                        <time dateTime={post.created_at}>{formatDate(post.created_at)}</time>
+                    </div>
+                    {post.category && (
+                        <Link
+                            href={`/blog/categoria/${post.category.slug}`}
+                            className="flex items-center gap-1 text-xs text-slate-400 hover:text-sky-400 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <Tag size={11} />
+                            {post.category.name}
+                        </Link>
+                    )}
                 </div>
 
                 <h3 className="text-slate-100 font-semibold text-base leading-snug mb-2 line-clamp-2 group-hover:text-sky-400 transition-colors">

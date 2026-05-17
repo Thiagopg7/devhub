@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -11,6 +12,7 @@ class PostService
     public function getAllActive(int $perPage = 15): LengthAwarePaginator
     {
         return Post::active()
+            ->with('category')
             ->orderByDesc('created_at')
             ->paginate($perPage);
     }
@@ -18,6 +20,7 @@ class PostService
     public function getLatest(int $count = 3): Collection
     {
         return Post::active()
+            ->with('category')
             ->orderByDesc('created_at')
             ->limit($count)
             ->get();
@@ -25,7 +28,7 @@ class PostService
 
     public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
     {
-        $query = Post::orderBy('id', 'ASC');
+        $query = Post::with('category')->orderBy('id', 'ASC');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -39,7 +42,24 @@ class PostService
 
     public function findBySlug(string $slug): ?Post
     {
-        return Post::active()->where('slug', $slug)->first();
+        return Post::active()->with('category')->where('slug', $slug)->first();
+    }
+
+    public function getByCategory(string $categorySlug, int $perPage = 12): array
+    {
+        $category = Category::active()->where('slug', $categorySlug)->first();
+
+        if (!$category) {
+            return ['category' => null, 'posts' => null];
+        }
+
+        $posts = Post::active()
+            ->with('category')
+            ->where('category_id', $category->id)
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
+
+        return ['category' => $category, 'posts' => $posts];
     }
 
     public function create(array $data): Post

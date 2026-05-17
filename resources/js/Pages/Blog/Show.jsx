@@ -1,6 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -59,6 +59,15 @@ export default function BlogShow({ post }) {
                         <Clock size={14} />
                         {estimateReadTime(post.content)} min de leitura
                     </span>
+                    {post.category && (
+                        <Link
+                            href={`/blog/categoria/${post.category.slug}`}
+                            className="flex items-center gap-1.5 text-slate-400 hover:text-sky-400 transition-colors"
+                        >
+                            <Tag size={14} />
+                            {post.category.name}
+                        </Link>
+                    )}
                 </div>
 
                 {/* Title */}
