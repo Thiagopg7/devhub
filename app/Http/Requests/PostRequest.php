@@ -6,12 +6,17 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class PostRequest extends FormRequest
 {
+    public function authorize(): bool
+    {
+        return true;
+    }
+
     public function rules(): array
     {
         return [
             'category_id'       => 'nullable|exists:categories,id',
             'title'             => 'required|string|max:150',
-            'description'       => 'required|string|max:255',
+            'description'       => 'nullable|string|max:255',
             'content'           => 'nullable|string',
             'banner_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:8192',
             'is_active'         => 'boolean',

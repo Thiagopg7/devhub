@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Services\FileUploadService;
 use App\Services\PostService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PostController extends Controller
@@ -55,9 +56,10 @@ class PostController extends Controller
                 'type'    => 'success',
             ]);
         } catch (\Exception $e) {
+            Log::error('Erro ao criar post', ['error' => $e->getMessage()]);
             return redirect()->back()->withInput()->with('toast', [
                 'title'   => 'Erro!',
-                'message' => 'Erro ao criar post: ' . $e->getMessage(),
+                'message' => 'Ocorreu um erro ao criar o post. Tente novamente.',
                 'type'    => 'error',
             ]);
         }
@@ -97,9 +99,10 @@ class PostController extends Controller
                 'type'    => 'success',
             ]);
         } catch (\Exception $e) {
+            Log::error('Erro ao atualizar post', ['error' => $e->getMessage(), 'post_id' => $post->id]);
             return redirect()->back()->withInput()->with('toast', [
                 'title'   => 'Erro!',
-                'message' => 'Erro ao atualizar post: ' . $e->getMessage(),
+                'message' => 'Ocorreu um erro ao atualizar o post. Tente novamente.',
                 'type'    => 'error',
             ]);
         }
@@ -116,9 +119,10 @@ class PostController extends Controller
                 'type'    => 'success',
             ]);
         } catch (\Exception $e) {
+            Log::error('Erro ao excluir post', ['error' => $e->getMessage(), 'post_id' => $post->id]);
             return redirect()->back()->with('toast', [
                 'title'   => 'Erro!',
-                'message' => 'Erro ao excluir post: ' . $e->getMessage(),
+                'message' => 'Ocorreu um erro ao excluir o post. Tente novamente.',
                 'type'    => 'error',
             ]);
         }

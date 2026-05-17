@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class MenuItem extends Model
 {
@@ -49,5 +50,8 @@ class MenuItem extends Model
                 $model->order = ($scope->max('order') ?? 0) + 1;
             }
         });
+
+        static::saved(fn () => Cache::forget('menu.shared'));
+        static::deleted(fn () => Cache::forget('menu.shared'));
     }
 }

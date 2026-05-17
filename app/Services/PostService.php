@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostService
 {
+    public function __construct(private readonly FileUploadService $uploadService) {}
     public function getAllActive(int $perPage = 15): LengthAwarePaginator
     {
         return Post::active()
@@ -76,6 +77,7 @@ class PostService
 
     public function delete(Post $post): void
     {
+        $this->uploadService->delete($post->banner_image);
         $post->delete();
     }
 }
