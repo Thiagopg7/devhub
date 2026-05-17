@@ -60,6 +60,7 @@ mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
 ## Regras de commits
 - Seguir Conventional Commits: `type(scope): descrição curta`
 - Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`
+- Título e mensagens de commit em PT-BR
 - Nunca incluir `Co-Authored-By: Claude` nem nenhuma assinatura do Claude nas mensagens de commit
 
 ## Não fazer
