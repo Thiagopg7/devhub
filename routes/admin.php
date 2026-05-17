@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\ToggleController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'verified']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['stealth.admin', 'auth', 'verified']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('/posts', PostController::class);

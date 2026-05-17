@@ -59,7 +59,7 @@ function DesktopNavItem({ item }) {
 }
 
 export default function Header() {
-    const { auth, siteConfig = {}, menuItems = [] } = usePage().props;
+    const { siteConfig = {}, menuItems = [] } = usePage().props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const siteName = siteConfig.site_name || 'DevHub';
 
@@ -76,21 +76,6 @@ export default function Header() {
                         {menuItems.map((item) => (
                             <DesktopNavItem key={item.id} item={item} />
                         ))}
-                        {auth?.user ? (
-                            <Link
-                                href="/admin"
-                                className="px-4 py-2 text-sm font-semibold text-slate-900 bg-sky-400 rounded-lg hover:bg-sky-300 transition-colors"
-                            >
-                                Painel Admin
-                            </Link>
-                        ) : (
-                            <Link
-                                href="/login"
-                                className="px-4 py-2 text-sm font-semibold text-sky-400 border border-sky-400 rounded-lg hover:bg-sky-400/10 transition-colors"
-                            >
-                                Entrar
-                            </Link>
-                        )}
                     </div>
 
                     {/* Mobile menu button */}
@@ -128,21 +113,6 @@ export default function Header() {
                                 ))}
                             </div>
                         ))}
-                        {auth?.user ? (
-                            <Link
-                                href="/admin"
-                                className="block px-2 py-2 text-sm font-semibold text-sky-400"
-                            >
-                                Painel Admin
-                            </Link>
-                        ) : (
-                            <Link
-                                href="/login"
-                                className="block px-2 py-2 text-sm font-semibold text-sky-400"
-                            >
-                                Entrar
-                            </Link>
-                        )}
                     </div>
                 )}
             </nav>
