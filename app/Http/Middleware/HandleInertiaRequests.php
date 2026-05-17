@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Config;
+use App\Services\MenuService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
@@ -26,6 +27,7 @@ class HandleInertiaRequests extends Middleware
             'siteConfig' => Cache::remember('configs.shared', 3600, function () {
                 return Config::pluck('value', 'key');
             }),
+            'menuItems' => app(MenuService::class)->getPublicTree(),
         ];
     }
 }

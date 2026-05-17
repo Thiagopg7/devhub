@@ -1,15 +1,65 @@
 import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import Logo from './Logo';
 
-const navLinks = [
-    { label: 'Início', href: '/' },
-    { label: 'Blog', href: '/blog' },
-];
+function MenuLink({ href, openInNewTab, className, onClick, children }) {
+    const isExternal = /^https?:\/\//.test(href);
+    const extraProps = openInNewTab || isExternal
+        ? { target: '_blank', rel: 'noopener noreferrer' }
+        : {};
+    if (isExternal) {
+        return <a href={href} className={className} onClick={onClick} {...extraProps}>{children}</a>;
+    }
+    return <Link href={href} className={className} onClick={onClick} {...extraProps}>{children}</Link>;
+}
+
+function DesktopNavItem({ item }) {
+    const [open, setOpen] = useState(false);
+    const hasChildren = item.children?.length > 0;
+
+    if (!hasChildren) {
+        return (
+            <MenuLink
+                href={item.url}
+                openInNewTab={item.open_in_new_tab}
+                className="text-slate-300 hover:text-sky-400 text-sm font-medium transition-colors"
+            >
+                {item.label}
+            </MenuLink>
+        );
+    }
+
+    return (
+        <div
+            className="relative"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+        >
+            <button className="flex items-center gap-1 text-slate-300 hover:text-sky-400 text-sm font-medium transition-colors">
+                {item.label}
+                <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+            </button>
+            {open && (
+                <div className="absolute top-full left-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 z-50">
+                    {item.children.map((child) => (
+                        <MenuLink
+                            key={child.id}
+                            href={child.url}
+                            openInNewTab={child.open_in_new_tab}
+                            className="block px-4 py-2 text-sm text-slate-300 hover:text-sky-400 hover:bg-slate-700 transition-colors"
+                        >
+                            {child.label}
+                        </MenuLink>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function Header() {
-    const { auth, siteConfig = {} } = usePage().props;
+    const { auth, siteConfig = {}, menuItems = [] } = usePage().props;
     const [mobileOpen, setMobileOpen] = useState(false);
     const siteName = siteConfig.site_name || 'DevHub';
 
@@ -23,14 +73,8 @@ export default function Header() {
 
                     {/* Desktop nav */}
                     <div className="hidden md:flex items-center gap-8">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-slate-300 hover:text-sky-400 text-sm font-medium transition-colors"
-                            >
-                                {link.label}
-                            </Link>
+                        {menuItems.map((item) => (
+                            <DesktopNavItem key={item.id} item={item} />
                         ))}
                         {auth?.user ? (
                             <Link
@@ -60,16 +104,29 @@ export default function Header() {
 
                 {/* Mobile nav */}
                 {mobileOpen && (
-                    <div className="md:hidden pb-4 space-y-2 border-t border-slate-800 pt-4">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                onClick={() => setMobileOpen(false)}
-                                className="block px-2 py-2 text-slate-300 hover:text-sky-400 text-sm font-medium transition-colors"
-                            >
-                                {link.label}
-                            </Link>
+                    <div className="md:hidden pb-4 space-y-1 border-t border-slate-800 pt-4">
+                        {menuItems.map((item) => (
+                            <div key={item.id}>
+                                <MenuLink
+                                    href={item.url}
+                                    openInNewTab={item.open_in_new_tab}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="block px-2 py-2 text-slate-300 hover:text-sky-400 text-sm font-medium transition-colors"
+                                >
+                                    {item.label}
+                                </MenuLink>
+                                {item.children?.map((child) => (
+                                    <MenuLink
+                                        key={child.id}
+                                        href={child.url}
+                                        openInNewTab={child.open_in_new_tab}
+                                        onClick={() => setMobileOpen(false)}
+                                        className="block px-6 py-2 text-slate-400 hover:text-sky-400 text-sm transition-colors"
+                                    >
+                                        {child.label}
+                                    </MenuLink>
+                                ))}
+                            </div>
                         ))}
                         {auth?.user ? (
                             <Link

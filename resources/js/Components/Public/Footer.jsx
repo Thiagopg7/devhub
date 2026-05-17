@@ -1,11 +1,22 @@
 import { Link, usePage } from '@inertiajs/react';
+
+function FooterLink({ href, openInNewTab, className, children }) {
+    const isExternal = /^https?:\/\//.test(href);
+    const extraProps = openInNewTab || isExternal
+        ? { target: '_blank', rel: 'noopener noreferrer' }
+        : {};
+    if (isExternal) {
+        return <a href={href} className={className} {...extraProps}>{children}</a>;
+    }
+    return <Link href={href} className={className} {...extraProps}>{children}</Link>;
+}
 import { Mail, MapPin } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaYoutube } from 'react-icons/fa';
 import Logo from './Logo';
 
 export default function Footer() {
     const year = new Date().getFullYear();
-    const { siteConfig = {} } = usePage().props;
+    const { siteConfig = {}, menuItems = [] } = usePage().props;
 
     const siteName    = siteConfig.site_name          || 'DevHub';
     const tagline     = siteConfig.site_tagline       || 'Conectando ideias, pessoas e tecnologias para acelerar a inovação.';
@@ -52,26 +63,29 @@ export default function Footer() {
                     </div>
 
                     {/* Navegação */}
-                    <div>
-                        <h3 className="text-sm font-semibold text-slate-100 uppercase tracking-wider mb-4">
-                            Navegação
-                        </h3>
-                        <ul className="space-y-2">
-                            {[
-                                { label: 'Início', href: '/' },
-                                { label: 'Blog', href: '/blog' },
-                            ].map((link) => (
-                                <li key={link.href}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-slate-400 hover:text-sky-400 text-sm transition-colors"
-                                    >
-                                        {link.label}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    {menuItems.length > 0 && (
+                        <div>
+                            <h3 className="text-sm font-semibold text-slate-100 uppercase tracking-wider mb-4">
+                                Navegação
+                            </h3>
+                            <ul className="space-y-2">
+                                {menuItems.flatMap((item) => [
+                                    item,
+                                    ...(item.children ?? []),
+                                ]).map((link) => (
+                                    <li key={link.id}>
+                                        <FooterLink
+                                            href={link.url}
+                                            openInNewTab={link.open_in_new_tab}
+                                            className="text-slate-400 hover:text-sky-400 text-sm transition-colors"
+                                        >
+                                            {link.label}
+                                        </FooterLink>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     {/* Contato */}
                     {hasContact && (
