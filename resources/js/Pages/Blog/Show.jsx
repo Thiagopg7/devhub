@@ -26,10 +26,10 @@ export default function BlogShow({ post }) {
             </Head>
 
             {/* Banner */}
-            {post.banner_image && (
+            {post.banner_image_url && (
                 <div className="w-full h-72 md:h-96 overflow-hidden bg-slate-800">
                     <img
-                        src={post.banner_image}
+                        src={post.banner_image_url}
                         alt={post.title}
                         className="w-full h-full object-cover"
                     />

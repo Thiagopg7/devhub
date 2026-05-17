@@ -17,32 +17,20 @@ const ToolbarButton = ({ onClick, active, title, children }) => (
             onClick();
         }}
         title={title}
-        style={{
-            padding: "4px 8px",
-            borderRadius: 4,
-            border: "none",
-            cursor: "pointer",
-            fontWeight: active ? 700 : 400,
-            background: active ? "#dbeafe" : "transparent",
-            color: active ? "#1d4ed8" : "inherit",
-            fontSize: 13,
-        }}
+        className={`px-2 py-1 rounded text-sm cursor-pointer border-none transition-colors ${
+            active
+                ? "bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 font-bold"
+                : "bg-transparent hover:bg-gray-200 dark:hover:bg-gray-600 font-normal dark:text-gray-300"
+        }`}
     >
-        {" "}
-        {children}{" "}
+        {children}
     </button>
 );
+
 const Divider = () => (
-    <span
-        style={{
-            width: 1,
-            height: 20,
-            background: "#e5e7eb",
-            margin: "0 4px",
-            display: "inline-block",
-        }}
-    />
+    <span className="inline-block w-px h-5 bg-gray-200 dark:bg-gray-500 mx-1 self-center" />
 );
+
 export default function RichTextEditor({
     label,
     value,
@@ -78,64 +66,29 @@ export default function RichTextEditor({
     }, [editor]);
     if (!editor) return null;
     return (
-        <div
-            style={{
-                border: "1px solid #d1d5db",
-                borderRadius: 8,
-                overflow: "hidden",
-            }}
-        >
-            {" "}
-            {/* Header */}{" "}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "8px 12px",
-                    borderBottom: "1px solid #e5e7eb",
-                    background: "#f9fafb",
-                }}
-            >
-                {" "}
+        <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-center px-3 py-2 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
                 {label && (
-                    <span style={{ fontWeight: 500, fontSize: 14 }}>
+                    <span className="font-medium text-sm dark:text-gray-100">
                         {label}
                     </span>
-                )}{" "}
+                )}
                 <button
                     type="button"
                     onClick={() => setShowHTML(!showHTML)}
-                    style={{
-                        padding: "3px 10px",
-                        fontSize: 12,
-                        borderRadius: 4,
-                        border: "1px solid #d1d5db",
-                        background: "white",
-                        cursor: "pointer",
-                    }}
+                    className="px-2.5 py-0.5 text-xs rounded border border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-600 dark:text-gray-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                 >
-                    {" "}
-                    {showHTML ? "Visualizar Editor" : "Visualizar HTML"}{" "}
-                </button>{" "}
-            </div>{" "}
+                    {showHTML ? "Visualizar Editor" : "Visualizar HTML"}
+                </button>
+            </div>
+
             {!showHTML ? (
                 <>
-                    {" "}
-                    {/* Toolbar */}{" "}
+                    {/* Toolbar */}
                     {!readOnly && (
-                        <div
-                            style={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                                gap: 2,
-                                padding: "6px 8px",
-                                borderBottom: "1px solid #e5e7eb",
-                                background: "#f9fafb",
-                            }}
-                        >
-                            {" "}
-                            {/* Heading */}{" "}
+                        <div className="flex flex-wrap gap-0.5 px-2 py-1.5 border-b border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 items-center">
+                            {/* Heading */}
                             <select
                                 onChange={(e) => {
                                     const val = e.target.value;
@@ -154,23 +107,17 @@ export default function RichTextEditor({
                                             })
                                             .run();
                                 }}
-                                style={{
-                                    fontSize: 12,
-                                    borderRadius: 4,
-                                    border: "1px solid #d1d5db",
-                                    padding: "2px 4px",
-                                }}
+                                className="text-xs rounded border border-gray-300 dark:border-gray-500 dark:bg-gray-600 dark:text-gray-200 px-1 py-0.5"
                             >
-                                {" "}
-                                <option value="0">Parágrafo</option>{" "}
-                                <option value="1">H1</option>{" "}
-                                <option value="2">H2</option>{" "}
-                                <option value="3">H3</option>{" "}
-                                <option value="4">H4</option>{" "}
-                                <option value="5">H5</option>{" "}
-                                <option value="6">H6</option>{" "}
-                            </select>{" "}
-                            <Divider />{" "}
+                                <option value="0">Parágrafo</option>
+                                <option value="1">H1</option>
+                                <option value="2">H2</option>
+                                <option value="3">H3</option>
+                                <option value="4">H4</option>
+                                <option value="5">H5</option>
+                                <option value="6">H6</option>
+                            </select>
+                            <Divider />
                             <ToolbarButton
                                 onClick={() =>
                                     editor.chain().focus().toggleBold().run()
@@ -179,7 +126,7 @@ export default function RichTextEditor({
                                 title="Negrito"
                             >
                                 <b>B</b>
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor.chain().focus().toggleItalic().run()
@@ -188,7 +135,7 @@ export default function RichTextEditor({
                                 title="Itálico"
                             >
                                 <i>I</i>
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -201,7 +148,7 @@ export default function RichTextEditor({
                                 title="Sublinhado"
                             >
                                 <u>U</u>
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor.chain().focus().toggleStrike().run()
@@ -210,7 +157,7 @@ export default function RichTextEditor({
                                 title="Tachado"
                             >
                                 <s>S</s>
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor.chain().focus().toggleCode().run()
@@ -219,20 +166,14 @@ export default function RichTextEditor({
                                 title="Código inline"
                             >
                                 {"</>"}
-                            </ToolbarButton>{" "}
-                            <Divider /> {/* Cor do texto */}{" "}
+                            </ToolbarButton>
+                            <Divider />
+                            {/* Cor do texto */}
                             <label
                                 title="Cor do texto"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    cursor: "pointer",
-                                    gap: 2,
-                                    fontSize: 12,
-                                }}
+                                className="flex items-center gap-0.5 text-xs cursor-pointer dark:text-gray-300"
                             >
-                                {" "}
-                                A{" "}
+                                A
                                 <input
                                     type="color"
                                     onChange={(e) =>
@@ -242,16 +183,10 @@ export default function RichTextEditor({
                                             .setColor(e.target.value)
                                             .run()
                                     }
-                                    style={{
-                                        width: 18,
-                                        height: 18,
-                                        border: "none",
-                                        cursor: "pointer",
-                                        padding: 0,
-                                    }}
-                                />{" "}
-                            </label>{" "}
-                            <Divider />{" "}
+                                    className="w-4 h-4 border-none cursor-pointer p-0 bg-transparent"
+                                />
+                            </label>
+                            <Divider />
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -264,7 +199,7 @@ export default function RichTextEditor({
                                 title="Alinhar esquerda"
                             >
                                 ≡
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -279,7 +214,7 @@ export default function RichTextEditor({
                                 title="Centralizar"
                             >
                                 ≡
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -292,7 +227,7 @@ export default function RichTextEditor({
                                 title="Alinhar direita"
                             >
                                 ≡
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -307,8 +242,8 @@ export default function RichTextEditor({
                                 title="Justificar"
                             >
                                 ≡
-                            </ToolbarButton>{" "}
-                            <Divider />{" "}
+                            </ToolbarButton>
+                            <Divider />
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -321,7 +256,7 @@ export default function RichTextEditor({
                                 title="Lista com marcadores"
                             >
                                 • Lista
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -334,8 +269,8 @@ export default function RichTextEditor({
                                 title="Lista numerada"
                             >
                                 1. Lista
-                            </ToolbarButton>{" "}
-                            <Divider />{" "}
+                            </ToolbarButton>
+                            <Divider />
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -348,7 +283,7 @@ export default function RichTextEditor({
                                 title="Citação"
                             >
                                 "
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor
@@ -361,18 +296,18 @@ export default function RichTextEditor({
                                 title="Bloco de código"
                             >
                                 {"{ }"}
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={setLink}
                                 active={editor.isActive("link")}
                                 title="Link"
                             >
                                 🔗
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton onClick={addImage} title="Imagem">
                                 🖼
-                            </ToolbarButton>{" "}
-                            <Divider />{" "}
+                            </ToolbarButton>
+                            <Divider />
                             <ToolbarButton
                                 onClick={() =>
                                     editor.chain().focus().undo().run()
@@ -380,7 +315,7 @@ export default function RichTextEditor({
                                 title="Desfazer"
                             >
                                 ↩
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                             <ToolbarButton
                                 onClick={() =>
                                     editor.chain().focus().redo().run()
@@ -388,36 +323,23 @@ export default function RichTextEditor({
                                 title="Refazer"
                             >
                                 ↪
-                            </ToolbarButton>{" "}
+                            </ToolbarButton>
                         </div>
-                    )}{" "}
-                    {/* Editor */}{" "}
-                    <EditorContent
-                        editor={editor}
-                        style={{
-                            padding: "12px 16px",
-                            minHeight: 200,
-                            outline: "none",
-                        }}
-                    />{" "}
+                    )}
+                    {/* Editor */}
+                    <div className="bg-white dark:bg-gray-700 dark:text-gray-100 [&_.tiptap]:outline-none [&_.tiptap]:min-h-[200px] [&_.tiptap]:p-4">
+                        <EditorContent editor={editor} />
+                    </div>
                 </>
             ) : (
                 <textarea
-                    style={{
-                        width: "100%",
-                        minHeight: 200,
-                        padding: 12,
-                        border: "none",
-                        fontFamily: "monospace",
-                        fontSize: 13,
-                        resize: "vertical",
-                        boxSizing: "border-box",
-                    }}
+                    className="w-full font-mono text-sm resize-y bg-white dark:bg-gray-700 dark:text-gray-100 border-none outline-none p-3"
+                    style={{ minHeight: 200, boxSizing: "border-box" }}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     readOnly={readOnly}
                 />
-            )}{" "}
+            )}
         </div>
     );
 }

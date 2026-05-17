@@ -1,7 +1,7 @@
 export default function ActionButton({
     type = 'submit',
     theme = 'default',
-    colorClasses = 'bg-w6 text-black hover:bg-w6-600 active:bg-w6-800 focus:border-w6-400 focus:ring-w6-400',
+    colorClasses = 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:border-red-400 focus:ring-red-400',
     className = '',
     children,
     ...props
