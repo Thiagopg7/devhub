@@ -28,4 +28,15 @@ class Technology extends Model
     {
         return $query->where('is_active', true);
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (is_null($model->order)) {
+                $model->order = (static::max('order') ?? 0) + 1;
+            }
+        });
+    }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\MenuRequest;
 use App\Models\MenuItem;
 use App\Services\MenuService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,10 +15,11 @@ class MenuController extends Controller
 {
     public function __construct(private readonly MenuService $menuService) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Admin/Menu/Index', [
-            'items' => $this->menuService->getAdminList(),
+            'items'  => $this->menuService->getAdminList($request->input('q')),
+            'filter' => $request->only('q'),
         ]);
     }
 

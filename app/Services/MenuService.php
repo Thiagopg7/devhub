@@ -8,12 +8,17 @@ use Illuminate\Support\Facades\Cache;
 
 class MenuService
 {
-    public function getAdminList(): Collection
+    public function getAdminList(?string $search = null): Collection
     {
-        return MenuItem::with(['children' => fn ($q) => $q->orderBy('order')])
+        $query = MenuItem::with(['children' => fn ($q) => $q->orderBy('order')])
             ->roots()
-            ->orderBy('order')
-            ->get();
+            ->orderBy('order');
+
+        if ($search) {
+            $query->where('label', 'like', "%{$search}%");
+        }
+
+        return $query->get();
     }
 
     public function getRoots(): Collection

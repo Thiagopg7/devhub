@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GalleryImageController;
 use App\Http\Controllers\Admin\ImageDeleteController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\TechnologyController;
@@ -31,4 +32,5 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::resource('/menu', MenuController::class)->except(['show']);
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');
+    Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder');
 });

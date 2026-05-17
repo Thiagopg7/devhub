@@ -34,4 +34,20 @@ class MenuItem extends Model
     {
         return $query->whereNull('parent_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (is_null($model->order)) {
+                $scope = static::when(
+                    is_null($model->parent_id),
+                    fn ($q) => $q->whereNull('parent_id'),
+                    fn ($q) => $q->where('parent_id', $model->parent_id),
+                );
+                $model->order = ($scope->max('order') ?? 0) + 1;
+            }
+        });
+    }
 }
