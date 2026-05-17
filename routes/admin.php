@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GalleryImageController;
 use App\Http\Controllers\Admin\ImageDeleteController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\NewsletterAreaController;
 use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PostController;
@@ -30,6 +31,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::put('/configs', [ConfigController::class, 'update'])->name('configs.update');
 
     Route::resource('/menu', MenuController::class)->except(['show']);
+    Route::resource('/newsletter-areas', NewsletterAreaController::class)->except(['show']);
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');
     Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder');

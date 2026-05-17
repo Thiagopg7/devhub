@@ -71,6 +71,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Tecnologias
                                 </NavLink>
                                 <NavLink
+                                    href={route('admin.newsletter-areas.index')}
+                                    active={route().current('admin.newsletter-areas.*')}
+                                >
+                                    Áreas Newsletter
+                                </NavLink>
+                                <NavLink
                                     href={route('admin.configs.edit')}
                                     active={route().current('admin.configs.*')}
                                 >
@@ -208,6 +214,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('admin.technologies.*')}
                         >
                             Tecnologias
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('admin.newsletter-areas.index')}
+                            active={route().current('admin.newsletter-areas.*')}
+                        >
+                            Áreas Newsletter
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('admin.configs.edit')}

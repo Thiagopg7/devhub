@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 class ReorderController extends Controller
 {
     private const ALLOWED_MODELS = [
-        'technology' => \App\Models\Technology::class,
-        'menu_item'  => \App\Models\MenuItem::class,
+        'technology'      => \App\Models\Technology::class,
+        'menu_item'       => \App\Models\MenuItem::class,
+        'newsletter_area' => \App\Models\NewsletterArea::class,
     ];
 
     public function update(Request $request): RedirectResponse
@@ -29,7 +30,10 @@ class ReorderController extends Controller
         }
 
         foreach ($request->items as $item) {
-            $modelClass::where('id', $item['id'])->update(['order' => $item['order']]);
+            $instance = $modelClass::find($item['id']);
+            if ($instance) {
+                $instance->update(['order' => $item['order']]);
+            }
         }
 
         return back();

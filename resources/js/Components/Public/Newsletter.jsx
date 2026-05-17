@@ -1,18 +1,9 @@
 import { useState } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
-
-const areas = [
-    'Tecnologia',
-    'Inovação',
-    'Negócios',
-    'Design',
-    'Marketing',
-    'Saúde',
-    'Educação',
-    'Outro',
-];
+import { usePage } from '@inertiajs/react';
 
 export default function Newsletter() {
+    const { newsletterAreas = [] } = usePage().props;
     const [submitted, setSubmitted] = useState(false);
     const [form, setForm] = useState({ name: '', email: '', area: '' });
 
@@ -85,8 +76,8 @@ export default function Newsletter() {
                                 className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-400 transition-colors"
                             >
                                 <option value="" disabled>Selecione sua área</option>
-                                {areas.map((area) => (
-                                    <option key={area} value={area}>{area}</option>
+                                {newsletterAreas.map((area) => (
+                                    <option key={area.id} value={area.name}>{area.name}</option>
                                 ))}
                             </select>
                         </div>
