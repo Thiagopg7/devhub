@@ -18,6 +18,7 @@ export default function PostCard({ post }) {
                     <img
                         src={post.banner_image_url}
                         alt={post.title}
+                        loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                 ) : (
@@ -38,7 +39,7 @@ export default function PostCard({ post }) {
                     </div>
                     {post.category && (
                         <Link
-                            href={`/blog/categoria/${post.category.slug}`}
+                            href={route('blog.category', post.category.slug)}
                             className="flex items-center gap-1 text-xs text-slate-400 hover:text-sky-400 transition-colors"
                             onClick={(e) => e.stopPropagation()}
                         >
@@ -59,7 +60,7 @@ export default function PostCard({ post }) {
                 )}
 
                 <Link
-                    href={`/blog/${post.slug}`}
+                    href={route('blog.show', post.slug)}
                     className="inline-flex items-center gap-1.5 text-sky-400 text-sm font-medium hover:gap-2.5 transition-all mt-auto"
                 >
                     Ler artigo

@@ -10,12 +10,14 @@ import ToggleActive from "@/Components/Admin/ToggleActive";
 import SortableTr from "@/Components/Admin/SortableTr";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 
 export default function Index({ areas, filter }) {
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(areas.data);
+    const [pending, setPending] = useState(null);
 
     useEffect(() => {
         setItems(areas.data);
@@ -59,13 +61,14 @@ export default function Index({ areas, filter }) {
     };
 
     const deleteConfirm = (id) => {
-        if (confirm("Deseja realmente excluir esta área?")) {
-            router.delete(route("admin.newsletter-areas.destroy", id), {
+        setPending({
+            message: "Deseja realmente excluir esta área?",
+            onConfirm: () => router.delete(route("admin.newsletter-areas.destroy", id), {
                 preserveScroll: true,
                 onSuccess: () => toast.success("Área excluída com sucesso!"),
                 onError: () => toast.error("Erro ao excluir a área."),
-            });
-        }
+            }),
+        });
     };
 
     const isFiltering = !!data.q;
@@ -154,6 +157,13 @@ export default function Index({ areas, filter }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

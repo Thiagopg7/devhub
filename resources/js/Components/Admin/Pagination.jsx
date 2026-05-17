@@ -16,7 +16,7 @@ export default function Pagination({ links = [] }) {
                         <Link
                             href={link.url}
                             className={`px-4 py-2 border dark:border-gray-600 rounded-md hover:border-gray-600 dark:text-gray-300 ${
-                                link.active ? 'bg-purple-bg text-white' : ''
+                                link.active ? 'bg-red-600 text-white border-red-600' : ''
                             }`}
                             as="button"
                             type="button"

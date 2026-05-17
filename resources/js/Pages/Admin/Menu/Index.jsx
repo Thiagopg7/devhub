@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
@@ -9,20 +9,12 @@ import ToggleActive from "@/Components/Admin/ToggleActive";
 import SortableTr from "@/Components/Admin/SortableTr";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-function MenuRowCells({ item, isChild = false }) {
-    const deleteConfirm = (id) => {
-        if (confirm("Deseja realmente excluir este item?")) {
-            router.delete(route("admin.menu.destroy", id), {
-                preserveScroll: true,
-                onSuccess: () => toast.success("Item excluído com sucesso!"),
-                onError: (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
-            });
-        }
-    };
+function MenuRowCells({ item, isChild = false, onDeleteRequest }) {
 
     return (
         <>
@@ -50,7 +42,7 @@ function MenuRowCells({ item, isChild = false }) {
                     <NavButton href={route("admin.menu.edit", item.id)} title="Editar">
                         <FaPen />
                     </NavButton>
-                    <ActionButton theme="light" onClick={() => deleteConfirm(item.id)}>
+                    <ActionButton theme="light" onClick={() => onDeleteRequest(item.id)}>
                         <FaTrash className="text-white" />
                     </ActionButton>
                 </div>
@@ -62,6 +54,18 @@ function MenuRowCells({ item, isChild = false }) {
 export default function Index({ items: initialItems, filter }) {
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(initialItems);
+    const [pending, setPending] = useState(null);
+
+    const handleDeleteRequest = useCallback((id) => {
+        setPending({
+            message: "Deseja realmente excluir este item de menu?",
+            onConfirm: () => router.delete(route("admin.menu.destroy", id), {
+                preserveScroll: true,
+                onSuccess: () => toast.success("Item excluído com sucesso!"),
+                onError: (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
+            }),
+        });
+    }, []);
 
     useEffect(() => {
         setItems(initialItems);
@@ -158,12 +162,12 @@ export default function Index({ items: initialItems, filter }) {
                                                     {items.map((item) => (
                                                         <React.Fragment key={item.id}>
                                                             <SortableTr id={item.id} disabled={isFiltering}>
-                                                                <MenuRowCells item={item} />
+                                                                <MenuRowCells item={item} onDeleteRequest={handleDeleteRequest} />
                                                             </SortableTr>
                                                             {item.children?.map((child) => (
                                                                 <tr key={child.id} className="bg-gray-50 dark:bg-gray-750">
                                                                     <td className="pl-3 pr-1 py-4 w-8" />
-                                                                    <MenuRowCells item={child} isChild />
+                                                                    <MenuRowCells item={child} isChild onDeleteRequest={handleDeleteRequest} />
                                                                 </tr>
                                                             ))}
                                                         </React.Fragment>
@@ -182,6 +186,13 @@ export default function Index({ items: initialItems, filter }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

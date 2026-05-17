@@ -10,7 +10,7 @@ export default function ActionButton({
         if (theme === 'danger') {
             return 'bg-red-400 hover:bg-red-500 hover:text-white';
         } else if (theme === 'light') {
-            return 'bg-red-600 text-gray-400 hover:bg-gray-400 hover:text-gray-500 active:bg-gray-400 active:text-white focus:border-gray-500 focus:ring-gray-500';
+            return 'bg-gray-500 text-white hover:bg-gray-600 active:bg-gray-700 focus:border-gray-400 focus:ring-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500';
         } else {
             return colorClasses;
         }

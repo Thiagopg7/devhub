@@ -1,15 +1,18 @@
+import { useState } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaTrash, FaSearch } from "react-icons/fa";
 import { Users } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export default function Index({ subscribers, filter, total }) {
     const { data, setData, get } = useForm({ q: filter?.q || "" });
+    const [pending, setPending] = useState(null);
 
     const submit = (e) => {
         e.preventDefault();
@@ -21,13 +24,14 @@ export default function Index({ subscribers, filter, total }) {
     };
 
     const deleteConfirm = (id) => {
-        if (confirm("Deseja realmente remover este inscrito?")) {
-            router.delete(route("admin.newsletter-subscribers.destroy", id), {
+        setPending({
+            message: "Deseja realmente remover este inscrito?",
+            onConfirm: () => router.delete(route("admin.newsletter-subscribers.destroy", id), {
                 preserveScroll: true,
                 onSuccess: () => toast.success("Inscrito removido com sucesso!"),
                 onError: () => toast.error("Erro ao remover o inscrito."),
-            });
-        }
+            }),
+        });
     };
 
     return (
@@ -114,6 +118,13 @@ export default function Index({ subscribers, filter, total }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

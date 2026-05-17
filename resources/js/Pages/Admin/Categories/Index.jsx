@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Input from "@/Components/Admin/Input";
@@ -6,6 +7,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ToggleActive from "@/Components/Admin/ToggleActive";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 
@@ -13,6 +15,7 @@ export default function Index({ categories, filter }) {
     const { data, setData, get } = useForm({
         q: filter?.q || "",
     });
+    const [pending, setPending] = useState(null);
 
     const submit = (e) => {
         e.preventDefault();
@@ -24,12 +27,13 @@ export default function Index({ categories, filter }) {
     };
 
     const deleteConfirm = (url) => {
-        if (confirm("Deseja realmente excluir esta categoria?")) {
-            router.delete(url, {
+        setPending({
+            message: "Deseja realmente excluir esta categoria?",
+            onConfirm: () => router.delete(url, {
                 preserveScroll: true,
                 onError: () => toast.error("Erro ao excluir a categoria."),
-            });
-        }
+            }),
+        });
     };
 
     return (
@@ -179,6 +183,13 @@ export default function Index({ categories, filter }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

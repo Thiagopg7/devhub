@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Head, useForm, Link, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Input from "@/Components/Admin/Input";
@@ -6,6 +7,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ToggleActive from "@/Components/Admin/ToggleActive";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 
@@ -13,6 +15,7 @@ export default function Index({ auth, posts, filter }) {
     const { data, setData, get } = useForm({
         q: filter?.q || "",
     });
+    const [pending, setPending] = useState(null);
 
     const submit = (e) => {
         e.preventDefault();
@@ -24,15 +27,13 @@ export default function Index({ auth, posts, filter }) {
     };
 
     const deleteConfirm = (url) => {
-        if (confirm("Deseja realmente excluir este item?")) {
-            router.delete(url, {
+        setPending({
+            message: "Deseja realmente excluir este post?",
+            onConfirm: () => router.delete(url, {
                 preserveScroll: true,
-                onSuccess: () => {},
-                onError: () => {
-                    toast.error(`Erro ao excluir o post.`);
-                },
-            });
-        }
+                onError: () => toast.error("Erro ao excluir o post."),
+            }),
+        });
     };
     return (
         <>
@@ -178,6 +179,13 @@ export default function Index({ auth, posts, filter }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

@@ -1,5 +1,5 @@
 import { Head, useForm, router } from "@inertiajs/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
@@ -11,6 +11,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
 import ImageSlot from "@/Components/Admin/ImageSlot";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import TextareaAutosize from "react-textarea-autosize";
 import { Trash2, Upload } from "lucide-react";
 
@@ -41,7 +42,7 @@ function TabBar({ active, onChange }) {
     );
 }
 
-function GallerySection({ page, processing }) {
+function GallerySection({ page, processing, onDeleteRequest }) {
     const { data, setData, post: uploadImages, processing: uploading, reset } = useForm({ images: [] });
     const inputRef = useRef();
 
@@ -74,11 +75,13 @@ function GallerySection({ page, processing }) {
     };
 
     const deleteImage = (imageId) => {
-        if (!confirm("Remover esta imagem da galeria?")) return;
-        router.delete(route("admin.gallery-images.destroy", imageId), {
-            preserveScroll: true,
-            onSuccess: () => toast.success("Imagem removida!"),
-            onError: () => toast.error("Erro ao remover imagem."),
+        onDeleteRequest({
+            message: "Remover esta imagem da galeria?",
+            onConfirm: () => router.delete(route("admin.gallery-images.destroy", imageId), {
+                preserveScroll: true,
+                onSuccess: () => toast.success("Imagem removida!"),
+                onError: () => toast.error("Erro ao remover imagem."),
+            }),
         });
     };
 
@@ -92,7 +95,7 @@ function GallerySection({ page, processing }) {
                 <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                     {gallery.map((img) => (
                         <div key={img.id} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-square bg-gray-100 dark:bg-gray-900">
-                            <img src={img.image_url} alt="" className="w-full h-full object-cover" />
+                            <img src={img.image_url} alt="" loading="lazy" className="w-full h-full object-cover" />
                             <button
                                 type="button"
                                 onClick={() => deleteImage(img.id)}
@@ -143,6 +146,9 @@ function GallerySection({ page, processing }) {
 export default function Form({ page = null }) {
     const isEditing = !!page?.id;
     const [tab, setTab] = useState("content");
+    const [pending, setPending] = useState(null);
+
+    const handleDeleteRequest = useCallback((config) => setPending(config), []);
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         title:            page?.title            ?? "",
@@ -175,12 +181,14 @@ export default function Form({ page = null }) {
     };
 
     const deleteImage = (field, label) => {
-        if (!confirm(`Remover ${label}?`)) return;
-        router.delete(route("admin.image.destroy"), {
-            data: { model: "page", id: page.id, field },
-            preserveScroll: true,
-            onSuccess: () => toast.success("Imagem removida!"),
-            onError:   () => toast.error("Erro ao remover imagem."),
+        setPending({
+            message: `Remover ${label}?`,
+            onConfirm: () => router.delete(route("admin.image.destroy"), {
+                data: { model: "page", id: page.id, field },
+                preserveScroll: true,
+                onSuccess: () => toast.success("Imagem removida!"),
+                onError:   () => toast.error("Erro ao remover imagem."),
+            }),
         });
     };
 
@@ -285,7 +293,7 @@ export default function Form({ page = null }) {
                                             />
 
                                             <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
-                                                <GallerySection page={page} processing={processing} />
+                                                <GallerySection page={page} processing={processing} onDeleteRequest={handleDeleteRequest} />
                                             </div>
                                         </>
                                     )}
@@ -357,6 +365,13 @@ export default function Form({ page = null }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

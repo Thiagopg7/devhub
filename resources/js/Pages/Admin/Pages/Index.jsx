@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import NavButton from "@/Components/Admin/NavButton";
@@ -6,12 +7,14 @@ import Pagination from "@/Components/Admin/Pagination";
 import ToggleActive from "@/Components/Admin/ToggleActive";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export default function Index({ pages, filter }) {
     const { data, setData, get } = useForm({ q: filter?.q || "" });
+    const [pending, setPending] = useState(null);
 
     const submit = (e) => {
         e.preventDefault();
@@ -23,13 +26,14 @@ export default function Index({ pages, filter }) {
     };
 
     const deleteConfirm = (id) => {
-        if (confirm("Deseja realmente excluir esta página? Esta ação não pode ser desfeita.")) {
-            router.delete(route("admin.pages.destroy", id), {
+        setPending({
+            message: "Deseja realmente excluir esta página? Esta ação não pode ser desfeita.",
+            onConfirm: () => router.delete(route("admin.pages.destroy", id), {
                 preserveScroll: true,
                 onSuccess: () => toast.success("Página excluída com sucesso!"),
                 onError: () => toast.error("Erro ao excluir a página."),
-            });
-        }
+            }),
+        });
     };
 
     return (
@@ -128,6 +132,13 @@ export default function Index({ pages, filter }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

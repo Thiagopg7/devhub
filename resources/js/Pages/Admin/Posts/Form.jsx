@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
@@ -11,10 +12,12 @@ import ToggleButton from "@/Components/Admin/ToggleButton";
 import ImageSlot from "@/Components/Admin/ImageSlot";
 import TextareaAutosize from "react-textarea-autosize";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { CircleHelp } from "lucide-react";
 
 export default function Form({ post = {}, categories = [] }) {
     const isEditing = !!post?.id;
+    const [pending, setPending] = useState(null);
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         category_id:      post?.category_id      ?? "",
@@ -46,12 +49,14 @@ export default function Form({ post = {}, categories = [] }) {
     };
 
     const deleteBanner = () => {
-        if (!confirm("Remover a imagem de capa?")) return;
-        router.delete(route("admin.image.destroy"), {
-            data: { model: "post", id: post.id, field: "banner_image" },
-            preserveScroll: true,
-            onSuccess: () => toast.success("Imagem removida!"),
-            onError:   () => toast.error("Erro ao remover imagem."),
+        setPending({
+            message: "Remover a imagem de capa?",
+            onConfirm: () => router.delete(route("admin.image.destroy"), {
+                data: { model: "post", id: post.id, field: "banner_image" },
+                preserveScroll: true,
+                onSuccess: () => toast.success("Imagem removida!"),
+                onError:   () => toast.error("Erro ao remover imagem."),
+            }),
         });
     };
 
@@ -217,6 +222,13 @@ export default function Form({ post = {}, categories = [] }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }

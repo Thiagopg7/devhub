@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
@@ -10,6 +10,7 @@ import ToggleActive from "@/Components/Admin/ToggleActive";
 import SortableTr from "@/Components/Admin/SortableTr";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -17,6 +18,7 @@ import { toast } from "react-hot-toast";
 export default function Index({ technologies, filter }) {
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(technologies.data);
+    const [pending, setPending] = useState(null);
 
     useEffect(() => {
         setItems(technologies.data);
@@ -60,13 +62,14 @@ export default function Index({ technologies, filter }) {
     };
 
     const deleteConfirm = (id) => {
-        if (confirm("Deseja realmente excluir esta tecnologia?")) {
-            router.delete(route("admin.technologies.destroy", id), {
+        setPending({
+            message: "Deseja realmente excluir esta tecnologia?",
+            onConfirm: () => router.delete(route("admin.technologies.destroy", id), {
                 preserveScroll: true,
                 onSuccess: () => toast.success("Tecnologia excluída com sucesso!"),
                 onError: () => toast.error("Erro ao excluir a tecnologia."),
-            });
-        }
+            }),
+        });
     };
 
     const isFiltering = !!data.q;
@@ -175,6 +178,13 @@ export default function Index({ technologies, filter }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            <ConfirmModal
+                show={!!pending}
+                message={pending?.message}
+                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
+                onCancel={() => setPending(null)}
+            />
         </>
     );
 }
