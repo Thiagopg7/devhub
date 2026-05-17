@@ -55,6 +55,13 @@ export default function RichTextEditor({
             onChange(editor.getHTML());
         },
     });
+    const handleToggleHTML = () => {
+        if (showHTML && editor) {
+            editor.commands.setContent(value || "");
+        }
+        setShowHTML((prev) => !prev);
+    };
+
     const setLink = useCallback(() => {
         const url = window.prompt("URL do link:");
         if (!url) return;
@@ -76,7 +83,7 @@ export default function RichTextEditor({
                 )}
                 <button
                     type="button"
-                    onClick={() => setShowHTML(!showHTML)}
+                    onClick={handleToggleHTML}
                     className="px-2.5 py-0.5 text-xs rounded border border-gray-300 dark:border-gray-500 bg-white dark:bg-gray-600 dark:text-gray-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors"
                 >
                     {showHTML ? "Visualizar Editor" : "Visualizar HTML"}

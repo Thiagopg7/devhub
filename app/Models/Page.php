@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Models;
+
+use Cviebrock\EloquentSluggable\Sluggable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Page extends Model
+{
+    use HasFactory, Sluggable, SoftDeletes;
+
+    protected $fillable = [
+        'title',
+        'subtitle',
+        'slug',
+        'banner_image',
+        'main_image',
+        'content',
+        'is_active',
+        'is_searchable',
+        'meta_title',
+        'meta_description',
+    ];
+
+    protected $casts = [
+        'is_active'     => 'boolean',
+        'is_searchable' => 'boolean',
+    ];
+
+    protected $appends = ['banner_image_url', 'main_image_url'];
+
+    protected $hidden = ['deleted_at', 'updated_at'];
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source'   => 'title',
+                'onUpdate' => true,
+            ],
+        ];
+    }
+
+    protected function bannerImageUrl(): Attribute
+    {
+        return Attribute::get(
+            fn () => $this->banner_image ? asset('storage/' . $this->banner_image) : null
+        );
+    }
+
+    protected function mainImageUrl(): Attribute
+    {
+        return Attribute::get(
+            fn () => $this->main_image ? asset('storage/' . $this->main_image) : null
+        );
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeSearchable($query)
+    {
+        return $query->where('is_searchable', true);
+    }
+
+    public function galleryImages()
+    {
+        return $this->morphMany(GalleryImage::class, 'imageable')->orderBy('order')->orderBy('id');
+    }
+}

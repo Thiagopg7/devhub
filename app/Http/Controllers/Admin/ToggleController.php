@@ -12,6 +12,7 @@ class ToggleController extends Controller
         'category'   => \App\Models\Category::class,
         'menu_item'  => \App\Models\MenuItem::class,
         'technology' => \App\Models\Technology::class,
+        'page'       => \App\Models\Page::class,
     ];
 
     private function resolveModel(string $model): ?string

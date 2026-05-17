@@ -1,0 +1,125 @@
+import { Head, router } from "@inertiajs/react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import NavButton from "@/Components/Admin/NavButton";
+import ActionButton from "@/Components/Admin/ActionButton";
+import Pagination from "@/Components/Admin/Pagination";
+import ToggleActive from "@/Components/Admin/ToggleActive";
+import { FaPen, FaTrash } from "react-icons/fa";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-hot-toast";
+
+export default function Index({ pages }) {
+    const deleteConfirm = (id) => {
+        if (confirm("Deseja realmente excluir esta página? Esta ação não pode ser desfeita.")) {
+            router.delete(route("admin.pages.destroy", id), {
+                preserveScroll: true,
+                onSuccess: () => toast.success("Página excluída com sucesso!"),
+                onError: () => toast.error("Erro ao excluir a página."),
+            });
+        }
+    };
+
+    return (
+        <>
+            <Head title="Páginas" />
+
+            <AuthenticatedLayout
+                header={
+                    <div className="flex w-full justify-between items-center">
+                        <h2 className="font-semibold text-xl leading-tight">Páginas</h2>
+                        <NavButton href={route("admin.pages.create")}>Cadastrar</NavButton>
+                    </div>
+                }
+            >
+                <div className="py-12">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                                {pages.data.length > 0 ? (
+                                    <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead className="bg-gray-50 dark:bg-gray-700">
+                                            <tr>
+                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    Título
+                                                </th>
+                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    Slug
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    Pesquisável
+                                                </th>
+                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    Ativo
+                                                </th>
+                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    Ações
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                            {pages.data.map((page) => (
+                                                <tr key={page.id}>
+                                                    <td className="px-6 py-4">
+                                                        <div className="font-medium dark:text-gray-100">
+                                                            {page.title}
+                                                        </div>
+                                                        {page.subtitle && (
+                                                            <div className="text-xs text-gray-400 mt-0.5">
+                                                                {page.subtitle}
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">
+                                                        {page.slug}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        {page.is_searchable ? (
+                                                            <Eye size={16} className="mx-auto text-sky-400" title="Pesquisável" />
+                                                        ) : (
+                                                            <EyeOff size={16} className="mx-auto text-gray-300 dark:text-gray-600" title="Não pesquisável" />
+                                                        )}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-center">
+                                                        <ToggleActive
+                                                            id={page.id}
+                                                            model="page"
+                                                            value={page.is_active}
+                                                        />
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <div className="flex gap-2 justify-end">
+                                                            <NavButton
+                                                                href={route("admin.pages.edit", page.id)}
+                                                                title="Editar"
+                                                            >
+                                                                <FaPen />
+                                                            </NavButton>
+                                                            <ActionButton
+                                                                theme="light"
+                                                                onClick={() => deleteConfirm(page.id)}
+                                                            >
+                                                                <FaTrash className="text-white" />
+                                                            </ActionButton>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                ) : (
+                                    <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
+                                        Nenhuma página cadastrada.
+                                    </div>
+                                )}
+
+                                <div className="w-full mt-4">
+                                    <Pagination links={pages.links} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </AuthenticatedLayout>
+        </>
+    );
+}

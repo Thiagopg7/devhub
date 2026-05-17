@@ -47,6 +47,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Posts
                                 </NavLink>
                                 <NavLink
+                                    href={route('admin.pages.index')}
+                                    active={route().current('admin.pages.*')}
+                                >
+                                    Páginas
+                                </NavLink>
+                                <NavLink
                                     href={route('admin.categories.index')}
                                     active={route().current('admin.categories.*')}
                                 >
@@ -178,6 +184,12 @@ export default function AuthenticatedLayout({ header, children }) {
                             active={route().current('admin.posts.*')}
                         >
                             Posts
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('admin.pages.index')}
+                            active={route().current('admin.pages.*')}
+                        >
+                            Páginas
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('admin.categories.index')}

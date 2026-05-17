@@ -1,5 +1,6 @@
 import Header from '@/Components/Public/Header';
 import Footer from '@/Components/Public/Footer';
+import PrivacyBanner from '@/Components/Public/PrivacyBanner';
 
 export default function PublicLayout({ children }) {
     return (
@@ -9,6 +10,7 @@ export default function PublicLayout({ children }) {
                 {children}
             </main>
             <Footer />
+            <PrivacyBanner />
         </div>
     );
 }
