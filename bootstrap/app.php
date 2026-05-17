@@ -34,12 +34,13 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        $middleware->alias([
-            'stealth.admin' => \App\Http\Middleware\StealthAdmin::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Throwable $e, Request $request) {
+            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+                return null;
+            }
+
             if ($request->is('api/*')) {
                 Log::error('Erro na API', [
                     'error' => $e->getMessage(),
