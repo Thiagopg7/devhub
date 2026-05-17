@@ -68,3 +68,4 @@ mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
 - Não rodar `php artisan migrate:fresh` sem confirmar explicitamente
 - Não instalar pacotes (composer/npm) sem perguntar antes
 - Não rodar comandos PHP/Artisan direto no host — sempre via `docker exec app`
+- Não fazer commit nem push sem perguntar antes ao usuário
