@@ -1,5 +1,6 @@
 import ApplicationLogo from '@/Components/Admin/ApplicationLogo';
 import Dropdown from '@/Components/Admin/Dropdown';
+import NavDropdown from '@/Components/Admin/NavDropdown';
 import NavLink from '@/Components/Admin/NavLink';
 import ResponsiveNavLink from '@/Components/Admin/ResponsiveNavLink';
 import ThemeToggle from '@/Components/Admin/ThemeToggle';
@@ -33,30 +34,19 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </Link>
                             </div>
 
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div className="hidden space-x-6 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     href={route('admin.dashboard')}
                                     active={route().current('admin.dashboard')}
                                 >
                                     Dashboard
                                 </NavLink>
-                                <NavLink
-                                    href={route('admin.posts.index')}
-                                    active={route().current('admin.posts.*')}
-                                >
-                                    Posts
-                                </NavLink>
+
                                 <NavLink
                                     href={route('admin.pages.index')}
                                     active={route().current('admin.pages.*')}
                                 >
                                     Páginas
-                                </NavLink>
-                                <NavLink
-                                    href={route('admin.categories.index')}
-                                    active={route().current('admin.categories.*')}
-                                >
-                                    Categorias
                                 </NavLink>
                                 <NavLink
                                     href={route('admin.menu.index')}
@@ -70,12 +60,43 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Tecnologias
                                 </NavLink>
-                                <NavLink
-                                    href={route('admin.newsletter-areas.index')}
-                                    active={route().current('admin.newsletter-areas.*')}
+
+                                <NavDropdown
+                                    label="Posts"
+                                    active={route().current('admin.posts.*') || route().current('admin.categories.*')}
                                 >
-                                    Áreas Newsletter
-                                </NavLink>
+                                    <NavDropdown.Item
+                                        href={route('admin.posts.index')}
+                                        active={route().current('admin.posts.*')}
+                                    >
+                                        Posts
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        href={route('admin.categories.index')}
+                                        active={route().current('admin.categories.*')}
+                                    >
+                                        Categorias
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+
+                                <NavDropdown
+                                    label="Newsletter"
+                                    active={route().current('admin.newsletter-areas.*') || route().current('admin.newsletter-subscribers.*')}
+                                >
+                                    <NavDropdown.Item
+                                        href={route('admin.newsletter-areas.index')}
+                                        active={route().current('admin.newsletter-areas.*')}
+                                    >
+                                        Áreas
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item
+                                        href={route('admin.newsletter-subscribers.index')}
+                                        active={route().current('admin.newsletter-subscribers.*')}
+                                    >
+                                        Inscritos
+                                    </NavDropdown.Item>
+                                </NavDropdown>
+
                                 <NavLink
                                     href={route('admin.configs.edit')}
                                     active={route().current('admin.configs.*')}
@@ -178,13 +199,17 @@ export default function AuthenticatedLayout({ header, children }) {
                         (showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'
                     }
                 >
-                    <div className="space-y-1 pb-3 pt-2">
+                    <div className="pb-3 pt-2">
                         <ResponsiveNavLink
                             href={route('admin.dashboard')}
                             active={route().current('admin.dashboard')}
                         >
                             Dashboard
                         </ResponsiveNavLink>
+
+                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
+                            Posts
+                        </p>
                         <ResponsiveNavLink
                             href={route('admin.posts.index')}
                             active={route().current('admin.posts.*')}
@@ -192,16 +217,20 @@ export default function AuthenticatedLayout({ header, children }) {
                             Posts
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href={route('admin.pages.index')}
-                            active={route().current('admin.pages.*')}
-                        >
-                            Páginas
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
                             href={route('admin.categories.index')}
                             active={route().current('admin.categories.*')}
                         >
                             Categorias
+                        </ResponsiveNavLink>
+
+                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
+                            Conteúdo
+                        </p>
+                        <ResponsiveNavLink
+                            href={route('admin.pages.index')}
+                            active={route().current('admin.pages.*')}
+                        >
+                            Páginas
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
                             href={route('admin.menu.index')}
@@ -215,12 +244,26 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Tecnologias
                         </ResponsiveNavLink>
+
+                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
+                            Newsletter
+                        </p>
                         <ResponsiveNavLink
                             href={route('admin.newsletter-areas.index')}
                             active={route().current('admin.newsletter-areas.*')}
                         >
-                            Áreas Newsletter
+                            Áreas
                         </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            href={route('admin.newsletter-subscribers.index')}
+                            active={route().current('admin.newsletter-subscribers.*')}
+                        >
+                            Inscritos
+                        </ResponsiveNavLink>
+
+                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
+                            Sistema
+                        </p>
                         <ResponsiveNavLink
                             href={route('admin.configs.edit')}
                             active={route().current('admin.configs.*')}

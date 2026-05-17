@@ -1,19 +1,45 @@
 import { useState } from 'react';
-import { Send, CheckCircle } from 'lucide-react';
+import { Send, CheckCircle, Loader } from 'lucide-react';
 import { usePage } from '@inertiajs/react';
+import axios from 'axios';
 
 export default function Newsletter() {
     const { newsletterAreas = [] } = usePage().props;
     const [submitted, setSubmitted] = useState(false);
-    const [form, setForm] = useState({ name: '', email: '', area: '' });
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [form, setForm] = useState({ name: '', email: '', newsletter_area_id: '', website: '' });
 
     function handleChange(e) {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+        if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault();
-        setSubmitted(true);
+        setLoading(true);
+        setErrors({});
+
+        try {
+            await axios.post('/newsletter/subscribe', {
+                name:               form.name,
+                email:              form.email,
+                newsletter_area_id: form.newsletter_area_id,
+                website:            form.website, // honeypot — always empty for real users
+            });
+            setSubmitted(true);
+        } catch (err) {
+            if (err.response?.status === 422) {
+                setErrors(err.response.data.errors ?? {});
+            } else if (err.response?.status === 429) {
+                setErrors({ email: ['Muitas tentativas. Aguarde alguns minutos e tente novamente.'] });
+            } else {
+                setErrors({ email: ['Erro ao realizar inscrição. Tente novamente.'] });
+            }
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -34,6 +60,19 @@ export default function Newsletter() {
                     </div>
                 ) : (
                     <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+
+                        {/* Honeypot — hidden from real users, filled by bots */}
+                        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+                            <input
+                                type="text"
+                                name="website"
+                                value={form.website}
+                                onChange={handleChange}
+                                tabIndex="-1"
+                                autoComplete="off"
+                            />
+                        </div>
+
                         <div>
                             <label className="block text-xs font-medium text-slate-400 mb-1.5">
                                 Nome
@@ -45,8 +84,10 @@ export default function Newsletter() {
                                 value={form.name}
                                 onChange={handleChange}
                                 placeholder="Seu nome"
-                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors"
+                                disabled={loading}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors disabled:opacity-50"
                             />
+                            {errors.name && <p className="mt-1 text-xs text-red-400">{errors.name[0]}</p>}
                         </div>
 
                         <div>
@@ -60,8 +101,10 @@ export default function Newsletter() {
                                 value={form.email}
                                 onChange={handleChange}
                                 placeholder="seu@email.com"
-                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors"
+                                disabled={loading}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors disabled:opacity-50"
                             />
+                            {errors.email && <p className="mt-1 text-xs text-red-400">{errors.email[0]}</p>}
                         </div>
 
                         <div className="sm:col-span-2">
@@ -69,26 +112,29 @@ export default function Newsletter() {
                                 Área de atuação
                             </label>
                             <select
-                                name="area"
+                                name="newsletter_area_id"
                                 required
-                                value={form.area}
+                                value={form.newsletter_area_id}
                                 onChange={handleChange}
-                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-400 transition-colors"
+                                disabled={loading}
+                                className="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-sky-400 transition-colors disabled:opacity-50"
                             >
                                 <option value="" disabled>Selecione sua área</option>
                                 {newsletterAreas.map((area) => (
-                                    <option key={area.id} value={area.name}>{area.name}</option>
+                                    <option key={area.id} value={area.id}>{area.name}</option>
                                 ))}
                             </select>
+                            {errors.newsletter_area_id && <p className="mt-1 text-xs text-red-400">{errors.newsletter_area_id[0]}</p>}
                         </div>
 
                         <div className="sm:col-span-2 flex justify-center pt-2">
                             <button
                                 type="submit"
-                                className="inline-flex items-center gap-2 px-8 py-3 bg-sky-400 text-slate-900 font-semibold rounded-lg hover:bg-sky-300 transition-colors"
+                                disabled={loading}
+                                className="inline-flex items-center gap-2 px-8 py-3 bg-sky-400 text-slate-900 font-semibold rounded-lg hover:bg-sky-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                             >
-                                <Send size={16} />
-                                Inscrever-se
+                                {loading ? <Loader size={16} className="animate-spin" /> : <Send size={16} />}
+                                {loading ? 'Enviando...' : 'Inscrever-se'}
                             </button>
                         </div>
                     </form>
