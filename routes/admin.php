@@ -11,8 +11,10 @@ use App\Http\Controllers\Admin\NewsletterSubscriberController;
 use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\ToggleController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'verified', 'admin']], function () {
@@ -57,6 +59,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::delete('/newsletter-subscribers/{newsletterSubscriber}', [NewsletterSubscriberController::class, 'destroy'])
         ->name('newsletter-subscribers.destroy')
         ->middleware('can:newsletter_subscribers.delete');
+
+    Route::resource('/roles', RoleController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:roles');
+
+    Route::resource('/users', UserController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:users');
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');
     Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder');
