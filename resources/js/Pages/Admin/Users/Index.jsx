@@ -104,7 +104,7 @@ export default function Index({ users, filter }) {
                                                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
                                                         <td className="px-6 py-4">
                                                             {role ? (
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300">
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-200 dark:ring-1 dark:ring-inset dark:ring-sky-500/30">
                                                                     {role.name}
                                                                 </span>
                                                             ) : (

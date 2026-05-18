@@ -42,7 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Throwable $e, Request $request) {
-            if ($e instanceof \Illuminate\Auth\AuthenticationException) {
+            if ($e instanceof \Illuminate\Auth\AuthenticationException
+                || $e instanceof \Illuminate\Validation\ValidationException) {
                 return null;
             }
 
