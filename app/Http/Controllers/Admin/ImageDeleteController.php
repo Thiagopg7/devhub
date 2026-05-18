@@ -10,13 +10,8 @@ use Illuminate\Http\Request;
 class ImageDeleteController extends Controller
 {
     private const ALLOWED = [
-        'post' => ['banner_image'],
-        'page' => ['banner_image', 'main_image'],
-    ];
-
-    private const MODELS = [
-        'post' => \App\Models\Post::class,
-        'page' => \App\Models\Page::class,
+        'post' => ['fields' => ['banner_image'],                'class' => \App\Models\Post::class, 'module' => 'posts'],
+        'page' => ['fields' => ['banner_image', 'main_image'],  'class' => \App\Models\Page::class, 'module' => 'pages'],
     ];
 
     public function destroy(Request $request, FileUploadService $uploadService): RedirectResponse
@@ -30,12 +25,15 @@ class ImageDeleteController extends Controller
         $modelKey = strtolower($request->model);
         $field    = $request->field;
 
-        $modelClass    = self::MODELS[$modelKey] ?? null;
-        $allowedFields = self::ALLOWED[$modelKey] ?? [];
+        $config = self::ALLOWED[$modelKey] ?? null;
 
-        if (!$modelClass || !in_array($field, $allowedFields, true)) {
+        if (!$config || !in_array($field, $config['fields'], true)) {
             return back()->withErrors(['field' => 'Operação inválida.']);
         }
+
+        abort_unless($request->user()?->can("{$config['module']}.edit"), 403);
+
+        $modelClass = $config['class'];
 
         $item = $modelClass::find($request->id);
 

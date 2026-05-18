@@ -5,14 +5,16 @@ import NavLink from '@/Components/Admin/NavLink';
 import ResponsiveNavLink from '@/Components/Admin/ResponsiveNavLink';
 import ThemeToggle from '@/Components/Admin/ThemeToggle';
 import { useTheme } from '@/hooks/useTheme';
+import { useCan } from '@/hooks/useCan';
 import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
     const { toast: toastProps } = usePage().props;
     const { theme, toggleTheme } = useTheme();
+    const can = useCan();
 
     useEffect(() => {
         if (toastProps) {
@@ -21,6 +23,46 @@ export default function AuthenticatedLayout({ header, children }) {
     }, [toastProps]);
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    const groups = useMemo(() => [
+        {
+            label: 'Posts',
+            items: [
+                { permission: 'posts.view',      label: 'Posts',      routeName: 'admin.posts.index',      activePattern: 'admin.posts.*' },
+                { permission: 'categories.view', label: 'Categorias', routeName: 'admin.categories.index', activePattern: 'admin.categories.*' },
+            ],
+        },
+        {
+            label: 'Conteúdo',
+            items: [
+                { permission: 'pages.view',        label: 'Páginas',     routeName: 'admin.pages.index',        activePattern: 'admin.pages.*' },
+                { permission: 'menu.view',         label: 'Menu',        routeName: 'admin.menu.index',         activePattern: 'admin.menu.*' },
+                { permission: 'technologies.view', label: 'Tecnologias', routeName: 'admin.technologies.index', activePattern: 'admin.technologies.*' },
+            ],
+        },
+        {
+            label: 'Newsletter',
+            items: [
+                { permission: 'newsletter_areas.view',       label: 'Áreas',     routeName: 'admin.newsletter-areas.index',       activePattern: 'admin.newsletter-areas.*' },
+                { permission: 'newsletter_subscribers.view', label: 'Inscritos', routeName: 'admin.newsletter-subscribers.index', activePattern: 'admin.newsletter-subscribers.*' },
+            ],
+        },
+        {
+            label: 'Sistema',
+            items: [
+                { permission: 'users.view',   label: 'Usuários',      routeName: 'admin.users.index',  activePattern: 'admin.users.*' },
+                { permission: 'roles.view',   label: 'Perfis',        routeName: 'admin.roles.index',  activePattern: 'admin.roles.*' },
+                { permission: 'configs.view', label: 'Configurações', routeName: 'admin.configs.edit', activePattern: 'admin.configs.*' },
+            ],
+        },
+    ], []);
+
+    const visibleGroups = useMemo(
+        () => groups
+            .map((g) => ({ ...g, items: g.items.filter((i) => can(i.permission) && routeExists(i.routeName)) }))
+            .filter((g) => g.items.length > 0),
+        [groups, can],
+    );
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -42,67 +84,33 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
 
-                                <NavLink
-                                    href={route('admin.pages.index')}
-                                    active={route().current('admin.pages.*')}
-                                >
-                                    Páginas
-                                </NavLink>
-                                <NavLink
-                                    href={route('admin.menu.index')}
-                                    active={route().current('admin.menu.*')}
-                                >
-                                    Menu
-                                </NavLink>
-                                <NavLink
-                                    href={route('admin.technologies.index')}
-                                    active={route().current('admin.technologies.*')}
-                                >
-                                    Tecnologias
-                                </NavLink>
-
-                                <NavDropdown
-                                    label="Posts"
-                                    active={route().current('admin.posts.*') || route().current('admin.categories.*')}
-                                >
-                                    <NavDropdown.Item
-                                        href={route('admin.posts.index')}
-                                        active={route().current('admin.posts.*')}
-                                    >
-                                        Posts
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item
-                                        href={route('admin.categories.index')}
-                                        active={route().current('admin.categories.*')}
-                                    >
-                                        Categorias
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-
-                                <NavDropdown
-                                    label="Newsletter"
-                                    active={route().current('admin.newsletter-areas.*') || route().current('admin.newsletter-subscribers.*')}
-                                >
-                                    <NavDropdown.Item
-                                        href={route('admin.newsletter-areas.index')}
-                                        active={route().current('admin.newsletter-areas.*')}
-                                    >
-                                        Áreas
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item
-                                        href={route('admin.newsletter-subscribers.index')}
-                                        active={route().current('admin.newsletter-subscribers.*')}
-                                    >
-                                        Inscritos
-                                    </NavDropdown.Item>
-                                </NavDropdown>
-
-                                <NavLink
-                                    href={route('admin.configs.edit')}
-                                    active={route().current('admin.configs.*')}
-                                >
-                                    Configurações
-                                </NavLink>
+                                {visibleGroups.map((group) => (
+                                    group.items.length === 1 ? (
+                                        <NavLink
+                                            key={group.items[0].routeName}
+                                            href={route(group.items[0].routeName)}
+                                            active={route().current(group.items[0].activePattern)}
+                                        >
+                                            {group.items[0].label}
+                                        </NavLink>
+                                    ) : (
+                                        <NavDropdown
+                                            key={group.label}
+                                            label={group.label}
+                                            active={group.items.some((i) => route().current(i.activePattern))}
+                                        >
+                                            {group.items.map((item) => (
+                                                <NavDropdown.Item
+                                                    key={item.routeName}
+                                                    href={route(item.routeName)}
+                                                    active={route().current(item.activePattern)}
+                                                >
+                                                    {item.label}
+                                                </NavDropdown.Item>
+                                            ))}
+                                        </NavDropdown>
+                                    )
+                                ))}
                             </div>
                         </div>
 
@@ -207,69 +215,22 @@ export default function AuthenticatedLayout({ header, children }) {
                             Dashboard
                         </ResponsiveNavLink>
 
-                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
-                            Posts
-                        </p>
-                        <ResponsiveNavLink
-                            href={route('admin.posts.index')}
-                            active={route().current('admin.posts.*')}
-                        >
-                            Posts
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('admin.categories.index')}
-                            active={route().current('admin.categories.*')}
-                        >
-                            Categorias
-                        </ResponsiveNavLink>
-
-                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
-                            Conteúdo
-                        </p>
-                        <ResponsiveNavLink
-                            href={route('admin.pages.index')}
-                            active={route().current('admin.pages.*')}
-                        >
-                            Páginas
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('admin.menu.index')}
-                            active={route().current('admin.menu.*')}
-                        >
-                            Menu
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('admin.technologies.index')}
-                            active={route().current('admin.technologies.*')}
-                        >
-                            Tecnologias
-                        </ResponsiveNavLink>
-
-                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
-                            Newsletter
-                        </p>
-                        <ResponsiveNavLink
-                            href={route('admin.newsletter-areas.index')}
-                            active={route().current('admin.newsletter-areas.*')}
-                        >
-                            Áreas
-                        </ResponsiveNavLink>
-                        <ResponsiveNavLink
-                            href={route('admin.newsletter-subscribers.index')}
-                            active={route().current('admin.newsletter-subscribers.*')}
-                        >
-                            Inscritos
-                        </ResponsiveNavLink>
-
-                        <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
-                            Sistema
-                        </p>
-                        <ResponsiveNavLink
-                            href={route('admin.configs.edit')}
-                            active={route().current('admin.configs.*')}
-                        >
-                            Configurações
-                        </ResponsiveNavLink>
+                        {visibleGroups.map((group) => (
+                            <div key={group.label}>
+                                <p className="px-4 pt-3 pb-1 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 tracking-wider">
+                                    {group.label}
+                                </p>
+                                {group.items.map((item) => (
+                                    <ResponsiveNavLink
+                                        key={item.routeName}
+                                        href={route(item.routeName)}
+                                        active={route().current(item.activePattern)}
+                                    >
+                                        {item.label}
+                                    </ResponsiveNavLink>
+                                ))}
+                            </div>
+                        ))}
                     </div>
 
                     <div className="border-t border-gray-200 dark:border-gray-700 pb-1 pt-4">
@@ -309,4 +270,12 @@ export default function AuthenticatedLayout({ header, children }) {
             <main>{children}</main>
         </div>
     );
+}
+
+function routeExists(name) {
+    try {
+        return typeof route().has === 'function' ? route().has(name) : true;
+    } catch {
+        return false;
+    }
 }

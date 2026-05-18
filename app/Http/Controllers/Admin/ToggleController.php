@@ -8,34 +8,31 @@ use App\Http\Controllers\Controller;
 class ToggleController extends Controller
 {
     private const ALLOWED_MODELS = [
-        'post'            => \App\Models\Post::class,
-        'category'        => \App\Models\Category::class,
-        'menu_item'       => \App\Models\MenuItem::class,
-        'technology'      => \App\Models\Technology::class,
-        'page'            => \App\Models\Page::class,
-        'newsletter_area' => \App\Models\NewsletterArea::class,
+        'post'            => ['class' => \App\Models\Post::class,           'module' => 'posts'],
+        'category'        => ['class' => \App\Models\Category::class,       'module' => 'categories'],
+        'menu_item'       => ['class' => \App\Models\MenuItem::class,       'module' => 'menu'],
+        'technology'      => ['class' => \App\Models\Technology::class,     'module' => 'technologies'],
+        'page'            => ['class' => \App\Models\Page::class,           'module' => 'pages'],
+        'newsletter_area' => ['class' => \App\Models\NewsletterArea::class, 'module' => 'newsletter_areas'],
     ];
-
-    private function resolveModel(string $model): ?string
-    {
-        return self::ALLOWED_MODELS[strtolower($model)] ?? null;
-    }
 
     public function update(Request $request)
     {
         $request->validate([
-            'id' => 'required',
-            'model' => 'required|string',
+            'id'        => 'required',
+            'model'     => 'required|string',
             'is_active' => 'required|boolean',
         ]);
 
-        $modelClass = $this->resolveModel($request->model);
+        $config = self::ALLOWED_MODELS[strtolower($request->model)] ?? null;
 
-        if (!$modelClass) {
+        if (!$config) {
             return back()->withErrors(['model' => 'Módulo inválido.']);
         }
 
-        $item = $modelClass::find($request->id);
+        abort_unless($request->user()?->can("{$config['module']}.edit"), 403);
+
+        $item = $config['class']::find($request->id);
 
         if (!$item) {
             return back()->withErrors(['item' => 'Item não encontrado.']);

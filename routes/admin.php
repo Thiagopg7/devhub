@@ -15,26 +15,48 @@ use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\ToggleController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'verified']], function () {
+Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'verified', 'admin']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('/posts', PostController::class);
-    Route::resource('/categories', CategoryController::class);
-    Route::resource('/technologies', TechnologyController::class)->except(['show']);
+    Route::resource('/posts', PostController::class)->middleware('resource.permission:posts');
+    Route::resource('/categories', CategoryController::class)->middleware('resource.permission:categories');
+    Route::resource('/technologies', TechnologyController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:technologies');
 
-    Route::resource('/pages', PageController::class)->except(['show']);
-    Route::post('/pages/{page}/gallery', [GalleryImageController::class, 'store'])->name('pages.gallery.store');
-    Route::delete('/gallery-images/{galleryImage}', [GalleryImageController::class, 'destroy'])->name('gallery-images.destroy');
+    Route::resource('/pages', PageController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:pages');
+    Route::post('/pages/{page}/gallery', [GalleryImageController::class, 'store'])
+        ->name('pages.gallery.store')
+        ->middleware('can:pages.edit');
+    Route::delete('/gallery-images/{galleryImage}', [GalleryImageController::class, 'destroy'])
+        ->name('gallery-images.destroy')
+        ->middleware('can:pages.edit');
 
     Route::delete('/image', [ImageDeleteController::class, 'destroy'])->name('image.destroy');
 
-    Route::get('/configs', [ConfigController::class, 'edit'])->name('configs.edit');
-    Route::put('/configs', [ConfigController::class, 'update'])->name('configs.update');
+    Route::get('/configs', [ConfigController::class, 'edit'])
+        ->name('configs.edit')
+        ->middleware('can:configs.view');
+    Route::put('/configs', [ConfigController::class, 'update'])
+        ->name('configs.update')
+        ->middleware('can:configs.edit');
 
-    Route::resource('/menu', MenuController::class)->except(['show']);
-    Route::resource('/newsletter-areas', NewsletterAreaController::class)->except(['show']);
-    Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])->name('newsletter-subscribers.index');
-    Route::delete('/newsletter-subscribers/{newsletterSubscriber}', [NewsletterSubscriberController::class, 'destroy'])->name('newsletter-subscribers.destroy');
+    Route::resource('/menu', MenuController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:menu');
+
+    Route::resource('/newsletter-areas', NewsletterAreaController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:newsletter_areas');
+
+    Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])
+        ->name('newsletter-subscribers.index')
+        ->middleware('can:newsletter_subscribers.view');
+    Route::delete('/newsletter-subscribers/{newsletterSubscriber}', [NewsletterSubscriberController::class, 'destroy'])
+        ->name('newsletter-subscribers.destroy')
+        ->middleware('can:newsletter_subscribers.delete');
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');
     Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder');
