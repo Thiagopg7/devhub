@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
@@ -63,5 +64,14 @@ class Post extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    protected static function booted(): void
+    {
+        static::forceDeleted(function (self $post) {
+            if ($post->banner_image && Storage::disk('public')->exists($post->banner_image)) {
+                Storage::disk('public')->delete($post->banner_image);
+            }
+        });
     }
 }

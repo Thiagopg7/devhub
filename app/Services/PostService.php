@@ -77,7 +77,6 @@ class PostService
 
     public function delete(Post $post): void
     {
-        $this->uploadService->delete($post->banner_image);
         $post->delete();
     }
 }

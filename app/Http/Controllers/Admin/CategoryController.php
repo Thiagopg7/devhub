@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
-use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
@@ -40,9 +41,10 @@ class CategoryController extends Controller
                 'type'    => 'success',
             ]);
         } catch (\Exception $e) {
+            Log::error('Erro ao criar categoria', ['error' => $e->getMessage()]);
             return redirect()->back()->withInput()->with('toast', [
                 'title'   => 'Erro!',
-                'message' => 'Erro ao criar categoria: ' . $e->getMessage(),
+                'message' => 'Ocorreu um erro ao criar a categoria. Tente novamente.',
                 'type'    => 'error',
             ]);
         }
@@ -66,9 +68,10 @@ class CategoryController extends Controller
                 'type'    => 'success',
             ]);
         } catch (\Exception $e) {
+            Log::error('Erro ao atualizar categoria', ['error' => $e->getMessage(), 'category_id' => $category->id]);
             return redirect()->back()->withInput()->with('toast', [
                 'title'   => 'Erro!',
-                'message' => 'Erro ao atualizar categoria: ' . $e->getMessage(),
+                'message' => 'Ocorreu um erro ao atualizar a categoria. Tente novamente.',
                 'type'    => 'error',
             ]);
         }
@@ -85,9 +88,10 @@ class CategoryController extends Controller
                 'type'    => 'success',
             ]);
         } catch (\Exception $e) {
+            Log::error('Erro ao excluir categoria', ['error' => $e->getMessage(), 'category_id' => $category->id]);
             return redirect()->back()->with('toast', [
                 'title'   => 'Erro!',
-                'message' => 'Erro ao excluir categoria: ' . $e->getMessage(),
+                'message' => 'Ocorreu um erro ao excluir a categoria. Tente novamente.',
                 'type'    => 'error',
             ]);
         }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -25,40 +26,44 @@ class UserService
 
     public function create(array $data): User
     {
-        $user = User::create([
-            'name'           => $data['name'],
-            'email'          => $data['email'],
-            'password'       => Hash::make($data['password']),
-            'is_super_admin' => $data['is_super_admin'] ?? false,
-        ]);
+        return DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name'           => $data['name'],
+                'email'          => $data['email'],
+                'password'       => Hash::make($data['password']),
+                'is_super_admin' => $data['is_super_admin'] ?? false,
+            ]);
 
-        $this->syncRole($user, $data['role_id'] ?? null);
+            $this->syncRole($user, $data['role_id'] ?? null);
 
-        return $user;
+            return $user;
+        });
     }
 
     public function update(User $user, array $data, bool $canEditPrivileges = true): User
     {
-        $payload = [
-            'name'  => $data['name'],
-            'email' => $data['email'],
-        ];
+        return DB::transaction(function () use ($user, $data, $canEditPrivileges) {
+            $payload = [
+                'name'  => $data['name'],
+                'email' => $data['email'],
+            ];
 
-        if (!empty($data['password'])) {
-            $payload['password'] = Hash::make($data['password']);
-        }
+            if (!empty($data['password'])) {
+                $payload['password'] = Hash::make($data['password']);
+            }
 
-        if ($canEditPrivileges && array_key_exists('is_super_admin', $data)) {
-            $payload['is_super_admin'] = (bool) $data['is_super_admin'];
-        }
+            if ($canEditPrivileges && array_key_exists('is_super_admin', $data)) {
+                $payload['is_super_admin'] = (bool) $data['is_super_admin'];
+            }
 
-        $user->update($payload);
+            $user->update($payload);
 
-        if ($canEditPrivileges) {
-            $this->syncRole($user, $data['role_id'] ?? null);
-        }
+            if ($canEditPrivileges) {
+                $this->syncRole($user, $data['role_id'] ?? null);
+            }
 
-        return $user;
+            return $user;
+        });
     }
 
     public function delete(User $user): void

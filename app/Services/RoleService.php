@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -22,18 +23,22 @@ class RoleService
 
     public function create(array $data): Role
     {
-        $role = Role::create(['name' => $data['name'], 'guard_name' => 'web']);
-        $role->syncPermissions($this->filterPermissions($data['permissions'] ?? []));
+        return DB::transaction(function () use ($data) {
+            $role = Role::create(['name' => $data['name'], 'guard_name' => 'web']);
+            $role->syncPermissions($this->filterPermissions($data['permissions'] ?? []));
 
-        return $role;
+            return $role;
+        });
     }
 
     public function update(Role $role, array $data): Role
     {
-        $role->update(['name' => $data['name']]);
-        $role->syncPermissions($this->filterPermissions($data['permissions'] ?? []));
+        return DB::transaction(function () use ($role, $data) {
+            $role->update(['name' => $data['name']]);
+            $role->syncPermissions($this->filterPermissions($data['permissions'] ?? []));
 
-        return $role;
+            return $role;
+        });
     }
 
     public function delete(Role $role): void

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class Page extends Model
 {
@@ -71,5 +72,20 @@ class Page extends Model
     public function galleryImages()
     {
         return $this->morphMany(GalleryImage::class, 'imageable')->orderBy('order')->orderBy('id');
+    }
+
+    protected static function booted(): void
+    {
+        static::forceDeleted(function (self $page) {
+            foreach (['banner_image', 'main_image'] as $field) {
+                if ($page->{$field} && Storage::disk('public')->exists($page->{$field})) {
+                    Storage::disk('public')->delete($page->{$field});
+                }
+            }
+
+            // Gallery images não têm soft delete; dispara o evento `deleted`
+            // de cada uma, que apaga o arquivo correspondente.
+            $page->galleryImages()->get()->each->delete();
+        });
     }
 }

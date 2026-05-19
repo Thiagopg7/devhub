@@ -69,14 +69,6 @@ class PageService
 
     public function delete(Page $page): void
     {
-        $this->uploadService->delete($page->banner_image);
-        $this->uploadService->delete($page->main_image);
-
-        foreach ($page->galleryImages as $img) {
-            $this->uploadService->delete($img->image);
-            $img->delete();
-        }
-
         $page->delete();
     }
 }

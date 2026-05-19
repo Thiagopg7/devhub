@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReorderController extends Controller
 {
@@ -31,12 +32,16 @@ class ReorderController extends Controller
 
         abort_unless($request->user()?->can("{$config['module']}.edit"), 403);
 
-        foreach ($request->items as $item) {
-            $instance = $config['class']::find($item['id']);
-            if ($instance) {
-                $instance->update(['order' => $item['order']]);
+        $modelClass = $config['class'];
+        $table      = (new $modelClass)->getTable();
+
+        DB::transaction(function () use ($table, $request) {
+            foreach ($request->items as $item) {
+                DB::table($table)
+                    ->where('id', $item['id'])
+                    ->update(['order' => $item['order']]);
             }
-        }
+        });
 
         return back();
     }

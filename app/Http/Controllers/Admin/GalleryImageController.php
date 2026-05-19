@@ -8,6 +8,7 @@ use App\Models\Page;
 use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GalleryImageController extends Controller
 {
@@ -20,11 +21,22 @@ class GalleryImageController extends Controller
             'images.*' => ['image', 'max:5120'],
         ]);
 
-        foreach ($request->file('images') as $file) {
-            if ($file->isValid()) {
-                $path = $this->uploadService->upload($file, 'gallery');
-                $page->galleryImages()->create(['image' => $path]);
+        $uploaded = [];
+        try {
+            DB::transaction(function () use ($request, $page, &$uploaded) {
+                foreach ($request->file('images') as $file) {
+                    if ($file->isValid()) {
+                        $path       = $this->uploadService->upload($file, 'gallery');
+                        $uploaded[] = $path;
+                        $page->galleryImages()->create(['image' => $path]);
+                    }
+                }
+            });
+        } catch (\Throwable $e) {
+            foreach ($uploaded as $path) {
+                $this->uploadService->delete($path);
             }
+            throw $e;
         }
 
         return back();
@@ -32,7 +44,6 @@ class GalleryImageController extends Controller
 
     public function destroy(GalleryImage $galleryImage): RedirectResponse
     {
-        $this->uploadService->delete($galleryImage->image);
         $galleryImage->delete();
 
         return back();
