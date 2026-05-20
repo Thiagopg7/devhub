@@ -10,11 +10,16 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Thiago Henrique',
-            'email' => 'thiago@teste.com.br',
-            'password' => Hash::make('Senha@123'),
-            'is_super_admin' => true,
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'thiago@teste.com.br'],
+            [
+                'name' => 'Thiago Henrique',
+                'password' => Hash::make('Senha@123'),
+                'is_super_admin' => true,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $user->assignRole('Administrador');
     }
 }
