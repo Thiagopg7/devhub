@@ -6,7 +6,7 @@
 - MySQL 8 (containerizado via Docker)
 
 ## Docker
-O projeto roda inteiramente via Docker. Sempre use `docker exec` para rodar comandos dentro do container.
+O backend roda via Docker — use `docker exec` para comandos PHP/Artisan/Composer. O frontend (Vite) roda no host (ver seção NPM abaixo).
 
 ### Containers
 | Container   | Função                        |
@@ -24,9 +24,11 @@ docker compose up -d
 docker exec app php artisan <comando>
 docker exec app composer <comando>
 
-# NPM (se não rodar no host)
-docker exec app npm run dev
-docker exec app npm run build
+# Frontend / Vite — roda no HOST (o container `app` NÃO tem Node/npm)
+# Requer Node 20.19+/22.12+ (vite ^8). Host tem Node 18 como padrão;
+# usar nvm: `nvm use 22` antes de rodar.
+npm run dev      # dev server com hot reload (precisa ficar rodando)
+npm run build    # build de produção (gera public/build/manifest.json)
 
 # Acessar o banco direto (do host)
 mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
