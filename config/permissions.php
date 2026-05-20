@@ -20,6 +20,7 @@ return [
         'newsletter_subscribers' => 'Inscritos da newsletter',
         'users'                  => 'Usuários',
         'roles'                  => 'Perfis',
+        'activity_log'           => 'Logs de atividade',
     ],
 
     'actions' => ['view', 'create', 'edit', 'delete'],

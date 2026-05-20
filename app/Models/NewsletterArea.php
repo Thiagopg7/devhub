@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasActivityLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
 class NewsletterArea extends Model
 {
+    use HasActivityLog;
+
     protected $fillable = ['name', 'order', 'is_active'];
 
     protected $casts = [

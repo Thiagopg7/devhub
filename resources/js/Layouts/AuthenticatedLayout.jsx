@@ -51,9 +51,10 @@ export default function AuthenticatedLayout({ header, children }) {
         {
             label: 'Sistema',
             items: [
-                { permission: 'users.view',   label: 'Usuários',      routeName: 'admin.users.index',  activePattern: 'admin.users.*' },
-                { permission: 'roles.view',   label: 'Perfis',        routeName: 'admin.roles.index',  activePattern: 'admin.roles.*' },
-                { permission: 'configs.view', label: 'Configurações', routeName: 'admin.configs.edit', activePattern: 'admin.configs.*' },
+                { permission: 'users.view',        label: 'Usuários',          routeName: 'admin.users.index',        activePattern: 'admin.users.*' },
+                { permission: 'roles.view',        label: 'Perfis',            routeName: 'admin.roles.index',        activePattern: 'admin.roles.*' },
+                { permission: 'configs.view',      label: 'Configurações',     routeName: 'admin.configs.edit',       activePattern: 'admin.configs.*' },
+                { permission: 'activity_log.view', label: 'Logs de atividade', routeName: 'admin.activity-log.index', activePattern: 'admin.activity-log.*' },
             ],
         },
     ], []);
