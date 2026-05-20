@@ -42,6 +42,7 @@ class HandleInertiaRequests extends Middleware
                 'modules' => ConfigFacade::get('permissions.modules', []),
                 'actions' => ConfigFacade::get('permissions.actions', []),
             ] : null,
+            'toast' => session('toast'),
         ];
     }
 }

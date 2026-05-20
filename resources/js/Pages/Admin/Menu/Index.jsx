@@ -13,8 +13,10 @@ import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 function MenuRowCells({ item, isChild = false, onDeleteRequest }) {
+    const can = useCan();
 
     return (
         <>
@@ -39,12 +41,16 @@ function MenuRowCells({ item, isChild = false, onDeleteRequest }) {
             </td>
             <td className="px-6 py-3 text-right">
                 <div className="flex gap-2 justify-end">
-                    <NavButton href={route("admin.menu.edit", item.id)} title="Editar">
-                        <FaPen />
-                    </NavButton>
-                    <ActionButton theme="light" onClick={() => onDeleteRequest(item.id)}>
-                        <FaTrash className="text-white" />
-                    </ActionButton>
+                    {can('menu.edit') && (
+                        <NavButton href={route("admin.menu.edit", item.id)} title="Editar">
+                            <FaPen />
+                        </NavButton>
+                    )}
+                    {can('menu.delete') && (
+                        <ActionButton theme="light" onClick={() => onDeleteRequest(item.id)}>
+                            <FaTrash className="text-white" />
+                        </ActionButton>
+                    )}
                 </div>
             </td>
         </>
@@ -52,6 +58,7 @@ function MenuRowCells({ item, isChild = false, onDeleteRequest }) {
 }
 
 export default function Index({ items: initialItems, filter }) {
+    const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(initialItems);
     const [pending, setPending] = useState(null);
@@ -61,7 +68,6 @@ export default function Index({ items: initialItems, filter }) {
             message: "Deseja realmente excluir este item de menu?",
             onConfirm: () => router.delete(route("admin.menu.destroy", id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Item excluído com sucesso!"),
                 onError: (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
             }),
         });
@@ -118,7 +124,9 @@ export default function Index({ items: initialItems, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Menu</h2>
-                        <NavButton href={route("admin.menu.create")}>Cadastrar</NavButton>
+                        {can('menu.create') && (
+                            <NavButton href={route("admin.menu.create")}>Cadastrar</NavButton>
+                        )}
                     </div>
                 }
             >

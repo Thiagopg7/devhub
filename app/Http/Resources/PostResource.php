@@ -15,9 +15,7 @@ class PostResource extends JsonResource
             'slug'             => $this->slug,
             'description'      => $this->description,
             'content'          => $this->content,
-            'banner_image'     => $this->banner_image
-                ? asset('storage/' . $this->banner_image)
-                : null,
+            'banner_image'     => $this->banner_image_url,
             'meta_title'       => $this->meta_title,
             'meta_description' => $this->meta_description,
             'is_active'        => $this->is_active,

@@ -60,7 +60,7 @@ class MenuService
         $this->clearCache();
     }
 
-    public function clearCache(): void
+    private function clearCache(): void
     {
         Cache::forget('menu.shared');
     }

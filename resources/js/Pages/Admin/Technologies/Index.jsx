@@ -14,8 +14,10 @@ import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 export default function Index({ technologies, filter }) {
+    const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(technologies.data);
     const [pending, setPending] = useState(null);
@@ -66,7 +68,6 @@ export default function Index({ technologies, filter }) {
             message: "Deseja realmente excluir esta tecnologia?",
             onConfirm: () => router.delete(route("admin.technologies.destroy", id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Tecnologia excluída com sucesso!"),
                 onError: () => toast.error("Erro ao excluir a tecnologia."),
             }),
         });
@@ -82,7 +83,9 @@ export default function Index({ technologies, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Tecnologias</h2>
-                        <NavButton href={route("admin.technologies.create")}>Cadastrar</NavButton>
+                        {can('technologies.create') && (
+                            <NavButton href={route("admin.technologies.create")}>Cadastrar</NavButton>
+                        )}
                     </div>
                 }
             >
@@ -150,12 +153,16 @@ export default function Index({ technologies, filter }) {
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <div className="flex gap-2 justify-end">
-                                                                    <NavButton href={route("admin.technologies.edit", tech.id)} title="Editar">
-                                                                        <FaPen />
-                                                                    </NavButton>
-                                                                    <ActionButton theme="light" onClick={() => deleteConfirm(tech.id)}>
-                                                                        <FaTrash className="text-white" />
-                                                                    </ActionButton>
+                                                                    {can('technologies.edit') && (
+                                                                        <NavButton href={route("admin.technologies.edit", tech.id)} title="Editar">
+                                                                            <FaPen />
+                                                                        </NavButton>
+                                                                    )}
+                                                                    {can('technologies.delete') && (
+                                                                        <ActionButton theme="light" onClick={() => deleteConfirm(tech.id)}>
+                                                                            <FaTrash className="text-white" />
+                                                                        </ActionButton>
+                                                                    )}
                                                                 </div>
                                                             </td>
                                                         </SortableTr>

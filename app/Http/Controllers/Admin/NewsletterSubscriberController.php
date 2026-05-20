@@ -34,6 +34,6 @@ class NewsletterSubscriberController extends Controller
     {
         $newsletterSubscriber->delete();
 
-        return back()->with('success', 'Inscrito removido com sucesso.');
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Inscrito removido com sucesso.', 'type' => 'success']);
     }
 }

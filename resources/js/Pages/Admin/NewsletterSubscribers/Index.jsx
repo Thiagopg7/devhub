@@ -9,8 +9,10 @@ import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaTrash, FaSearch } from "react-icons/fa";
 import { Users } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 export default function Index({ subscribers, filter, total }) {
+    const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [pending, setPending] = useState(null);
 
@@ -28,7 +30,6 @@ export default function Index({ subscribers, filter, total }) {
             message: "Deseja realmente remover este inscrito?",
             onConfirm: () => router.delete(route("admin.newsletter-subscribers.destroy", id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Inscrito removido com sucesso!"),
                 onError: () => toast.error("Erro ao remover o inscrito."),
             }),
         });
@@ -96,9 +97,11 @@ export default function Index({ subscribers, filter, total }) {
                                                         {new Date(sub.created_at).toLocaleDateString("pt-BR")}
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
-                                                        <ActionButton theme="light" onClick={() => deleteConfirm(sub.id)}>
-                                                            <FaTrash className="text-white" />
-                                                        </ActionButton>
+                                                        {can('newsletter_subscribers.delete') && (
+                                                            <ActionButton theme="light" onClick={() => deleteConfirm(sub.id)}>
+                                                                <FaTrash className="text-white" />
+                                                            </ActionButton>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}

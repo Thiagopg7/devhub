@@ -33,7 +33,7 @@ class RoleController extends Controller
         $this->roleService->create($request->validated());
 
         return redirect()->route('admin.roles.index')
-            ->with('success', 'Perfil criado com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil criado com sucesso.', 'type' => 'success']);
     }
 
     public function edit(Role $role): Response
@@ -52,7 +52,7 @@ class RoleController extends Controller
         $this->roleService->update($role, $request->validated());
 
         return redirect()->route('admin.roles.index')
-            ->with('success', 'Perfil atualizado com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil atualizado com sucesso.', 'type' => 'success']);
     }
 
     public function destroy(Role $role): RedirectResponse
@@ -63,6 +63,6 @@ class RoleController extends Controller
 
         $this->roleService->delete($role);
 
-        return back()->with('success', 'Perfil excluído com sucesso.');
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil excluído com sucesso.', 'type' => 'success']);
     }
 }

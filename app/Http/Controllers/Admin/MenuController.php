@@ -44,7 +44,7 @@ class MenuController extends Controller
         $this->menuService->create($data);
 
         return redirect()->route('admin.menu.index')
-            ->with('success', 'Item criado com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Item criado com sucesso.', 'type' => 'success']);
     }
 
     public function edit(MenuItem $menu): Response
@@ -72,7 +72,7 @@ class MenuController extends Controller
         $this->menuService->update($menu, $data);
 
         return redirect()->route('admin.menu.index')
-            ->with('success', 'Item atualizado com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Item atualizado com sucesso.', 'type' => 'success']);
     }
 
     public function destroy(MenuItem $menu): RedirectResponse
@@ -83,6 +83,6 @@ class MenuController extends Controller
 
         $this->menuService->delete($menu);
 
-        return back()->with('success', 'Item excluído com sucesso.');
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Item excluído com sucesso.', 'type' => 'success']);
     }
 }

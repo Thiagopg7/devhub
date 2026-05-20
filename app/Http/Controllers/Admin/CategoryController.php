@@ -21,7 +21,6 @@ class CategoryController extends Controller
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $this->categoryService->getPaginated(20, $request->input('q')),
             'filter'     => $request->only('q'),
-            'toast'      => session('toast'),
         ]);
     }
 

@@ -24,7 +24,6 @@ class PostController extends Controller
         return Inertia::render('Admin/Posts/Index', [
             'posts'  => $this->postService->getPaginated(20, $request->input('q')),
             'filter' => $request->only('q'),
-            'toast'  => session('toast'),
         ]);
     }
 
@@ -32,7 +31,6 @@ class PostController extends Controller
     {
         return Inertia::render('Admin/Posts/Form', [
             'categories' => Category::active()->orderBy('name')->get(['id', 'name', 'color']),
-            'toast'      => session('toast'),
         ]);
     }
 
@@ -70,7 +68,6 @@ class PostController extends Controller
         return Inertia::render('Admin/Posts/Form', [
             'post'       => $post,
             'categories' => Category::active()->orderBy('name')->get(['id', 'name', 'color']),
-            'toast'      => session('toast'),
         ]);
     }
 

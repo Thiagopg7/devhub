@@ -13,8 +13,10 @@ import Label from "@/Components/Admin/Label";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 export default function Index({ areas, filter }) {
+    const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(areas.data);
     const [pending, setPending] = useState(null);
@@ -65,7 +67,6 @@ export default function Index({ areas, filter }) {
             message: "Deseja realmente excluir esta área?",
             onConfirm: () => router.delete(route("admin.newsletter-areas.destroy", id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Área excluída com sucesso!"),
                 onError: () => toast.error("Erro ao excluir a área."),
             }),
         });
@@ -81,7 +82,9 @@ export default function Index({ areas, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Áreas de Atuação</h2>
-                        <NavButton href={route("admin.newsletter-areas.create")}>Cadastrar</NavButton>
+                        {can('newsletter_areas.create') && (
+                            <NavButton href={route("admin.newsletter-areas.create")}>Cadastrar</NavButton>
+                        )}
                     </div>
                 }
             >
@@ -129,12 +132,16 @@ export default function Index({ areas, filter }) {
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <div className="flex gap-2 justify-end">
-                                                                    <NavButton href={route("admin.newsletter-areas.edit", area.id)} title="Editar">
-                                                                        <FaPen />
-                                                                    </NavButton>
-                                                                    <ActionButton theme="light" onClick={() => deleteConfirm(area.id)}>
-                                                                        <FaTrash className="text-white" />
-                                                                    </ActionButton>
+                                                                    {can('newsletter_areas.edit') && (
+                                                                        <NavButton href={route("admin.newsletter-areas.edit", area.id)} title="Editar">
+                                                                            <FaPen />
+                                                                        </NavButton>
+                                                                    )}
+                                                                    {can('newsletter_areas.delete') && (
+                                                                        <ActionButton theme="light" onClick={() => deleteConfirm(area.id)}>
+                                                                            <FaTrash className="text-white" />
+                                                                        </ActionButton>
+                                                                    )}
                                                                 </div>
                                                             </td>
                                                         </SortableTr>

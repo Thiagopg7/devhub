@@ -10,8 +10,10 @@ import ToggleActive from "@/Components/Admin/ToggleActive";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 export default function Index({ categories, filter }) {
+    const can = useCan();
     const { data, setData, get } = useForm({
         q: filter?.q || "",
     });
@@ -46,9 +48,11 @@ export default function Index({ categories, filter }) {
                         <h2 className="font-semibold text-xl leading-tight">
                             Categorias
                         </h2>
-                        <NavButton href={route("admin.categories.create")}>
-                            Cadastrar
-                        </NavButton>
+                        {can('categories.create') && (
+                            <NavButton href={route("admin.categories.create")}>
+                                Cadastrar
+                            </NavButton>
+                        )}
                     </div>
                 }
             >
@@ -136,29 +140,32 @@ export default function Index({ categories, filter }) {
                                                                 />
                                                             </td>
                                                             <td className="px-6 py-4 flex gap-3 justify-end">
-                                                                <NavButton
-                                                                    href={route(
-                                                                        "admin.categories.edit",
-                                                                        category,
-                                                                    )}
-                                                                    title="Editar"
-                                                                >
-                                                                    <FaPen />
-                                                                </NavButton>
-
-                                                                <ActionButton
-                                                                    theme="light"
-                                                                    onClick={() =>
-                                                                        deleteConfirm(
-                                                                            route(
-                                                                                "admin.categories.destroy",
-                                                                                category,
-                                                                            ),
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <FaTrash className="text-white" />
-                                                                </ActionButton>
+                                                                {can('categories.edit') && (
+                                                                    <NavButton
+                                                                        href={route(
+                                                                            "admin.categories.edit",
+                                                                            category,
+                                                                        )}
+                                                                        title="Editar"
+                                                                    >
+                                                                        <FaPen />
+                                                                    </NavButton>
+                                                                )}
+                                                                {can('categories.delete') && (
+                                                                    <ActionButton
+                                                                        theme="light"
+                                                                        onClick={() =>
+                                                                            deleteConfirm(
+                                                                                route(
+                                                                                    "admin.categories.destroy",
+                                                                                    category,
+                                                                                ),
+                                                                            )
+                                                                        }
+                                                                    >
+                                                                        <FaTrash className="text-white" />
+                                                                    </ActionButton>
+                                                                )}
                                                             </td>
                                                         </tr>
                                                     ),

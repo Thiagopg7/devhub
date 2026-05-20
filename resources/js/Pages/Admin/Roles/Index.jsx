@@ -9,8 +9,10 @@ import Pagination from "@/Components/Admin/Pagination";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 export default function Index({ roles, filter }) {
+    const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [pending, setPending] = useState(null);
 
@@ -28,8 +30,7 @@ export default function Index({ roles, filter }) {
             message: `Excluir o perfil "${role.name}"?`,
             onConfirm: () => router.delete(route("admin.roles.destroy", role.id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Perfil excluído!"),
-                onError:   (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
+                onError: (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
             }),
         });
     };
@@ -42,7 +43,9 @@ export default function Index({ roles, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Perfis</h2>
-                        <NavButton href={route("admin.roles.create")}>Cadastrar</NavButton>
+                        {can('roles.create') && (
+                            <NavButton href={route("admin.roles.create")}>Cadastrar</NavButton>
+                        )}
                     </div>
                 }
             >
@@ -85,12 +88,16 @@ export default function Index({ roles, filter }) {
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.permissions_count}</td>
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.users_count}</td>
                                                     <td className="px-6 py-4 flex gap-3 justify-end">
-                                                        <NavButton href={route("admin.roles.edit", role.id)} title="Editar">
-                                                            <FaPen />
-                                                        </NavButton>
-                                                        <ActionButton theme="light" onClick={() => deleteConfirm(role)}>
-                                                            <FaTrash className="text-white" />
-                                                        </ActionButton>
+                                                        {can('roles.edit') && (
+                                                            <NavButton href={route("admin.roles.edit", role.id)} title="Editar">
+                                                                <FaPen />
+                                                            </NavButton>
+                                                        )}
+                                                        {can('roles.delete') && (
+                                                            <ActionButton theme="light" onClick={() => deleteConfirm(role)}>
+                                                                <FaTrash className="text-white" />
+                                                            </ActionButton>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}

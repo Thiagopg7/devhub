@@ -33,7 +33,7 @@ class TechnologyController extends Controller
         $this->service->create($request->validated());
 
         return redirect()->route('admin.technologies.index')
-            ->with('success', 'Tecnologia criada com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Tecnologia criada com sucesso.', 'type' => 'success']);
     }
 
     public function edit(Technology $technology): Response
@@ -48,13 +48,13 @@ class TechnologyController extends Controller
         $this->service->update($technology, $request->validated());
 
         return redirect()->route('admin.technologies.index')
-            ->with('success', 'Tecnologia atualizada com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Tecnologia atualizada com sucesso.', 'type' => 'success']);
     }
 
     public function destroy(Technology $technology): RedirectResponse
     {
         $this->service->delete($technology);
 
-        return back()->with('success', 'Tecnologia excluída com sucesso.');
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Tecnologia excluída com sucesso.', 'type' => 'success']);
     }
 }

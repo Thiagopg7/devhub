@@ -39,7 +39,7 @@ class PageController extends Controller
         );
 
         return redirect()->route('admin.pages.index')
-            ->with('success', 'Página criada com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Página criada com sucesso.', 'type' => 'success']);
     }
 
     public function edit(Page $page): Response
@@ -61,7 +61,7 @@ class PageController extends Controller
         );
 
         return redirect()->route('admin.pages.index')
-            ->with('success', 'Página atualizada com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Página atualizada com sucesso.', 'type' => 'success']);
     }
 
     public function destroy(Page $page): RedirectResponse
@@ -69,6 +69,6 @@ class PageController extends Controller
         $this->pageService->delete($page);
 
         return redirect()->route('admin.pages.index')
-            ->with('success', 'Página excluída com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Página excluída com sucesso.', 'type' => 'success']);
     }
 }

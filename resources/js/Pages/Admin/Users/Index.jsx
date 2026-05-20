@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Head, useForm, router, usePage } from "@inertiajs/react";
+import { useCan } from "@/hooks/useCan";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
@@ -12,6 +13,7 @@ import { ShieldCheck } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export default function Index({ users, filter }) {
+    const can = useCan();
     const currentUser = usePage().props.auth.user;
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [pending, setPending] = useState(null);
@@ -30,8 +32,7 @@ export default function Index({ users, filter }) {
             message: `Excluir o usuário "${user.name}"?`,
             onConfirm: () => router.delete(route("admin.users.destroy", user.id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Usuário excluído!"),
-                onError:   (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
+                onError: (errors) => toast.error(Object.values(errors)[0] ?? "Erro ao excluir."),
             }),
         });
     };
@@ -44,7 +45,9 @@ export default function Index({ users, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Usuários</h2>
-                        <NavButton href={route("admin.users.create")}>Cadastrar</NavButton>
+                        {can('users.create') && (
+                            <NavButton href={route("admin.users.create")}>Cadastrar</NavButton>
+                        )}
                     </div>
                 }
             >
@@ -112,10 +115,12 @@ export default function Index({ users, filter }) {
                                                             )}
                                                         </td>
                                                         <td className="px-6 py-4 flex gap-3 justify-end">
-                                                            <NavButton href={route("admin.users.edit", user.id)} title="Editar">
-                                                                <FaPen />
-                                                            </NavButton>
-                                                            {!isSelf && (
+                                                            {can('users.edit') && (
+                                                                <NavButton href={route("admin.users.edit", user.id)} title="Editar">
+                                                                    <FaPen />
+                                                                </NavButton>
+                                                            )}
+                                                            {!isSelf && can('users.delete') && (
                                                                 <ActionButton theme="light" onClick={() => deleteConfirm(user)}>
                                                                     <FaTrash className="text-white" />
                                                                 </ActionButton>

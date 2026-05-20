@@ -42,7 +42,7 @@ class UserController extends Controller
         $this->userService->create($data);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Usuário criado com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Usuário criado com sucesso.', 'type' => 'success']);
     }
 
     public function edit(User $user, Request $request): Response
@@ -88,7 +88,7 @@ class UserController extends Controller
         $this->userService->update($user, $data, $canEditPrivileges);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Usuário atualizado com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Usuário atualizado com sucesso.', 'type' => 'success']);
     }
 
     public function destroy(User $user, Request $request): RedirectResponse
@@ -105,7 +105,7 @@ class UserController extends Controller
 
         $this->userService->delete($user);
 
-        return back()->with('success', 'Usuário excluído com sucesso.');
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Usuário excluído com sucesso.', 'type' => 'success']);
     }
 
     private function rolesPayload(): array

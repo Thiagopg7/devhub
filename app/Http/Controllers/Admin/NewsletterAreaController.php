@@ -33,7 +33,7 @@ class NewsletterAreaController extends Controller
         $this->service->create($request->validated());
 
         return redirect()->route('admin.newsletter-areas.index')
-            ->with('success', 'Área criada com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Área criada com sucesso.', 'type' => 'success']);
     }
 
     public function edit(NewsletterArea $newsletterArea): Response
@@ -48,13 +48,13 @@ class NewsletterAreaController extends Controller
         $this->service->update($newsletterArea, $request->validated());
 
         return redirect()->route('admin.newsletter-areas.index')
-            ->with('success', 'Área atualizada com sucesso.');
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Área atualizada com sucesso.', 'type' => 'success']);
     }
 
     public function destroy(NewsletterArea $newsletterArea): RedirectResponse
     {
         $this->service->delete($newsletterArea);
 
-        return back()->with('success', 'Área excluída com sucesso.');
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Área excluída com sucesso.', 'type' => 'success']);
     }
 }

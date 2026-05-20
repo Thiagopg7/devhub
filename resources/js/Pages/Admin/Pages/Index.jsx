@@ -11,8 +11,10 @@ import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useCan } from "@/hooks/useCan";
 
 export default function Index({ pages, filter }) {
+    const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [pending, setPending] = useState(null);
 
@@ -30,7 +32,6 @@ export default function Index({ pages, filter }) {
             message: "Deseja realmente excluir esta página? Esta ação não pode ser desfeita.",
             onConfirm: () => router.delete(route("admin.pages.destroy", id), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Página excluída com sucesso!"),
                 onError: () => toast.error("Erro ao excluir a página."),
             }),
         });
@@ -44,7 +45,9 @@ export default function Index({ pages, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Páginas</h2>
-                        <NavButton href={route("admin.pages.create")}>Cadastrar</NavButton>
+                        {can('pages.create') && (
+                            <NavButton href={route("admin.pages.create")}>Cadastrar</NavButton>
+                        )}
                     </div>
                 }
             >
@@ -106,12 +109,16 @@ export default function Index({ pages, filter }) {
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex gap-2 justify-end">
-                                                            <NavButton href={route("admin.pages.edit", page.id)} title="Editar">
-                                                                <FaPen />
-                                                            </NavButton>
-                                                            <ActionButton theme="light" onClick={() => deleteConfirm(page.id)}>
-                                                                <FaTrash className="text-white" />
-                                                            </ActionButton>
+                                                            {can('pages.edit') && (
+                                                                <NavButton href={route("admin.pages.edit", page.id)} title="Editar">
+                                                                    <FaPen />
+                                                                </NavButton>
+                                                            )}
+                                                            {can('pages.delete') && (
+                                                                <ActionButton theme="light" onClick={() => deleteConfirm(page.id)}>
+                                                                    <FaTrash className="text-white" />
+                                                                </ActionButton>
+                                                            )}
                                                         </div>
                                                     </td>
                                                 </tr>
