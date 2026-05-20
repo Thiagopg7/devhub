@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -22,6 +23,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
 
     Route::resource('/posts', PostController::class)->middleware('resource.permission:posts');
     Route::resource('/categories', CategoryController::class)->middleware('resource.permission:categories');
+    Route::resource('/blocks', BlockController::class)->middleware('resource.permission:blocks');
     Route::resource('/technologies', TechnologyController::class)
         ->except(['show'])
         ->middleware('resource.permission:technologies');
@@ -67,6 +69,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::resource('/users', UserController::class)
         ->except(['show'])
         ->middleware('resource.permission:users');
+
+
+
+
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');
     Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder');

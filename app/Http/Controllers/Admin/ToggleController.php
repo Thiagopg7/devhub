@@ -10,6 +10,7 @@ class ToggleController extends Controller
     private const ALLOWED_MODELS = [
         'post'            => ['class' => \App\Models\Post::class,           'module' => 'posts'],
         'category'        => ['class' => \App\Models\Category::class,       'module' => 'categories'],
+        'block'           => ['class' => \App\Models\Block::class,          'module' => 'blocks'],
         'menu_item'       => ['class' => \App\Models\MenuItem::class,       'module' => 'menu'],
         'technology'      => ['class' => \App\Models\Technology::class,     'module' => 'technologies'],
         'page'            => ['class' => \App\Models\Page::class,           'module' => 'pages'],

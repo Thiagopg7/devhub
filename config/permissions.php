@@ -11,6 +11,7 @@ return [
     'modules' => [
         'posts'                  => 'Posts',
         'categories'             => 'Categorias',
+        'blocks'                 => 'Blocos',
         'pages'                  => 'Páginas',
         'menu'                   => 'Menu',
         'technologies'           => 'Tecnologias',
