@@ -14,9 +14,9 @@ class Role extends SpatieRole
 {
     protected function casts(): array
     {
-        return [
+        return array_merge(parent::casts(), [
             'is_system' => 'boolean',
-        ];
+        ]);
     }
 
     public function isSystem(): bool

@@ -39,8 +39,11 @@ class RoleController extends Controller
 
     public function edit(Role $role, Request $request): Response
     {
-        // Perfis de sistema podem ser abertos apenas em modo leitura (is_system).
-        $this->assertNotOwnRole($role, $request->user());
+        // Perfis de sistema abrem em modo somente-leitura — qualquer um pode visualizar.
+        // A proteção de edição do próprio perfil só é necessária onde há gravação.
+        if (!$role->isSystem()) {
+            $this->assertNotOwnRole($role, $request->user());
+        }
 
         return Inertia::render('Admin/Roles/Form', [
             'role' => [
