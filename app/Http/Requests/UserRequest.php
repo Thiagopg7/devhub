@@ -30,6 +30,7 @@ class UserRequest extends FormRequest
                 'string',
                 'min:8',
                 'max:100',
+                'confirmed',
             ],
             'role_id'        => ['nullable', 'integer', 'exists:roles,id'],
             'is_super_admin' => ['boolean'],

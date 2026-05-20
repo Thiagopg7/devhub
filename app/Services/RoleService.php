@@ -18,7 +18,7 @@ class RoleService
             $query->where('name', 'like', "%{$search}%");
         }
 
-        return $query->paginate($perPage);
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function create(array $data): Role

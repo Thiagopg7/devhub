@@ -38,7 +38,7 @@ class PostService
             });
         }
 
-        return $query->paginate($perPage);
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function findBySlug(string $slug): ?Post

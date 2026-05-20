@@ -18,7 +18,7 @@ class PageService
             $query->where('title', 'like', "%{$search}%");
         }
 
-        return $query->paginate($perPage);
+        return $query->paginate($perPage)->withQueryString();
     }
 
     public function create(array $data, ?UploadedFile $banner, ?UploadedFile $mainImage): Page

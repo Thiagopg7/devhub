@@ -7,12 +7,7 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(): \Inertia\Response
     {
         return Inertia::render('Admin/Dashboard');
     }

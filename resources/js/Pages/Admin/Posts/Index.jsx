@@ -12,7 +12,7 @@ import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
-export default function Index({ auth, posts, filter }) {
+export default function Index({ posts, filter }) {
     const can = useCan();
     const { data, setData, get } = useForm({
         q: filter?.q || "",
