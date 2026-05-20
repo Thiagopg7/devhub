@@ -35,6 +35,23 @@ class User extends Authenticatable
     }
 
     /**
+     * Indica se o usuário possui algum perfil de sistema (ex.: Administrador).
+     */
+    public function hasSystemRole(): bool
+    {
+        return $this->roles()->where('is_system', true)->exists();
+    }
+
+    /**
+     * Usuário "privilegiado": super admin ou portador de um perfil de sistema.
+     * Só pode ser editado/excluído por um super admin.
+     */
+    public function isPrivileged(): bool
+    {
+        return $this->isSuperAdmin() || $this->hasSystemRole();
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

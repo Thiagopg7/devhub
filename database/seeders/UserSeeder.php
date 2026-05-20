@@ -13,7 +13,8 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'Thiago Henrique',
             'email' => 'thiago@teste.com.br',
-            'password' => Hash::make('Senha@123')
+            'password' => Hash::make('Senha@123'),
+            'is_super_admin' => true,
         ]);
     }
 }

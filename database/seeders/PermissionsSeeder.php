@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Config;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 
 class PermissionsSeeder extends Seeder
@@ -26,7 +26,10 @@ class PermissionsSeeder extends Seeder
             }
         }
 
+        // Perfil de sistema: protegido e sempre com todas as permissions.
         $admin = Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);
+        $admin->is_system = true;
+        $admin->save();
         $admin->syncPermissions($all);
     }
 }

@@ -18,8 +18,11 @@ const ACTION_LABELS = {
 
 export default function Form({ role = null }) {
     const isEditing = !!role?.id;
-    const { permissionsCatalog } = usePage().props;
+    const locked = !!role?.is_system;
+    const { permissionsCatalog, auth } = usePage().props;
     const { modules = {}, actions = [] } = permissionsCatalog ?? {};
+    const isSuperAdmin = auth?.isSuperAdmin ?? false;
+    const myPermissions = auth?.permissions ?? [];
 
     const moduleKeys = useMemo(() => Object.keys(modules), [modules]);
 
@@ -29,7 +32,11 @@ export default function Form({ role = null }) {
         return list;
     }, [moduleKeys, actions]);
 
-    const { data, setData, post, put, processing, errors, transform } = useForm({
+    // Um usuário não-super-admin só pode conceder permissões que ele próprio possui.
+    const canGrant = (perm) => isSuperAdmin || myPermissions.includes(perm);
+    const editable = (perm) => !locked && canGrant(perm);
+
+    const { data, setData, post, put, processing, errors } = useForm({
         name:        role?.name        ?? "",
         permissions: role?.permissions ?? [],
     });
@@ -37,41 +44,40 @@ export default function Form({ role = null }) {
     const has = (perm) => data.permissions.includes(perm);
 
     const togglePermission = (perm) => {
+        if (!editable(perm)) return;
         setData("permissions", has(perm)
             ? data.permissions.filter((p) => p !== perm)
             : [...data.permissions, perm]
         );
     };
 
-    const toggleRow = (module) => {
-        const rowPerms = actions.map((a) => `${module}.${a}`);
-        const allOn    = rowPerms.every((p) => has(p));
+    // Alterna em lote apenas as permissões que o usuário pode conceder.
+    const toggleSet = (perms) => {
+        const targets = perms.filter(editable);
+        if (targets.length === 0) return;
+        const allOn = targets.every((p) => has(p));
         setData("permissions", allOn
-            ? data.permissions.filter((p) => !rowPerms.includes(p))
-            : Array.from(new Set([...data.permissions, ...rowPerms]))
+            ? data.permissions.filter((p) => !targets.includes(p))
+            : Array.from(new Set([...data.permissions, ...targets]))
         );
     };
 
-    const toggleColumn = (action) => {
-        const colPerms = moduleKeys.map((m) => `${m}.${action}`);
-        const allOn    = colPerms.every((p) => has(p));
-        setData("permissions", allOn
-            ? data.permissions.filter((p) => !colPerms.includes(p))
-            : Array.from(new Set([...data.permissions, ...colPerms]))
-        );
-    };
+    const toggleRow    = (module) => toggleSet(actions.map((a) => `${module}.${a}`));
+    const toggleColumn = (action) => toggleSet(moduleKeys.map((m) => `${m}.${action}`));
+    const toggleAll    = () => toggleSet(allPermissions);
 
-    const toggleAll = () => {
-        const allOn = allPermissions.every((p) => has(p));
-        setData("permissions", allOn ? [] : [...allPermissions]);
+    // Estado dos checkboxes "marca tudo" considera só o que é concedível.
+    const groupAllOn = (perms) => {
+        const targets = perms.filter(canGrant);
+        return targets.length > 0 && targets.every((p) => has(p));
     };
-
-    const rowAllOn    = (module) => actions.every((a) => has(`${module}.${a}`));
-    const colAllOn    = (action) => moduleKeys.every((m) => has(`${m}.${action}`));
-    const everythingOn = allPermissions.length > 0 && allPermissions.every((p) => has(p));
+    const rowAllOn     = (module) => groupAllOn(actions.map((a) => `${module}.${a}`));
+    const colAllOn     = (action) => groupAllOn(moduleKeys.map((m) => `${m}.${action}`));
+    const everythingOn = groupAllOn(allPermissions);
 
     const submit = (e) => {
         e.preventDefault();
+        if (locked) return;
         const handlers = {
             onSuccess: () => toast.success(isEditing ? "Perfil atualizado!" : "Perfil criado!"),
             onError:   () => toast.error("Verifique os campos e tente novamente."),
@@ -100,6 +106,13 @@ export default function Form({ role = null }) {
                             <div className="p-6">
                                 <ValidationErrors errors={errors} className="mb-4" />
 
+                                {locked && (
+                                    <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
+                                        Este é um <strong>perfil de sistema</strong>: possui sempre todas as
+                                        permissões e não pode ser alterado nem excluído.
+                                    </div>
+                                )}
+
                                 <form onSubmit={submit} className="flex flex-col gap-5">
                                     <div className="max-w-md">
                                         <Label htmlFor="name" value="Nome do perfil *" />
@@ -109,7 +122,7 @@ export default function Form({ role = null }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || locked}
                                             autoFocus
                                         />
                                     </div>
@@ -131,7 +144,7 @@ export default function Form({ role = null }) {
                                                                     className="rounded text-red-600 focus:ring-red-600"
                                                                     checked={everythingOn}
                                                                     onChange={toggleAll}
-                                                                    disabled={processing}
+                                                                    disabled={processing || locked}
                                                                 />
                                                                 Módulo
                                                             </label>
@@ -145,7 +158,7 @@ export default function Form({ role = null }) {
                                                                         className="rounded text-red-600 focus:ring-red-600"
                                                                         checked={colAllOn(action)}
                                                                         onChange={() => toggleColumn(action)}
-                                                                        disabled={processing}
+                                                                        disabled={processing || locked}
                                                                     />
                                                                 </label>
                                                             </th>
@@ -162,21 +175,23 @@ export default function Form({ role = null }) {
                                                                         className="rounded text-red-600 focus:ring-red-600"
                                                                         checked={rowAllOn(module)}
                                                                         onChange={() => toggleRow(module)}
-                                                                        disabled={processing}
+                                                                        disabled={processing || locked}
                                                                     />
                                                                     {modules[module]}
                                                                 </label>
                                                             </td>
                                                             {actions.map((action) => {
                                                                 const perm = `${module}.${action}`;
+                                                                const grantable = canGrant(perm);
                                                                 return (
                                                                     <td key={action} className="px-3 py-2 text-center">
                                                                         <input
                                                                             type="checkbox"
-                                                                            className="rounded text-red-600 focus:ring-red-600"
+                                                                            className="rounded text-red-600 focus:ring-red-600 disabled:opacity-50"
                                                                             checked={has(perm)}
                                                                             onChange={() => togglePermission(perm)}
-                                                                            disabled={processing}
+                                                                            disabled={processing || locked || !grantable}
+                                                                            title={!grantable && !locked ? "Você não possui esta permissão" : undefined}
                                                                             aria-label={`${modules[module]} - ${ACTION_LABELS[action] ?? action}`}
                                                                         />
                                                                     </td>
@@ -187,6 +202,11 @@ export default function Form({ role = null }) {
                                                 </tbody>
                                             </table>
                                         </div>
+                                        {!isSuperAdmin && !locked && (
+                                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                                Você só pode conceder permissões que já possui.
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
@@ -196,14 +216,16 @@ export default function Form({ role = null }) {
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {locked ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!locked && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 class UserService
 {
     public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
     {
-        $query = User::with('roles:id,name')->orderBy('name');
+        $query = User::with('roles:id,name,is_system')->orderBy('name');
 
         if ($search) {
             $query->where(function ($q) use ($search) {

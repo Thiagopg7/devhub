@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Admin;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -25,6 +25,15 @@ class UserControllerTest extends TestCase
         $user->assignRole($role);
 
         return $user;
+    }
+
+    private function systemRole(string $name = 'Sistema'): Role
+    {
+        $role = Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+        $role->is_system = true;
+        $role->save();
+
+        return $role;
     }
 
     public function test_index_lista_usuarios(): void
@@ -108,5 +117,94 @@ class UserControllerTest extends TestCase
             ->assertRedirect(route('admin.users.index'));
 
         $this->assertFalse($user->fresh()->is_super_admin);
+    }
+
+    public function test_nao_super_admin_nao_pode_excluir_super_admin(): void
+    {
+        $admin  = $this->adminUser(['users.delete']);
+        $target = User::factory()->superAdmin()->create();
+
+        $this->actingAs($admin)
+            ->delete(route('admin.users.destroy', $target))
+            ->assertSessionHasErrors('user');
+
+        $this->assertDatabaseHas('users', ['id' => $target->id]);
+    }
+
+    public function test_nao_super_admin_nao_pode_excluir_usuario_com_perfil_de_sistema(): void
+    {
+        $admin  = $this->adminUser(['users.delete']);
+        $target = User::factory()->create();
+        $target->assignRole($this->systemRole());
+
+        $this->actingAs($admin)
+            ->delete(route('admin.users.destroy', $target))
+            ->assertSessionHasErrors('user');
+
+        $this->assertDatabaseHas('users', ['id' => $target->id]);
+    }
+
+    public function test_super_admin_pode_excluir_super_admin(): void
+    {
+        $admin  = User::factory()->superAdmin()->create();
+        $target = User::factory()->superAdmin()->create();
+
+        $this->actingAs($admin)
+            ->delete(route('admin.users.destroy', $target))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('users', ['id' => $target->id]);
+    }
+
+    public function test_nao_super_admin_nao_pode_editar_super_admin(): void
+    {
+        $admin  = $this->adminUser(['users.edit']);
+        $target = User::factory()->superAdmin()->create();
+
+        $this->actingAs($admin)
+            ->put(route('admin.users.update', $target), [
+                'name'  => 'Nome Alterado',
+                'email' => $target->email,
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('users', ['id' => $target->id, 'name' => $target->name]);
+    }
+
+    public function test_nao_super_admin_nao_pode_atribuir_perfil_de_sistema(): void
+    {
+        $admin = $this->adminUser(['users.create']);
+        $role  = $this->systemRole();
+
+        $this->actingAs($admin)
+            ->post(route('admin.users.store'), [
+                'name'                  => 'Intruso',
+                'email'                 => 'intruso@exemplo.com',
+                'password'              => 'senha123456',
+                'password_confirmation' => 'senha123456',
+                'role_id'               => $role->id,
+            ])
+            ->assertSessionHasErrors('role_id');
+
+        $this->assertDatabaseMissing('users', ['email' => 'intruso@exemplo.com']);
+    }
+
+    public function test_super_admin_pode_atribuir_perfil_de_sistema(): void
+    {
+        $admin = User::factory()->superAdmin()->create();
+        $role  = $this->systemRole();
+
+        $this->actingAs($admin)
+            ->post(route('admin.users.store'), [
+                'name'                  => 'Novo Admin',
+                'email'                 => 'novoadmin@exemplo.com',
+                'password'              => 'senha123456',
+                'password_confirmation' => 'senha123456',
+                'role_id'               => $role->id,
+            ])
+            ->assertRedirect(route('admin.users.index'));
+
+        $created = User::where('email', 'novoadmin@exemplo.com')->firstOrFail();
+        $this->assertTrue($created->hasRole($role));
     }
 }

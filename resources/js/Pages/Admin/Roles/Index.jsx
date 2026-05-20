@@ -7,7 +7,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaLock } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
@@ -84,16 +84,31 @@ export default function Index({ roles, filter }) {
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                             {roles.data.map((role) => (
                                                 <tr key={role.id}>
-                                                    <td className="px-6 py-4 font-medium dark:text-gray-100">{role.name}</td>
+                                                    <td className="px-6 py-4 font-medium dark:text-gray-100">
+                                                        <div className="flex items-center gap-2">
+                                                            {role.name}
+                                                            {role.is_system && (
+                                                                <span
+                                                                    title="Perfil de sistema — protegido"
+                                                                    className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                                                >
+                                                                    <FaLock size={10} /> Sistema
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </td>
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.permissions_count}</td>
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.users_count}</td>
                                                     <td className="px-6 py-4 flex gap-3 justify-end">
                                                         {can('roles.edit') && (
-                                                            <NavButton href={route("admin.roles.edit", role.id)} title="Editar">
+                                                            <NavButton
+                                                                href={route("admin.roles.edit", role.id)}
+                                                                title={role.is_system ? "Visualizar" : "Editar"}
+                                                            >
                                                                 <FaPen />
                                                             </NavButton>
                                                         )}
-                                                        {can('roles.delete') && (
+                                                        {!role.is_system && can('roles.delete') && (
                                                             <ActionButton theme="light" onClick={() => deleteConfirm(role)}>
                                                                 <FaTrash className="text-white" />
                                                             </ActionButton>

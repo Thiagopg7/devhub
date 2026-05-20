@@ -15,6 +15,7 @@ import { toast } from "react-hot-toast";
 export default function Index({ users, filter }) {
     const can = useCan();
     const currentUser = usePage().props.auth.user;
+    const isSuperAdmin = usePage().props.auth.isSuperAdmin;
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [pending, setPending] = useState(null);
 
@@ -88,6 +89,10 @@ export default function Index({ users, filter }) {
                                             {users.data.map((user) => {
                                                 const role = user.roles?.[0];
                                                 const isSelf = user.id === currentUser.id;
+                                                // Usuário privilegiado só pode ser gerenciado por um super admin.
+                                                const isPrivileged = user.is_super_admin
+                                                    || (user.roles ?? []).some((r) => r.is_system);
+                                                const canManage = isSuperAdmin || !isPrivileged;
 
                                                 return (
                                                     <tr key={user.id}>
@@ -115,15 +120,21 @@ export default function Index({ users, filter }) {
                                                             )}
                                                         </td>
                                                         <td className="px-6 py-4 flex gap-3 justify-end">
-                                                            {can('users.edit') && (
-                                                                <NavButton href={route("admin.users.edit", user.id)} title="Editar">
-                                                                    <FaPen />
-                                                                </NavButton>
-                                                            )}
-                                                            {!isSelf && can('users.delete') && (
-                                                                <ActionButton theme="light" onClick={() => deleteConfirm(user)}>
-                                                                    <FaTrash className="text-white" />
-                                                                </ActionButton>
+                                                            {canManage ? (
+                                                                <>
+                                                                    {can('users.edit') && (
+                                                                        <NavButton href={route("admin.users.edit", user.id)} title="Editar">
+                                                                            <FaPen />
+                                                                        </NavButton>
+                                                                    )}
+                                                                    {!isSelf && can('users.delete') && (
+                                                                        <ActionButton theme="light" onClick={() => deleteConfirm(user)}>
+                                                                            <FaTrash className="text-white" />
+                                                                        </ActionButton>
+                                                                    )}
+                                                                </>
+                                                            ) : (
+                                                                <span className="text-xs text-gray-400 dark:text-gray-500 italic">Protegido</span>
                                                             )}
                                                         </td>
                                                     </tr>

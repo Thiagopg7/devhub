@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -27,16 +27,21 @@ class UserController extends Controller
     public function create(Request $request): Response
     {
         return Inertia::render('Admin/Users/Form', [
-            'roles' => $this->rolesPayload(),
+            'roles' => $this->rolesPayload($request->user()),
         ]);
     }
 
     public function store(UserRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $current = $request->user();
+        $data    = $request->validated();
 
-        if (!$request->user()->isSuperAdmin()) {
+        if (!$current->isSuperAdmin()) {
             unset($data['is_super_admin']);
+
+            if ($this->isSystemRole($data['role_id'] ?? null)) {
+                return back()->withErrors(['role_id' => 'Apenas um super admin pode atribuir um perfil de sistema.']);
+            }
         }
 
         $this->userService->create($data);
@@ -49,7 +54,7 @@ class UserController extends Controller
     {
         $current = $request->user();
 
-        if ($user->isSuperAdmin() && !$current->isSuperAdmin()) {
+        if ($user->isPrivileged() && !$current->isSuperAdmin()) {
             abort(403);
         }
 
@@ -61,7 +66,7 @@ class UserController extends Controller
                 'is_super_admin' => $user->is_super_admin,
                 'role_id'        => $user->roles->first()?->id,
             ],
-            'roles' => $this->rolesPayload(),
+            'roles' => $this->rolesPayload($current),
         ]);
     }
 
@@ -70,11 +75,13 @@ class UserController extends Controller
         $current = $request->user();
         $data    = $request->validated();
 
-        if ($user->isSuperAdmin() && !$current->isSuperAdmin()) {
+        // Usuários privilegiados (super admin ou com perfil de sistema)
+        // só podem ser editados por um super admin.
+        if ($user->isPrivileged() && !$current->isSuperAdmin()) {
             abort(403);
         }
 
-        // Bloqueios para auto-edição: usuário não pode alterar seus próprios privilégios
+        // Auto-edição: o usuário não pode alterar os próprios privilégios.
         $canEditPrivileges = true;
         if ($current->id === $user->id) {
             unset($data['is_super_admin'], $data['role_id']);
@@ -83,6 +90,10 @@ class UserController extends Controller
 
         if (!$current->isSuperAdmin()) {
             unset($data['is_super_admin']);
+
+            if ($canEditPrivileges && $this->isSystemRole($data['role_id'] ?? null)) {
+                return back()->withErrors(['role_id' => 'Apenas um super admin pode atribuir um perfil de sistema.']);
+            }
         }
 
         $this->userService->update($user, $data, $canEditPrivileges);
@@ -99,8 +110,8 @@ class UserController extends Controller
             return back()->withErrors(['user' => 'Você não pode excluir o próprio usuário.']);
         }
 
-        if ($user->isSuperAdmin() && !$current->isSuperAdmin()) {
-            return back()->withErrors(['user' => 'Apenas um super admin pode excluir outro super admin.']);
+        if ($user->isPrivileged() && !$current->isSuperAdmin()) {
+            return back()->withErrors(['user' => 'Apenas um super admin pode excluir um usuário administrador.']);
         }
 
         $this->userService->delete($user);
@@ -108,8 +119,23 @@ class UserController extends Controller
         return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Usuário excluído com sucesso.', 'type' => 'success']);
     }
 
-    private function rolesPayload(): array
+    /**
+     * Perfis disponíveis para atribuição. Perfis de sistema só aparecem para super admins.
+     */
+    private function rolesPayload(User $current): array
     {
-        return Role::orderBy('name')->get(['id', 'name'])->toArray();
+        $query = Role::orderBy('name');
+
+        if (!$current->isSuperAdmin()) {
+            $query->where('is_system', false);
+        }
+
+        return $query->get(['id', 'name', 'is_system'])->toArray();
+    }
+
+    private function isSystemRole(int|string|null $roleId): bool
+    {
+        return $roleId !== null
+            && Role::whereKey($roleId)->where('is_system', true)->exists();
     }
 }
