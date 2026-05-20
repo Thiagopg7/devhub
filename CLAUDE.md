@@ -57,13 +57,13 @@ mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
 - Repository Pattern para acesso a dados quando pertinente
 - Service Layer para lógica de negócio complexa
 - Componentes React funcionais com hooks
-- Nunca commitar direto na `main`
 
 ## Regras de commits
 - Seguir Conventional Commits: `type(scope): descrição curta`
 - Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`
 - Título e mensagens de commit em PT-BR
 - Nunca incluir `Co-Authored-By: Claude` nem nenhuma assinatura do Claude nas mensagens de commit
+- Pode commitar direto na `main`; sincronizar com `origin/main` (fast-forward) antes de commitar
 
 ## Não fazer
 - Não editar `.env`
