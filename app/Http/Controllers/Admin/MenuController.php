@@ -32,16 +32,7 @@ class MenuController extends Controller
 
     public function store(MenuRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
-        if ($data['parent_id'] ?? null) {
-            $parent = MenuItem::find($data['parent_id']);
-            if ($parent?->parent_id !== null) {
-                return back()->withErrors(['parent_id' => 'Não é possível criar mais de dois níveis de menu.']);
-            }
-        }
-
-        $this->menuService->create($data);
+        $this->menuService->create($request->validated());
 
         return redirect()->route('admin.menu.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Item criado com sucesso.', 'type' => 'success']);
@@ -57,19 +48,7 @@ class MenuController extends Controller
 
     public function update(MenuRequest $request, MenuItem $menu): RedirectResponse
     {
-        $data = $request->validated();
-
-        if ($data['parent_id'] ?? null) {
-            $parent = MenuItem::find($data['parent_id']);
-            if ($parent?->parent_id !== null) {
-                return back()->withErrors(['parent_id' => 'Não é possível criar mais de dois níveis de menu.']);
-            }
-            if ($menu->children()->exists()) {
-                return back()->withErrors(['parent_id' => 'Este item possui submenus e não pode se tornar um submenu.']);
-            }
-        }
-
-        $this->menuService->update($menu, $data);
+        $this->menuService->update($menu, $request->validated());
 
         return redirect()->route('admin.menu.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Item atualizado com sucesso.', 'type' => 'success']);
