@@ -54,9 +54,20 @@ mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
 
 ## Padrões a seguir
 - PSR-12 no PHP
-- Repository Pattern para acesso a dados quando pertinente
-- Service Layer para lógica de negócio complexa
 - Componentes React funcionais com hooks
+
+### Arquitetura de camadas (controller / service)
+- **Controller magro:** recebe a request, delega e devolve a response. CRUD simples
+  (listagem, create/update/delete) usa Eloquent direto no controller — **não** criar
+  service só para envelopar `Model::create()`.
+- **Service:** só quando há lógica de negócio real — orquestração de vários models,
+  transações, invalidação de cache, upload/manipulação de arquivos, regras de negócio.
+  Ex. atuais: `PostService`, `PageService`, `RoleService`, `UserService`,
+  `ConfigService`, `MenuService`, `FileUploadService`.
+- **Sem Repository:** acesso a dados fica no Eloquent. Query reaproveitada vira
+  query scope no model (ex.: `scopeActive`, `scopeOrdered`) — não um repositório.
+- Regra prática: lógica de domínio (um `if`/`try` decidindo regra de negócio) nunca
+  fica no controller; ou é trivial e fica no controller, ou vai para o service.
 
 ## Regras de commits
 - Seguir Conventional Commits: `type(scope): descrição curta`

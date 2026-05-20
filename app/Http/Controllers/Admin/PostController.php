@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
-use App\Services\FileUploadService;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -14,10 +13,7 @@ use Inertia\Inertia;
 
 class PostController extends Controller
 {
-    public function __construct(
-        private readonly PostService $postService,
-        private readonly FileUploadService $uploadService,
-    ) {}
+    public function __construct(private readonly PostService $postService) {}
 
     public function index(Request $request)
     {
@@ -36,17 +32,8 @@ class PostController extends Controller
 
     public function store(PostRequest $request)
     {
-        $data = $request->validated();
-
         try {
-            if ($request->hasFile('banner_image')) {
-                $data['banner_image'] = $this->uploadService->upload(
-                    $request->file('banner_image'),
-                    'posts'
-                );
-            }
-
-            $this->postService->create($data);
+            $this->postService->create($request->validated(), $request->file('banner_image'));
 
             return redirect()->route('admin.posts.index')->with('toast', [
                 'title'   => 'Sucesso!',
@@ -73,22 +60,8 @@ class PostController extends Controller
 
     public function update(PostRequest $request, Post $post)
     {
-        $data = $request->validated();
-
         try {
-            $file = $request->file('banner_image');
-
-            if ($file && $file->isValid()) {
-                if ($post->banner_image) {
-                    $this->uploadService->delete($post->banner_image);
-                }
-
-                $data['banner_image'] = $this->uploadService->upload($file, 'posts');
-            } else {
-                unset($data['banner_image']);
-            }
-
-            $this->postService->update($post, $data);
+            $this->postService->update($post, $request->validated(), $request->file('banner_image'));
 
             return redirect()->route('admin.posts.index')->with('toast', [
                 'title'   => 'Sucesso!',

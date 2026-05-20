@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PostService
@@ -63,13 +64,24 @@ class PostService
         return ['category' => $category, 'posts' => $posts];
     }
 
-    public function create(array $data): Post
+    public function create(array $data, ?UploadedFile $banner = null): Post
     {
+        if ($banner?->isValid()) {
+            $data['banner_image'] = $this->uploadService->upload($banner, 'posts');
+        }
+
         return Post::create($data);
     }
 
-    public function update(Post $post, array $data): Post
+    public function update(Post $post, array $data, ?UploadedFile $banner = null): Post
     {
+        if ($banner?->isValid()) {
+            $this->uploadService->delete($post->banner_image);
+            $data['banner_image'] = $this->uploadService->upload($banner, 'posts');
+        } else {
+            unset($data['banner_image']);
+        }
+
         $post->update($data);
 
         return $post;

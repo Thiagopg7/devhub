@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\NewsletterAreaRequest;
 use App\Models\NewsletterArea;
-use App\Services\NewsletterAreaService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,12 +12,17 @@ use Inertia\Response;
 
 class NewsletterAreaController extends Controller
 {
-    public function __construct(private readonly NewsletterAreaService $service) {}
-
     public function index(Request $request): Response
     {
+        $search = $request->input('q');
+
+        $areas = NewsletterArea::ordered()
+            ->when($search, fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->paginate(20)
+            ->withQueryString();
+
         return Inertia::render('Admin/NewsletterAreas/Index', [
-            'areas'  => $this->service->getPaginated(20, $request->input('q')),
+            'areas'  => $areas,
             'filter' => $request->only('q'),
         ]);
     }
@@ -30,7 +34,7 @@ class NewsletterAreaController extends Controller
 
     public function store(NewsletterAreaRequest $request): RedirectResponse
     {
-        $this->service->create($request->validated());
+        NewsletterArea::create($request->validated());
 
         return redirect()->route('admin.newsletter-areas.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Área criada com sucesso.', 'type' => 'success']);
@@ -45,7 +49,7 @@ class NewsletterAreaController extends Controller
 
     public function update(NewsletterAreaRequest $request, NewsletterArea $newsletterArea): RedirectResponse
     {
-        $this->service->update($newsletterArea, $request->validated());
+        $newsletterArea->update($request->validated());
 
         return redirect()->route('admin.newsletter-areas.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Área atualizada com sucesso.', 'type' => 'success']);
@@ -53,7 +57,7 @@ class NewsletterAreaController extends Controller
 
     public function destroy(NewsletterArea $newsletterArea): RedirectResponse
     {
-        $this->service->delete($newsletterArea);
+        $newsletterArea->delete();
 
         return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Área excluída com sucesso.', 'type' => 'success']);
     }

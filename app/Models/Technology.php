@@ -29,6 +29,11 @@ class Technology extends Model
         return $query->where('is_active', true);
     }
 
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('order')->orderBy('name');
+    }
+
     protected static function boot()
     {
         parent::boot();

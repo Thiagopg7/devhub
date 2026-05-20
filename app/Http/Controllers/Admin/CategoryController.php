@@ -5,21 +5,23 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
-use App\Services\CategoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
 {
-    public function __construct(
-        private readonly CategoryService $categoryService,
-    ) {}
-
     public function index(Request $request)
     {
+        $search = $request->input('q');
+
+        $categories = Category::orderBy('name')
+            ->when($search, fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->paginate(20)
+            ->withQueryString();
+
         return Inertia::render('Admin/Categories/Index', [
-            'categories' => $this->categoryService->getPaginated(20, $request->input('q')),
+            'categories' => $categories,
             'filter'     => $request->only('q'),
         ]);
     }
@@ -32,7 +34,7 @@ class CategoryController extends Controller
     public function store(CategoryRequest $request)
     {
         try {
-            $this->categoryService->create($request->validated());
+            Category::create($request->validated());
 
             return redirect()->route('admin.categories.index')->with('toast', [
                 'title'   => 'Sucesso!',
@@ -59,7 +61,7 @@ class CategoryController extends Controller
     public function update(CategoryRequest $request, Category $category)
     {
         try {
-            $this->categoryService->update($category, $request->validated());
+            $category->update($request->validated());
 
             return redirect()->route('admin.categories.index')->with('toast', [
                 'title'   => 'Sucesso!',
@@ -79,7 +81,7 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         try {
-            $this->categoryService->delete($category);
+            $category->delete();
 
             return redirect()->route('admin.categories.index')->with('toast', [
                 'title'   => 'Sucesso!',

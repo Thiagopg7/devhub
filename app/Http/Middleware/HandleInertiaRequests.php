@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Models\Config;
+use App\Models\NewsletterArea;
 use App\Services\MenuService;
-use App\Services\NewsletterAreaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config as ConfigFacade;
@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
             'siteConfig'      => Cache::remember('configs.shared', 3600, fn () => Config::pluck('value', 'key')),
             'menuItems'       => $isAdmin ? [] : app(MenuService::class)->getPublicTree(),
             'newsletterAreas' => $isAdmin ? [] : Cache::remember('newsletter_areas.active', 3600, function () {
-                return app(NewsletterAreaService::class)->getActive()->values()->toArray();
+                return NewsletterArea::active()->ordered()->get()->toArray();
             }),
             'permissionsCatalog' => $isAdmin ? [
                 'modules' => ConfigFacade::get('permissions.modules', []),
