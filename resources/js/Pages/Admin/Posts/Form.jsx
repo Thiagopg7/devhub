@@ -36,14 +36,12 @@ export default function Form({ post = {}, categories = [] }) {
             transform((d) => ({ ...d, _method: "PUT" }));
             send(route("admin.posts.update", post.id), {
                 forceFormData: true,
-                onSuccess: () => toast.success("Post atualizado com sucesso!"),
-                onError:   () => toast.error("Verifique os campos e tente novamente."),
+                onError: () => toast.error("Verifique os campos e tente novamente."),
             });
         } else {
             send(route("admin.posts.store"), {
                 forceFormData: true,
-                onSuccess: () => toast.success("Post criado com sucesso!"),
-                onError:   () => toast.error("Verifique os campos e tente novamente."),
+                onError: () => toast.error("Verifique os campos e tente novamente."),
             });
         }
     };

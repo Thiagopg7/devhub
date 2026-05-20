@@ -37,13 +37,11 @@ export default function Form({ category = {} }) {
                 transform((d) => ({ ...d, _method: "PUT" })),
                 {
                     forceFormData: true,
-                    onSuccess: () => toast.success("Categoria atualizada com sucesso!"),
                     onError: () => toast.error("Erro ao atualizar a categoria."),
                 },
             );
         } else {
             send(route("admin.categories.store"), data, {
-                onSuccess: () => toast.success("Categoria criada com sucesso!"),
                 onError: () => toast.error("Erro ao criar a categoria."),
             });
         }

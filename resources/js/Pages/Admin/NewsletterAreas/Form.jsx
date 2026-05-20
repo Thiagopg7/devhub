@@ -24,13 +24,11 @@ export default function Form({ area = null }) {
         if (isEditing) {
             transform((d) => ({ ...d, _method: "PUT" }));
             send(route("admin.newsletter-areas.update", area.id), {
-                onSuccess: () => toast.success("Área atualizada com sucesso!"),
-                onError:   () => toast.error("Erro ao atualizar a área."),
+                onError: () => toast.error("Erro ao atualizar a área."),
             });
         } else {
             send(route("admin.newsletter-areas.store"), {
-                onSuccess: () => toast.success("Área criada com sucesso!"),
-                onError:   () => toast.error("Erro ao criar a área."),
+                onError: () => toast.error("Erro ao criar a área."),
             });
         }
     };

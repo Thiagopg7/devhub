@@ -27,8 +27,7 @@ export default function Form({ user = null, roles = [] }) {
     const submit = (e) => {
         e.preventDefault();
         const handlers = {
-            onSuccess: () => toast.success(isEditing ? "Usuário atualizado!" : "Usuário criado!"),
-            onError:   () => toast.error("Verifique os campos e tente novamente."),
+            onError: () => toast.error("Verifique os campos e tente novamente."),
         };
         if (isEditing) {
             put(route("admin.users.update", user.id), handlers);

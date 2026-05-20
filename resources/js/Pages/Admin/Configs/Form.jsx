@@ -53,8 +53,7 @@ export default function Form({ values = {} }) {
     const submit = (e) => {
         e.preventDefault();
         put(route("admin.configs.update"), {
-            onSuccess: () => toast.success("Configurações salvas com sucesso!"),
-            onError:   () => toast.error("Verifique os campos e tente novamente."),
+            onError: () => toast.error("Verifique os campos e tente novamente."),
         });
     };
 

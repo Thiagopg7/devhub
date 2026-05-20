@@ -64,6 +64,10 @@ class ConfigController extends Controller
 
         Cache::forget('configs.shared');
 
-        return back();
+        return back()->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Configurações salvas com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 }

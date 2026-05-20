@@ -35,13 +35,11 @@ export default function Form({ block = {} }) {
                 route("admin.blocks.update", block.id),
                 transform((d) => ({ ...d, _method: "PUT" })),
                 {
-                    onSuccess: () => toast.success("Bloco atualizado com sucesso!"),
                     onError: () => toast.error("Erro ao atualizar o bloco."),
                 },
             );
         } else {
             send(route("admin.blocks.store"), data, {
-                onSuccess: () => toast.success("Bloco criado com sucesso!"),
                 onError: () => toast.error("Erro ao criar o bloco."),
             });
         }

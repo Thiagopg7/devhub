@@ -30,13 +30,11 @@ export default function Form({ technology = null }) {
             transform((d) => ({ ...d, _method: "PUT" }));
             send(route("admin.technologies.update", technology.id), {
                 forceFormData: true,
-                onSuccess: () => toast.success("Tecnologia atualizada com sucesso!"),
-                onError:   () => toast.error("Erro ao atualizar a tecnologia."),
+                onError: () => toast.error("Erro ao atualizar a tecnologia."),
             });
         } else {
             send(route("admin.technologies.store"), {
-                onSuccess: () => toast.success("Tecnologia criada com sucesso!"),
-                onError:   () => toast.error("Erro ao criar a tecnologia."),
+                onError: () => toast.error("Erro ao criar a tecnologia."),
             });
         }
     };

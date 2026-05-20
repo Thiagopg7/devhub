@@ -79,8 +79,7 @@ export default function Form({ role = null }) {
         e.preventDefault();
         if (locked) return;
         const handlers = {
-            onSuccess: () => toast.success(isEditing ? "Perfil atualizado!" : "Perfil criado!"),
-            onError:   () => toast.error("Verifique os campos e tente novamente."),
+            onError: () => toast.error("Verifique os campos e tente novamente."),
         };
         if (isEditing) {
             put(route("admin.roles.update", role.id), handlers);

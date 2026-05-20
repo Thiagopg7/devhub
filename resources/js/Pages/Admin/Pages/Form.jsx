@@ -168,14 +168,12 @@ export default function Form({ page = null }) {
             transform((d) => ({ ...d, _method: "PUT" }));
             send(route("admin.pages.update", page.id), {
                 forceFormData: true,
-                onSuccess: () => toast.success("Página atualizada com sucesso!"),
-                onError:   () => toast.error("Verifique os campos e tente novamente."),
+                onError: () => toast.error("Verifique os campos e tente novamente."),
             });
         } else {
             send(route("admin.pages.store"), {
                 forceFormData: true,
-                onSuccess: () => toast.success("Página criada com sucesso!"),
-                onError:   () => toast.error("Verifique os campos e tente novamente."),
+                onError: () => toast.error("Verifique os campos e tente novamente."),
             });
         }
     };

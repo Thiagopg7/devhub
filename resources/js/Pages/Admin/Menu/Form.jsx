@@ -28,13 +28,11 @@ export default function Form({ item = null, roots = [] }) {
             transform((d) => ({ ...d, _method: "PUT" }));
             send(route("admin.menu.update", item.id), {
                 forceFormData: true,
-                onSuccess: () => toast.success("Item atualizado com sucesso!"),
-                onError:   () => toast.error("Erro ao atualizar o item."),
+                onError: () => toast.error("Erro ao atualizar o item."),
             });
         } else {
             send(route("admin.menu.store"), {
-                onSuccess: () => toast.success("Item criado com sucesso!"),
-                onError:   () => toast.error("Erro ao criar o item."),
+                onError: () => toast.error("Erro ao criar o item."),
             });
         }
     };
