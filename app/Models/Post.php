@@ -52,7 +52,7 @@ class Post extends Model
     {
         return [
             'slug' => [
-                'source' => 'title',
+                'source' => ['title', 'id'],
                 'onUpdate' => true,
             ],
         ];

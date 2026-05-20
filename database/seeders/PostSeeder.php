@@ -24,6 +24,7 @@ class PostSeeder extends Seeder
                 'meta_title'       => 'Começando com Laravel — Guia Prático',
                 'meta_description' => 'Aprenda a criar seu primeiro CRUD com Laravel do zero, com migrations, Eloquent e controllers.',
                 'is_active'        => true,
+                'slug'             => 'começando-com-laravel-do-zero-ao-primeiro-crud',
             ],
             [
                 'category_id'      => $cat('desenvolvimento-web'),
@@ -33,6 +34,7 @@ class PostSeeder extends Seeder
                 'meta_title'       => 'React + Inertia.js — SPA sem API',
                 'meta_description' => 'Entenda como o Inertia.js conecta React e Laravel para criar SPAs sem uma API REST separada.',
                 'is_active'        => true,
+                'slug'             => 'react-com-inertia-js-spa-sem-api-rest',
             ],
             [
                 'category_id'      => $cat('banco-de-dados'),
@@ -42,6 +44,7 @@ class PostSeeder extends Seeder
                 'meta_title'       => 'Migrations Laravel — Versionamento de Banco',
                 'meta_description' => 'Aprenda a usar migrations no Laravel para versionar seu banco de dados de forma segura e colaborativa.',
                 'is_active'        => true,
+                'slug'             => 'migrations-no-laravel-versionando-seu-banco-de-dados',
             ],
             [
                 'category_id'      => $cat('devops'),
@@ -51,6 +54,7 @@ class PostSeeder extends Seeder
                 'meta_title'       => 'Docker para PHP — Ambiente Consistente',
                 'meta_description' => 'Configure um ambiente PHP com Docker e Docker Compose em minutos, do zero ao servidor rodando.',
                 'is_active'        => true,
+                'slug'             => 'docker-para-desenvolvedores-php-ambiente-consistente-em-minutos',
             ],
             [
                 'category_id'      => $cat('boas-praticas'),
@@ -60,6 +64,7 @@ class PostSeeder extends Seeder
                 'meta_title'       => 'Service Layer Laravel — Separando Responsabilidades',
                 'meta_description' => 'Aprenda a usar a Service Layer no Laravel para organizar a lógica de negócio fora dos controllers.',
                 'is_active'        => true,
+                'slug'             => 'service-layer-no-laravel-separando-responsabilidades',
             ],
             [
                 'category_id'      => $cat('carreira'),
@@ -69,6 +74,7 @@ class PostSeeder extends Seeder
                 'meta_title'       => 'Portfólio Dev — O que Recrutadores Realmente Olham',
                 'meta_description' => 'Saiba o que incluir no seu portfólio de desenvolvedor para se destacar nas triagens e entrevistas técnicas.',
                 'is_active'        => true,
+                'slug'             => 'portfolio-para-devs-o-que-realmente-importa-para-recrutadores',
             ],
         ];
 

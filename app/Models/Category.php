@@ -26,7 +26,7 @@ class Category extends Model
     {
         return [
             'slug' => [
-                'source' => 'name',
+                'source' => ['name', 'id'],
                 'onUpdate' => true,
             ],
         ];
