@@ -9,7 +9,15 @@ class RoleRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $role = $this->route('role');
+
+        // store: sem alvo específico — middleware já verificou a permission.
+        if (!$role) {
+            return true;
+        }
+
+        // update: delega à RolePolicy::update.
+        return $this->user()->can('update', $role);
     }
 
     public function rules(): array

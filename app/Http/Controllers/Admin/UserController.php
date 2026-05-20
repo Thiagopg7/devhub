@@ -52,11 +52,7 @@ class UserController extends Controller
 
     public function edit(User $user, Request $request): Response
     {
-        $current = $request->user();
-
-        if ($user->isPrivileged() && !$current->isSuperAdmin()) {
-            abort(403);
-        }
+        $this->authorize('update', $user);
 
         return Inertia::render('Admin/Users/Form', [
             'user' => [
@@ -66,20 +62,15 @@ class UserController extends Controller
                 'is_super_admin' => $user->is_super_admin,
                 'role_id'        => $user->roles->first()?->id,
             ],
-            'roles' => $this->rolesPayload($current),
+            'roles' => $this->rolesPayload($request->user()),
         ]);
     }
 
     public function update(UserRequest $request, User $user): RedirectResponse
     {
+        // Autorização delegada a UserPolicy via UserRequest::authorize().
         $current = $request->user();
         $data    = $request->validated();
-
-        // Usuários privilegiados (super admin ou com perfil de sistema)
-        // só podem ser editados por um super admin.
-        if ($user->isPrivileged() && !$current->isSuperAdmin()) {
-            abort(403);
-        }
 
         // Auto-edição: o usuário não pode alterar os próprios privilégios.
         $canEditPrivileges = true;
@@ -106,12 +97,12 @@ class UserController extends Controller
     {
         $current = $request->user();
 
-        if ($current->id === $user->id) {
-            return back()->withErrors(['user' => 'Você não pode excluir o próprio usuário.']);
-        }
+        if (!$current->can('delete', $user)) {
+            $message = $current->id === $user->id
+                ? 'Você não pode excluir o próprio usuário.'
+                : 'Apenas um super admin pode excluir um usuário administrador.';
 
-        if ($user->isPrivileged() && !$current->isSuperAdmin()) {
-            return back()->withErrors(['user' => 'Apenas um super admin pode excluir um usuário administrador.']);
+            return back()->withErrors(['user' => $message]);
         }
 
         $this->userService->delete($user);
@@ -119,9 +110,6 @@ class UserController extends Controller
         return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Usuário excluído com sucesso.', 'type' => 'success']);
     }
 
-    /**
-     * Perfis disponíveis para atribuição. Perfis de sistema só aparecem para super admins.
-     */
     private function rolesPayload(User $current): array
     {
         $query = Role::orderBy('name');

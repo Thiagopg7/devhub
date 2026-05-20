@@ -16,11 +16,11 @@ class RoleController extends Controller
 {
     public function __construct(private readonly RoleService $roleService) {}
 
-    public function index(Request $request): Response
+    public function index(): Response
     {
         return Inertia::render('Admin/Roles/Index', [
-            'roles'  => $this->roleService->getPaginated(20, $request->input('q')),
-            'filter' => $request->only('q'),
+            'roles'  => $this->roleService->getPaginated(20, request()->input('q')),
+            'filter' => request()->only('q'),
         ]);
     }
 
@@ -37,13 +37,10 @@ class RoleController extends Controller
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil criado com sucesso.', 'type' => 'success']);
     }
 
-    public function edit(Role $role, Request $request): Response
+    public function edit(Role $role): Response
     {
-        // Perfis de sistema abrem em modo somente-leitura — qualquer um pode visualizar.
-        // A proteção de edição do próprio perfil só é necessária onde há gravação.
-        if (!$role->isSystem()) {
-            $this->assertNotOwnRole($role, $request->user());
-        }
+        // RolePolicy::view — sistema sempre abre (somente-leitura); não-sistema bloqueia o próprio portador.
+        $this->authorize('view', $role);
 
         return Inertia::render('Admin/Roles/Form', [
             'role' => [
@@ -57,17 +54,20 @@ class RoleController extends Controller
 
     public function update(RoleRequest $request, Role $role): RedirectResponse
     {
+        // Invariante de domínio: perfis de sistema são imutáveis para todos,
+        // incluindo super admins (Gate::before não pode cobrir isso).
         abort_if($role->isSystem(), 403, 'Perfil de sistema não pode ser alterado.');
-        $this->assertNotOwnRole($role, $request->user());
 
+        // Autorização delegada a RolePolicy via RoleRequest::authorize().
         $this->roleService->update($role, $this->capPermissions($request->validated(), $request->user()));
 
         return redirect()->route('admin.roles.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil atualizado com sucesso.', 'type' => 'success']);
     }
 
-    public function destroy(Role $role): RedirectResponse
+    public function destroy(Role $role, Request $request): RedirectResponse
     {
+        // Invariante de domínio: imutável para todos, incluindo super admins.
         if ($role->isSystem()) {
             return back()->withErrors(['role' => 'Este é um perfil de sistema e não pode ser excluído.']);
         }
@@ -81,23 +81,6 @@ class RoleController extends Controller
         return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil excluído com sucesso.', 'type' => 'success']);
     }
 
-    /**
-     * Ninguém (exceto super admin) pode editar o próprio perfil — evita auto-escalada
-     * de privilégios (conceder permissões a si mesmo).
-     */
-    private function assertNotOwnRole(Role $role, User $current): void
-    {
-        abort_if(
-            !$current->isSuperAdmin() && $current->hasRole($role),
-            403,
-            'Você não pode editar o próprio perfil.'
-        );
-    }
-
-    /**
-     * Um usuário não-super-admin só pode conceder a um perfil as permissions
-     * que ele próprio possui — não pode criar/editar perfis mais poderosos que ele.
-     */
     private function capPermissions(array $data, User $current): array
     {
         if (!$current->isSuperAdmin()) {

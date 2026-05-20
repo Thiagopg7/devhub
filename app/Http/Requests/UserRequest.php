@@ -9,7 +9,15 @@ class UserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $target = $this->route('user');
+
+        // store: sem alvo específico — a permission de módulo já é verificada pelo middleware.
+        if (!$target) {
+            return true;
+        }
+
+        // update: delega à UserPolicy::update.
+        return $this->user()->can('update', $target);
     }
 
     public function rules(): array
