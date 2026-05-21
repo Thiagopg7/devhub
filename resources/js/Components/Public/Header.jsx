@@ -41,17 +41,19 @@ function DesktopNavItem({ item }) {
                 <ChevronDown size={14} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
             {open && (
-                <div className="absolute top-full left-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 z-50">
-                    {item.children.map((child) => (
-                        <MenuLink
-                            key={child.id}
-                            href={child.url}
-                            openInNewTab={child.open_in_new_tab}
-                            className="block px-4 py-2 text-sm text-slate-300 hover:text-sky-400 hover:bg-slate-700 transition-colors"
-                        >
-                            {child.label}
-                        </MenuLink>
-                    ))}
+                <div className="absolute top-full left-0 w-48 pt-1 z-50">
+                    <div className="bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1">
+                        {item.children.map((child) => (
+                            <MenuLink
+                                key={child.id}
+                                href={child.url}
+                                openInNewTab={child.open_in_new_tab}
+                                className="block px-4 py-2 text-sm text-slate-300 hover:text-sky-400 hover:bg-slate-700 transition-colors"
+                            >
+                                {child.label}
+                            </MenuLink>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

@@ -20,8 +20,11 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CategorySeeder::class,
             PostSeeder::class,
+            PageSeeder::class,
             TechnologySeeder::class,
             NewsletterAreaSeeder::class,
+            ConfigSeeder::class,
+            MenuSeeder::class,
         ]);
     }
 }
