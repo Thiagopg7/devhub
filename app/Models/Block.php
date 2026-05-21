@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasActivityLog;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Cviebrock\EloquentSluggable\Sluggable;
 
 class Block extends Model
 {
-    use HasFactory, Sluggable;
+    use HasActivityLog, HasFactory, Sluggable;
 
     protected $table = 'blocks';
 

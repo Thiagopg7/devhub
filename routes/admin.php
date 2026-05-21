@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ConfigController;
@@ -70,8 +71,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
         ->except(['show'])
         ->middleware('resource.permission:users');
 
-
-
+    Route::get('/activity-log', [ActivityLogController::class, 'index'])
+        ->name('activity-log.index')
+        ->middleware('can:activity_log.view');
 
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');

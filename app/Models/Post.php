@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
-    use HasFactory, Sluggable, SoftDeletes;
+    use HasActivityLog, HasFactory, Sluggable, SoftDeletes;
 
     protected $fillable = [
         'user_id',

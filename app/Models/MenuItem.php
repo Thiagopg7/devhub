@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasActivityLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,6 +10,8 @@ use Illuminate\Support\Facades\Cache;
 
 class MenuItem extends Model
 {
+    use HasActivityLog;
+
     protected $fillable = ['parent_id', 'label', 'url', 'order', 'is_active', 'open_in_new_tab'];
 
     protected $casts = [
