@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SaveConfigRequest;
 use App\Models\Config;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -61,8 +60,6 @@ class ConfigController extends Controller
 
             Config::setValue($key, $newValue, self::KEY_GROUPS[$key] ?? 'general');
         }
-
-        Cache::forget('configs.shared');
 
         return back()->with('toast', [
             'title'   => 'Sucesso!',

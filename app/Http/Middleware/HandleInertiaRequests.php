@@ -33,7 +33,7 @@ class HandleInertiaRequests extends Middleware
                     ? $user->getAllPermissions()->pluck('name')->values()->all()
                     : [],
             ],
-            'siteConfig'      => Cache::remember('configs.shared', 3600, fn () => Config::pluck('value', 'key')),
+            'siteConfig'      => Config::pluck('value', 'key'),
             'menuItems'       => $isAdmin ? [] : app(MenuService::class)->getPublicTree(),
             'newsletterAreas' => $isAdmin ? [] : Cache::remember('newsletter_areas.active', 3600, function () {
                 return NewsletterArea::active()->ordered()->get()->toArray();
