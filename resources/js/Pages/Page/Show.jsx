@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Head, usePage } from "@inertiajs/react";
+import DOMPurify from "dompurify";
 import PublicLayout from "@/Layouts/PublicLayout";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -122,7 +123,7 @@ export default function PageShow({ page }) {
                             prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700
                             prose-blockquote:border-l-sky-400 prose-blockquote:text-slate-400
                             prose-img:rounded-xl"
-                        dangerouslySetInnerHTML={{ __html: page.content }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(page.content) }}
                     />
                 )}
 

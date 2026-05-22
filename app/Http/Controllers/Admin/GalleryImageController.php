@@ -9,6 +9,7 @@ use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GalleryImageController extends Controller
 {
@@ -32,20 +33,34 @@ class GalleryImageController extends Controller
                     }
                 }
             });
+
+            return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Imagens adicionadas com sucesso.', 'type' => 'success']);
         } catch (\Throwable $e) {
             foreach ($uploaded as $path) {
                 $this->uploadService->delete($path);
             }
-            throw $e;
+            Log::error('Erro ao fazer upload de imagens da galeria', ['exception' => $e, 'page_id' => $page->id]);
+            return back()->with('toast', [
+                'title'   => 'Erro!',
+                'message' => 'Ocorreu um erro ao fazer upload das imagens. Tente novamente.',
+                'type'    => 'error',
+            ]);
         }
-
-        return back();
     }
 
     public function destroy(GalleryImage $galleryImage): RedirectResponse
     {
-        $galleryImage->delete();
+        try {
+            $galleryImage->delete();
 
-        return back();
+            return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Imagem removida com sucesso.', 'type' => 'success']);
+        } catch (\Exception $e) {
+            Log::error('Erro ao excluir imagem da galeria', ['exception' => $e, 'gallery_image_id' => $galleryImage->id]);
+            return back()->with('toast', [
+                'title'   => 'Erro!',
+                'message' => 'Ocorreu um erro ao remover a imagem. Tente novamente.',
+                'type'    => 'error',
+            ]);
+        }
     }
 }

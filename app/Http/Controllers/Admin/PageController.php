@@ -30,10 +30,8 @@ class PageController extends Controller
 
     public function store(PageRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-
         $this->pageService->create(
-            $data,
+            $request->validated(),
             $request->file('banner_image'),
             $request->file('main_image'),
         );
@@ -51,11 +49,9 @@ class PageController extends Controller
 
     public function update(PageRequest $request, Page $page): RedirectResponse
     {
-        $data = $request->validated();
-
         $this->pageService->update(
             $page,
-            $data,
+            $request->validated(),
             $request->file('banner_image'),
             $request->file('main_image'),
         );

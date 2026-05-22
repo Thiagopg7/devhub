@@ -49,14 +49,22 @@ return Application::configure(basePath: dirname(__DIR__))
 
             if ($request->is('api/*')) {
                 Log::error('Erro na API', [
-                    'error' => $e->getMessage(),
-                    'url'   => $request->fullUrl(),
+                    'exception' => $e,
+                    'url'       => $request->fullUrl(),
                 ]);
 
                 return response()->json([
                     'status'  => 'error',
                     'message' => 'Erro interno no servidor.',
                 ], 500);
+            }
+
+            if ($e instanceof \Illuminate\Database\QueryException && !$request->isMethod('GET')) {
+                return back()->withInput()->with('toast', [
+                    'title'   => 'Erro!',
+                    'message' => 'Erro ao acessar o banco de dados. Tente novamente.',
+                    'type'    => 'error',
+                ]);
             }
 
             $status = $e instanceof HttpException ? $e->getStatusCode() : 500;

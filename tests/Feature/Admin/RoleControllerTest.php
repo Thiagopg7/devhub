@@ -102,7 +102,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->delete(route('admin.roles.destroy', $role))
-            ->assertSessionHasErrors('role');
+            ->assertSessionHas('toast.type', 'error');
 
         $this->assertDatabaseHas('roles', ['name' => 'Ocupado']);
     }
@@ -139,7 +139,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($admin)
             ->delete(route('admin.roles.destroy', $role))
-            ->assertSessionHasErrors('role');
+            ->assertSessionHas('toast.type', 'error');
 
         $this->assertDatabaseHas('roles', ['id' => $role->id]);
     }

@@ -57,7 +57,11 @@ class MenuController extends Controller
     public function destroy(MenuItem $menu): RedirectResponse
     {
         if ($menu->children()->exists()) {
-            return back()->withErrors(['menu' => 'Remova os submenus antes de excluir este item.']);
+            return back()->with('toast', [
+                'title'   => 'Erro!',
+                'message' => 'Remova os submenus antes de excluir este item.',
+                'type'    => 'error',
+            ]);
         }
 
         $this->menuService->delete($menu);

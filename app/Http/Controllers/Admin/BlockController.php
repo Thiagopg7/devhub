@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\BlockRequest;
 use App\Models\Block;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class BlockController extends Controller
@@ -33,22 +32,13 @@ class BlockController extends Controller
 
     public function store(BlockRequest $request)
     {
-        try {
-            Block::create($request->validated());
+        Block::create($request->validated());
 
-            return redirect()->route('admin.blocks.index')->with('toast', [
-                'title'   => 'Sucesso!',
-                'message' => 'Bloco criado com sucesso.',
-                'type'    => 'success',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erro ao criar bloco', ['error' => $e->getMessage()]);
-            return redirect()->back()->withInput()->with('toast', [
-                'title'   => 'Erro!',
-                'message' => 'Ocorreu um erro ao criar o bloco. Tente novamente.',
-                'type'    => 'error',
-            ]);
-        }
+        return redirect()->route('admin.blocks.index')->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Bloco criado com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 
     public function edit(Block $block)
@@ -60,41 +50,23 @@ class BlockController extends Controller
 
     public function update(BlockRequest $request, Block $block)
     {
-        try {
-            $block->update($request->validated());
+        $block->update($request->validated());
 
-            return redirect()->route('admin.blocks.index')->with('toast', [
-                'title'   => 'Sucesso!',
-                'message' => 'Bloco atualizado com sucesso.',
-                'type'    => 'success',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erro ao atualizar bloco', ['error' => $e->getMessage(), 'block_id' => $block->id]);
-            return redirect()->back()->withInput()->with('toast', [
-                'title'   => 'Erro!',
-                'message' => 'Ocorreu um erro ao atualizar o bloco. Tente novamente.',
-                'type'    => 'error',
-            ]);
-        }
+        return redirect()->route('admin.blocks.index')->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Bloco atualizado com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 
     public function destroy(Block $block)
     {
-        try {
-            $block->delete();
+        $block->delete();
 
-            return redirect()->route('admin.blocks.index')->with('toast', [
-                'title'   => 'Sucesso!',
-                'message' => 'Bloco excluído com sucesso.',
-                'type'    => 'success',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erro ao excluir bloco', ['error' => $e->getMessage(), 'block_id' => $block->id]);
-            return redirect()->back()->with('toast', [
-                'title'   => 'Erro!',
-                'message' => 'Ocorreu um erro ao excluir o bloco. Tente novamente.',
-                'type'    => 'error',
-            ]);
-        }
+        return redirect()->route('admin.blocks.index')->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Bloco excluído com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 }

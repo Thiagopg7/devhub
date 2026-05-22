@@ -75,14 +75,20 @@ class PostService
 
     public function update(Post $post, array $data, ?UploadedFile $banner = null): Post
     {
+        $oldBanner = $post->banner_image;
+
         if ($banner?->isValid()) {
-            $this->uploadService->delete($post->banner_image);
             $data['banner_image'] = $this->uploadService->upload($banner, 'posts');
         } else {
             unset($data['banner_image']);
         }
 
         $post->update($data);
+
+        // Só deleta o arquivo antigo após o update persistir com sucesso
+        if (isset($data['banner_image']) && $oldBanner) {
+            $this->uploadService->delete($oldBanner);
+        }
 
         return $post;
     }

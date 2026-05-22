@@ -40,7 +40,11 @@ class UserController extends Controller
             unset($data['is_super_admin']);
 
             if ($this->isSystemRole($data['role_id'] ?? null)) {
-                return back()->withErrors(['role_id' => 'Apenas um super admin pode atribuir um perfil de sistema.']);
+                return back()->withInput()->with('toast', [
+                    'title'   => 'Erro!',
+                    'message' => 'Apenas um super admin pode atribuir um perfil de sistema.',
+                    'type'    => 'error',
+                ]);
             }
         }
 
@@ -83,7 +87,11 @@ class UserController extends Controller
             unset($data['is_super_admin']);
 
             if ($canEditPrivileges && $this->isSystemRole($data['role_id'] ?? null)) {
-                return back()->withErrors(['role_id' => 'Apenas um super admin pode atribuir um perfil de sistema.']);
+                return back()->withInput()->with('toast', [
+                    'title'   => 'Erro!',
+                    'message' => 'Apenas um super admin pode atribuir um perfil de sistema.',
+                    'type'    => 'error',
+                ]);
             }
         }
 
@@ -102,7 +110,7 @@ class UserController extends Controller
                 ? 'Você não pode excluir o próprio usuário.'
                 : 'Apenas um super admin pode excluir um usuário administrador.';
 
-            return back()->withErrors(['user' => $message]);
+            return back()->with('toast', ['title' => 'Erro!', 'message' => $message, 'type' => 'error']);
         }
 
         $this->userService->delete($user);

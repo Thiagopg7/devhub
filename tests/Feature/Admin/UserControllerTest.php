@@ -97,7 +97,7 @@ class UserControllerTest extends TestCase
 
         $this->actingAs($user)
             ->delete(route('admin.users.destroy', $user))
-            ->assertSessionHasErrors('user');
+            ->assertSessionHas('toast.type', 'error');
 
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
@@ -126,7 +126,7 @@ class UserControllerTest extends TestCase
 
         $this->actingAs($admin)
             ->delete(route('admin.users.destroy', $target))
-            ->assertSessionHasErrors('user');
+            ->assertSessionHas('toast.type', 'error');
 
         $this->assertDatabaseHas('users', ['id' => $target->id]);
     }
@@ -139,7 +139,7 @@ class UserControllerTest extends TestCase
 
         $this->actingAs($admin)
             ->delete(route('admin.users.destroy', $target))
-            ->assertSessionHasErrors('user');
+            ->assertSessionHas('toast.type', 'error');
 
         $this->assertDatabaseHas('users', ['id' => $target->id]);
     }
@@ -184,7 +184,7 @@ class UserControllerTest extends TestCase
                 'password_confirmation' => 'senha123456',
                 'role_id'               => $role->id,
             ])
-            ->assertSessionHasErrors('role_id');
+            ->assertSessionHas('toast.type', 'error');
 
         $this->assertDatabaseMissing('users', ['email' => 'intruso@exemplo.com']);
     }

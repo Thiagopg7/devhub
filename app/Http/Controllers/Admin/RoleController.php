@@ -69,11 +69,19 @@ class RoleController extends Controller
     {
         // Invariante de domínio: imutável para todos, incluindo super admins.
         if ($role->isSystem()) {
-            return back()->withErrors(['role' => 'Este é um perfil de sistema e não pode ser excluído.']);
+            return back()->with('toast', [
+                'title'   => 'Erro!',
+                'message' => 'Este é um perfil de sistema e não pode ser excluído.',
+                'type'    => 'error',
+            ]);
         }
 
         if ($role->users()->exists()) {
-            return back()->withErrors(['role' => 'Existem usuários vinculados a este perfil.']);
+            return back()->with('toast', [
+                'title'   => 'Erro!',
+                'message' => 'Existem usuários vinculados a este perfil.',
+                'type'    => 'error',
+            ]);
         }
 
         $this->roleService->delete($role);

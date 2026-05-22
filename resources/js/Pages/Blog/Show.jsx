@@ -1,4 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
+import DOMPurify from 'dompurify';
 import PublicLayout from '@/Layouts/PublicLayout';
 import { ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
 
@@ -93,7 +94,7 @@ export default function BlogShow({ post }) {
                             prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700
                             prose-blockquote:border-l-sky-400 prose-blockquote:text-slate-400
                             prose-img:rounded-xl"
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
                     />
                 )}
             </div>

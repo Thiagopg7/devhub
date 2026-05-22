@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PostController extends Controller
@@ -32,22 +31,14 @@ class PostController extends Controller
 
     public function store(PostRequest $request)
     {
-        try {
-            $this->postService->create($request->validated(), $request->file('banner_image'));
+        $data = array_merge($request->validated(), ['user_id' => auth()->id()]);
+        $this->postService->create($data, $request->file('banner_image'));
 
-            return redirect()->route('admin.posts.index')->with('toast', [
-                'title'   => 'Sucesso!',
-                'message' => 'Post criado com sucesso.',
-                'type'    => 'success',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erro ao criar post', ['error' => $e->getMessage()]);
-            return redirect()->back()->withInput()->with('toast', [
-                'title'   => 'Erro!',
-                'message' => 'Ocorreu um erro ao criar o post. Tente novamente.',
-                'type'    => 'error',
-            ]);
-        }
+        return redirect()->route('admin.posts.index')->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Post criado com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 
     public function edit(Post $post)
@@ -60,41 +51,23 @@ class PostController extends Controller
 
     public function update(PostRequest $request, Post $post)
     {
-        try {
-            $this->postService->update($post, $request->validated(), $request->file('banner_image'));
+        $this->postService->update($post, $request->validated(), $request->file('banner_image'));
 
-            return redirect()->route('admin.posts.index')->with('toast', [
-                'title'   => 'Sucesso!',
-                'message' => 'Post atualizado com sucesso.',
-                'type'    => 'success',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erro ao atualizar post', ['error' => $e->getMessage(), 'post_id' => $post->id]);
-            return redirect()->back()->withInput()->with('toast', [
-                'title'   => 'Erro!',
-                'message' => 'Ocorreu um erro ao atualizar o post. Tente novamente.',
-                'type'    => 'error',
-            ]);
-        }
+        return redirect()->route('admin.posts.index')->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Post atualizado com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 
     public function destroy(Post $post)
     {
-        try {
-            $this->postService->delete($post);
+        $this->postService->delete($post);
 
-            return redirect()->route('admin.posts.index')->with('toast', [
-                'title'   => 'Sucesso!',
-                'message' => 'Post excluído com sucesso.',
-                'type'    => 'success',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erro ao excluir post', ['error' => $e->getMessage(), 'post_id' => $post->id]);
-            return redirect()->back()->with('toast', [
-                'title'   => 'Erro!',
-                'message' => 'Ocorreu um erro ao excluir o post. Tente novamente.',
-                'type'    => 'error',
-            ]);
-        }
+        return redirect()->route('admin.posts.index')->with('toast', [
+            'title'   => 'Sucesso!',
+            'message' => 'Post excluído com sucesso.',
+            'type'    => 'success',
+        ]);
     }
 }
