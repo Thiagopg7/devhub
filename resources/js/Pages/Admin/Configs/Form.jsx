@@ -43,8 +43,6 @@ export default function Form({ values = {} }) {
             contact_address_link: values.contact_address_link  ?? "",
             scripts_head:         values.scripts_head          ?? "",
             scripts_body:         values.scripts_body          ?? "",
-            recaptcha_site_key:   values.recaptcha_site_key    ?? "",
-            recaptcha_secret_key: values.recaptcha_secret_key  ?? "",
         },
     });
 
@@ -205,34 +203,6 @@ export default function Form({ values = {} }) {
                                         minRows={4}
                                         maxRows={12}
                                         placeholder={"<!-- Google Tag Manager (noscript) -->\n<noscript>...</noscript>"}
-                                        disabled={processing}
-                                    />
-                                </Field>
-                            </Section>
-
-                            {/* reCAPTCHA */}
-                            <Section title="reCAPTCHA">
-                                <Field
-                                    label="Site Key (pública)"
-                                    hint="Chave pública usada no frontend. Pode ser exposta com segurança."
-                                >
-                                    <Input
-                                        type="text"
-                                        value={data.config.recaptcha_site_key}
-                                        onChange={set("recaptcha_site_key")}
-                                        className="mt-1 block w-full font-mono"
-                                        disabled={processing}
-                                    />
-                                </Field>
-                                <Field
-                                    label="Secret Key (privada)"
-                                    hint="Chave secreta usada apenas no servidor para validar as respostas. Mantenha em sigilo."
-                                >
-                                    <Input
-                                        type="password"
-                                        value={data.config.recaptcha_secret_key}
-                                        onChange={set("recaptcha_secret_key")}
-                                        className="mt-1 block w-full font-mono"
                                         disabled={processing}
                                     />
                                 </Field>

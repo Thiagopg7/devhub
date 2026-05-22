@@ -24,8 +24,6 @@ class ConfigController extends Controller
         'contact_address_link' => 'contact',
         'scripts_head'         => 'scripts',
         'scripts_body'         => 'scripts',
-        'recaptcha_site_key'   => 'recaptcha',
-        'recaptcha_secret_key' => 'recaptcha',
     ];
 
     public function edit(): Response

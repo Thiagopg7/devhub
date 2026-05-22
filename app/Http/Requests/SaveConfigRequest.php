@@ -18,8 +18,6 @@ class SaveConfigRequest extends FormRequest
         'contact_address_link',
         'scripts_head',
         'scripts_body',
-        'recaptcha_site_key',
-        'recaptcha_secret_key',
     ];
 
     public function authorize(): bool

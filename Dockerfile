@@ -22,7 +22,11 @@ RUN docker-php-ext-install \
     pdo_mysql \
     xml \
     dom \
-    zip
+    zip \
+    opcache
+
+# Configuração do OPcache
+COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
