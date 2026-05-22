@@ -1,0 +1,69 @@
+# ── Stage 1: build dos assets de frontend ─────────────────────────────────────
+FROM node:22-alpine AS frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --legacy-peer-deps
+COPY . .
+RUN npm run build
+
+# ── Stage 2: imagem de produção ────────────────────────────────────────────────
+FROM php:8.3-fpm
+
+# Dependências do sistema + Nginx
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    curl \
+    nginx \
+    gettext-base \
+    && rm -rf /var/lib/apt/lists/*
+
+# Extensões PHP
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    xml \
+    dom \
+    zip \
+    opcache
+
+# Configs do PHP
+COPY docker/php/opcache.prod.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY docker/php/production.ini   /usr/local/etc/php/conf.d/production.ini
+
+# Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www
+
+# Instala dependências PHP antes de copiar o código (cache de layer Docker)
+COPY composer.json composer.lock ./
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction
+
+# Copia o código da aplicação
+COPY . .
+
+# Sobrepõe os assets compilados do frontend
+COPY --from=frontend /app/public/build ./public/build
+
+# Ajusta permissões
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
+# Template do Nginx (PORT é substituído em runtime pelo start.sh)
+COPY docker/nginx/railway.conf /etc/nginx/templates/default.conf.template
+
+# Script de inicialização
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
+EXPOSE 8080
+
+CMD ["/start.sh"]
