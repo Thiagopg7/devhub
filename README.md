@@ -1,6 +1,8 @@
 # DevHub
 
-Hub de publicação de conteúdo sobre tecnologia e inovação. Projeto de portfólio que demonstra uma aplicação full-stack completa com painel administrativo, API RESTful autenticada e frontend público.
+CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada e frontend público com roteamento dinâmico.
+
+> **Demo ao vivo:** _em breve_ · **Admin:** _em breve_ (credenciais: `thiago@teste.com.br` / `Senha@123`)
 
 ## Stack
 
@@ -70,6 +72,24 @@ app/
 ```
 
 O projeto segue o padrão **Controller → Service → Eloquent**: controllers são finos e delegam lógica de negócio para services. CRUD simples usa Eloquent direto no controller. Dados da API passam por Resources para serialização consistente.
+
+## Decisões técnicas
+
+**Service layer em vez de Repository pattern**
+O Repository pattern adiciona uma camada de abstração que só se justifica quando você precisa trocar o mecanismo de persistência (ex: de Eloquent para uma API externa). Aqui, o banco é MySQL e o ORM é Eloquent — fixos. Criar repositórios seria burocracia sem benefício real. A camada de Service existe apenas onde há lógica de negócio genuína: orquestração de múltiplos models, transações, upload de arquivos. CRUD simples fica direto no controller.
+
+**Inertia.js em vez de API + SPA separado**
+O painel administrativo não precisa de uma API própria — é uma interface que consome os mesmos dados do backend. Inertia.js permite escrever o frontend em React com roteamento e estado gerenciados pelo Laravel, sem duplicar a camada de autenticação e autorização. A API RESTful existe separada para consumo externo, onde a separação de contexto faz sentido.
+
+**Spatie Permission e Activity Log**
+Controle de acesso baseado em papéis (RBAC) e log de auditoria são problemas resolvidos. Implementar do zero introduziria edge cases e surface de bug sem agregar diferencial. Os pacotes Spatie são padrão de mercado em projetos Laravel — conhecê-los e integrá-los é mais relevante para o dia a dia profissional do que reinventá-los.
+
+**SQLite in-memory para testes**
+Os testes de feature cobrem comportamento de rotas e regras de negócio, não detalhes de SQL. SQLite in-memory elimina a dependência de um banco real no CI, torna os testes mais rápidos e garante isolamento total entre suítes.
+
+## Screenshots
+
+_Em breve — disponíveis após o deploy._
 
 ## Pré-requisitos
 

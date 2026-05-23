@@ -21,9 +21,30 @@ export default function Login({ status, canResetPassword }) {
         });
     };
 
+    const fillDemo = () => {
+        setData({ email: 'thiago@teste.com.br', password: 'Senha@123', remember: false });
+    };
+
     return (
         <GuestLayout>
             <Head title="Log in" />
+
+            <div className="mb-4 rounded-md border border-blue-200 bg-blue-50 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-blue-600">
+                    Acesso de demonstração
+                </p>
+                <p className="mt-1 text-sm text-blue-800">
+                    <span className="font-mono">thiago@teste.com.br</span> /{' '}
+                    <span className="font-mono">Senha@123</span>
+                </p>
+                <button
+                    type="button"
+                    onClick={fillDemo}
+                    className="mt-2 text-xs text-blue-600 underline hover:text-blue-800"
+                >
+                    Preencher automaticamente
+                </button>
+            </div>
 
             {status && (
                 <div className="mb-4 text-sm font-medium text-green-600">
