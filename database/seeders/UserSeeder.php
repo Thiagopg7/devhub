@@ -10,7 +10,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $user = User::firstOrCreate(
+        $admin = User::firstOrCreate(
             ['email' => 'thiago@teste.com.br'],
             [
                 'name' => 'Thiago Henrique',
@@ -19,7 +19,17 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
             ]
         );
+        $admin->assignRole('Administrador');
 
-        $user->assignRole('Administrador');
+        $demo = User::firstOrCreate(
+            ['email' => 'demo@devhub.com'],
+            [
+                'name' => 'Demo',
+                'password' => Hash::make('Demo@123'),
+                'is_super_admin' => false,
+                'email_verified_at' => now(),
+            ]
+        );
+        $demo->assignRole('Visualizador');
     }
 }

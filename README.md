@@ -2,7 +2,7 @@
 
 CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada e frontend público com roteamento dinâmico.
 
-> **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `thiago@teste.com.br` / `Senha@123`)
+> **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `demo@devhub.com` / `Demo@123` — acesso somente leitura)
 
 ## Stack
 

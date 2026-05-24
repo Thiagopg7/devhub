@@ -76,6 +76,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
         ->middleware('can:activity_log.view');
 
 
-    Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active');
-    Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder');
+    Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active')->middleware('can:posts.edit');
+    Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder')->middleware('can:menu.edit');
 });

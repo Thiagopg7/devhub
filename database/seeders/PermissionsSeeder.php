@@ -31,5 +31,12 @@ class PermissionsSeeder extends Seeder
         $admin->is_system = true;
         $admin->save();
         $admin->syncPermissions($all);
+
+        // Perfil de demonstração: somente leitura.
+        $viewer = Role::firstOrCreate(['name' => 'Visualizador', 'guard_name' => 'web']);
+        $viewer->is_system = true;
+        $viewer->save();
+        $viewOnly = array_values(array_filter($all, fn($p) => str_ends_with($p, '.view')));
+        $viewer->syncPermissions($viewOnly);
     }
 }

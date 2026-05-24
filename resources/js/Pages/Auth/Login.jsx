@@ -22,7 +22,7 @@ export default function Login({ status, canResetPassword }) {
     };
 
     const fillDemo = () => {
-        setData({ email: 'thiago@teste.com.br', password: 'Senha@123', remember: false });
+        setData({ email: 'demo@devhub.com', password: 'Demo@123', remember: false });
     };
 
     return (
@@ -34,8 +34,8 @@ export default function Login({ status, canResetPassword }) {
                     Acesso de demonstração
                 </p>
                 <p className="mt-1 text-sm text-blue-800">
-                    <span className="font-mono">thiago@teste.com.br</span> /{' '}
-                    <span className="font-mono">Senha@123</span>
+                    <span className="font-mono">demo@devhub.com</span> /{' '}
+                    <span className="font-mono">Demo@123</span>
                 </p>
                 <button
                     type="button"
