@@ -11,7 +11,7 @@ envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.
 
 # Aguarda o banco de dados ficar disponível
 echo "Aguardando o banco de dados..."
-until php artisan migrate:status > /dev/null 2>&1; do
+until php artisan db:show > /dev/null 2>&1; do
     echo "  banco não disponível ainda, tentando em 3s..."
     sleep 3
 done
