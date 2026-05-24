@@ -3,6 +3,7 @@ import { Head, useForm, router } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
@@ -14,9 +15,12 @@ import TextareaAutosize from "react-textarea-autosize";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { CircleHelp } from "lucide-react";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ post = {}, categories = [] }) {
+    const can = useCan();
     const isEditing = !!post?.id;
+    const readonly = isEditing && !can('posts.edit');
     const [pending, setPending] = useState(null);
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
@@ -65,7 +69,7 @@ export default function Form({ post = {}, categories = [] }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? "Editar Post" : "Criar Post"}
+                        {readonly ? `Visualizar: ${post.title}` : isEditing ? "Editar Post" : "Criar Post"}
                     </h2>
                 }
             >
@@ -74,6 +78,7 @@ export default function Form({ post = {}, categories = [] }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="p-6">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-5">
                                     <div>
@@ -84,7 +89,7 @@ export default function Form({ post = {}, categories = [] }) {
                                             value={data.title}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("title", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -106,7 +111,7 @@ export default function Form({ post = {}, categories = [] }) {
                                                 id="category_id"
                                                 value={data.category_id}
                                                 onChange={(e) => setData("category_id", e.target.value)}
-                                                disabled={processing}
+                                                disabled={processing || readonly}
                                                 className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
                                             >
                                                 <option value="">— Sem categoria —</option>
@@ -126,7 +131,7 @@ export default function Form({ post = {}, categories = [] }) {
                                             minRows={2}
                                             maxRows={8}
                                             onChange={(e) => setData("description", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
@@ -136,7 +141,7 @@ export default function Form({ post = {}, categories = [] }) {
                                             <RichTextEditor
                                                 value={data.content}
                                                 onChange={(val) => setData("content", val)}
-                                                readOnly={processing}
+                                                readOnly={processing || readonly}
                                             />
                                         </div>
                                     </div>
@@ -147,7 +152,7 @@ export default function Form({ post = {}, categories = [] }) {
                                         onDelete={deleteBanner}
                                         fieldName="banner_image"
                                         onChange={setData}
-                                        processing={processing}
+                                        processing={processing || readonly}
                                     />
 
                                     {/* SEO */}
@@ -172,7 +177,7 @@ export default function Form({ post = {}, categories = [] }) {
                                                     className="mt-1 block w-full"
                                                     placeholder={data.title || "Deixe em branco para usar o título"}
                                                     onChange={(e) => setData("meta_title", e.target.value)}
-                                                    disabled={processing}
+                                                    disabled={processing || readonly}
                                                 />
                                             </div>
                                             <div>
@@ -184,7 +189,7 @@ export default function Form({ post = {}, categories = [] }) {
                                                     minRows={2}
                                                     maxRows={8}
                                                     onChange={(e) => setData("meta_description", e.target.value)}
-                                                    disabled={processing}
+                                                    disabled={processing || readonly}
                                                 />
                                             </div>
                                         </div>
@@ -195,24 +200,27 @@ export default function Form({ post = {}, categories = [] }) {
                                         <ToggleButton
                                             checked={data.is_active}
                                             onChange={(e) => setData("is_active", e.target.checked)}
+                                            disabled={readonly}
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.posts.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

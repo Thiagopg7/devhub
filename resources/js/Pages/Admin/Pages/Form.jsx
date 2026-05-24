@@ -3,6 +3,7 @@ import { useState, useRef, useCallback } from "react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
@@ -14,6 +15,7 @@ import ImageSlot from "@/Components/Admin/ImageSlot";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import TextareaAutosize from "react-textarea-autosize";
 import { Trash2, Upload } from "lucide-react";
+import { useCan } from "@/hooks/useCan";
 
 const TABS = [
     { id: "content", label: "Conteúdo" },
@@ -42,7 +44,7 @@ function TabBar({ active, onChange }) {
     );
 }
 
-function GallerySection({ page, processing, onDeleteRequest }) {
+function GallerySection({ page, processing, readonly, onDeleteRequest }) {
     const { data, setData, post: uploadImages, processing: uploading, reset } = useForm({ images: [] });
     const inputRef = useRef();
 
@@ -96,14 +98,16 @@ function GallerySection({ page, processing, onDeleteRequest }) {
                     {gallery.map((img) => (
                         <div key={img.id} className="relative group rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 aspect-square bg-gray-100 dark:bg-gray-900">
                             <img src={img.image_url} alt="" loading="lazy" className="w-full h-full object-cover" />
-                            <button
-                                type="button"
-                                onClick={() => deleteImage(img.id)}
-                                className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
-                                title="Remover"
-                            >
-                                <Trash2 size={12} />
-                            </button>
+                            {!readonly && (
+                                <button
+                                    type="button"
+                                    onClick={() => deleteImage(img.id)}
+                                    className="absolute top-1.5 right-1.5 p-1.5 rounded-full bg-red-600 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+                                    title="Remover"
+                                >
+                                    <Trash2 size={12} />
+                                </button>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -111,40 +115,44 @@ function GallerySection({ page, processing, onDeleteRequest }) {
                 <p className="mt-2 text-sm text-gray-400 dark:text-gray-500">Nenhuma imagem na galeria.</p>
             )}
 
-            <div className="mt-4 flex items-center gap-3">
-                <input
-                    ref={inputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    onChange={handleUpload}
-                />
-                <button
-                    type="button"
-                    onClick={() => inputRef.current?.click()}
-                    className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                    <Upload size={14} />
-                    Selecionar imagens
-                </button>
-                {data.images.length > 0 && (
+            {!readonly && (
+                <div className="mt-4 flex items-center gap-3">
+                    <input
+                        ref={inputRef}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleUpload}
+                    />
                     <button
                         type="button"
-                        onClick={submitUpload}
-                        disabled={uploading}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors"
+                        onClick={() => inputRef.current?.click()}
+                        className="inline-flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
-                        {uploading ? "Enviando..." : `Adicionar ${data.images.length} imagem(ns)`}
+                        <Upload size={14} />
+                        Selecionar imagens
                     </button>
-                )}
-            </div>
+                    {data.images.length > 0 && (
+                        <button
+                            type="button"
+                            onClick={submitUpload}
+                            disabled={uploading}
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 transition-colors"
+                        >
+                            {uploading ? "Enviando..." : `Adicionar ${data.images.length} imagem(ns)`}
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
 
 export default function Form({ page = null }) {
+    const can = useCan();
     const isEditing = !!page?.id;
+    const readonly = isEditing && !can('pages.edit');
     const [tab, setTab] = useState("content");
     const [pending, setPending] = useState(null);
 
@@ -197,7 +205,7 @@ export default function Form({ page = null }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? `Editar: ${page.title}` : "Nova Página"}
+                        {readonly ? `Visualizar: ${page.title}` : isEditing ? `Editar: ${page.title}` : "Nova Página"}
                     </h2>
                 }
             >
@@ -206,12 +214,12 @@ export default function Form({ page = null }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="p-6">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <TabBar active={tab} onChange={setTab} />
 
                                 <form onSubmit={submit} className="flex flex-col gap-5">
 
-                                    {/* ── Tab: Conteúdo ── */}
                                     {tab === "content" && (
                                         <>
                                             <div>
@@ -222,7 +230,7 @@ export default function Form({ page = null }) {
                                                     value={data.title}
                                                     className="mt-1 block w-full"
                                                     onChange={(e) => setData("title", e.target.value)}
-                                                    disabled={processing}
+                                                    disabled={processing || readonly}
                                                     autoFocus
                                                 />
                                             </div>
@@ -235,7 +243,7 @@ export default function Form({ page = null }) {
                                                     value={data.subtitle}
                                                     className="mt-1 block w-full"
                                                     onChange={(e) => setData("subtitle", e.target.value)}
-                                                    disabled={processing}
+                                                    disabled={processing || readonly}
                                                 />
                                             </div>
 
@@ -245,7 +253,7 @@ export default function Form({ page = null }) {
                                                     <RichTextEditor
                                                         value={data.content}
                                                         onChange={(val) => setData("content", val)}
-                                                        readOnly={processing}
+                                                        readOnly={processing || readonly}
                                                     />
                                                 </div>
                                             </div>
@@ -256,6 +264,7 @@ export default function Form({ page = null }) {
                                                     <ToggleButton
                                                         checked={data.is_active}
                                                         onChange={(e) => setData("is_active", e.target.checked)}
+                                                        disabled={readonly}
                                                     />
                                                 </div>
                                                 <div>
@@ -263,13 +272,13 @@ export default function Form({ page = null }) {
                                                     <ToggleButton
                                                         checked={data.is_searchable}
                                                         onChange={(e) => setData("is_searchable", e.target.checked)}
+                                                        disabled={readonly}
                                                     />
                                                 </div>
                                             </div>
                                         </>
                                     )}
 
-                                    {/* ── Tab: Imagens ── */}
                                     {tab === "images" && (
                                         <>
                                             <ImageSlot
@@ -278,7 +287,7 @@ export default function Form({ page = null }) {
                                                 onDelete={() => deleteImage("banner_image", "o banner")}
                                                 fieldName="banner_image"
                                                 onChange={setData}
-                                                processing={processing}
+                                                processing={processing || readonly}
                                             />
 
                                             <ImageSlot
@@ -287,16 +296,15 @@ export default function Form({ page = null }) {
                                                 onDelete={() => deleteImage("main_image", "a imagem principal")}
                                                 fieldName="main_image"
                                                 onChange={setData}
-                                                processing={processing}
+                                                processing={processing || readonly}
                                             />
 
                                             <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
-                                                <GallerySection page={page} processing={processing} onDeleteRequest={handleDeleteRequest} />
+                                                <GallerySection page={page} processing={processing} readonly={readonly} onDeleteRequest={handleDeleteRequest} />
                                             </div>
                                         </>
                                     )}
 
-                                    {/* ── Tab: SEO ── */}
                                     {tab === "seo" && (
                                         <>
                                             {isEditing && (
@@ -317,7 +325,7 @@ export default function Form({ page = null }) {
                                                     className="mt-1 block w-full"
                                                     placeholder={data.title || "Deixe em branco para usar o título"}
                                                     onChange={(e) => setData("meta_title", e.target.value)}
-                                                    disabled={processing}
+                                                    disabled={processing || readonly}
                                                 />
                                             </div>
 
@@ -331,7 +339,7 @@ export default function Form({ page = null }) {
                                                     maxRows={6}
                                                     placeholder="Descrição para mecanismos de busca (máx. 500 caracteres)"
                                                     onChange={(e) => setData("meta_description", e.target.value)}
-                                                    disabled={processing}
+                                                    disabled={processing || readonly}
                                                 />
                                                 <p className="mt-1 text-xs text-gray-400">
                                                     {data.meta_description?.length ?? 0}/500
@@ -340,22 +348,23 @@ export default function Form({ page = null }) {
                                         </>
                                     )}
 
-                                    {/* ── Actions (always visible) ── */}
                                     <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-gray-700 mt-2">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.pages.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

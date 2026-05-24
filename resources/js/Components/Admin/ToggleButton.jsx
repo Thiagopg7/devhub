@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function ToggleButton({ checked, onChange, labelOn = "Ativo", labelOff = "Inativo" }) {
+export default function ToggleButton({ checked, onChange, labelOn = "Ativo", labelOff = "Inativo", disabled = false }) {
   return (
-    <label className="flex items-center cursor-pointer">
+    <label className={`flex items-center ${disabled ? "pointer-events-none opacity-50" : "cursor-pointer"}`}>
       <div className="relative">
         {/* Checkbox oculto */}
         <input

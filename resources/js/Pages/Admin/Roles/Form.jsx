@@ -3,11 +3,13 @@ import { Head, useForm, usePage } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
+import { useCan } from "@/hooks/useCan";
 
 const ACTION_LABELS = {
     view:   "Ver",
@@ -17,7 +19,9 @@ const ACTION_LABELS = {
 };
 
 export default function Form({ role = null }) {
+    const can = useCan();
     const isEditing = !!role?.id;
+    const readonly = isEditing && !can('roles.edit');
     const locked = !!role?.is_system;
     const { permissionsCatalog, auth } = usePage().props;
     const { modules = {}, actions = [] } = permissionsCatalog ?? {};
@@ -32,9 +36,8 @@ export default function Form({ role = null }) {
         return list;
     }, [moduleKeys, actions]);
 
-    // Um usuário não-super-admin só pode conceder permissões que ele próprio possui.
     const canGrant = (perm) => isSuperAdmin || myPermissions.includes(perm);
-    const editable = (perm) => !locked && canGrant(perm);
+    const editable = (perm) => !locked && !readonly && canGrant(perm);
 
     const { data, setData, post, put, processing, errors } = useForm({
         name:        role?.name        ?? "",
@@ -51,7 +54,6 @@ export default function Form({ role = null }) {
         );
     };
 
-    // Alterna em lote apenas as permissões que o usuário pode conceder.
     const toggleSet = (perms) => {
         const targets = perms.filter(editable);
         if (targets.length === 0) return;
@@ -66,7 +68,6 @@ export default function Form({ role = null }) {
     const toggleColumn = (action) => toggleSet(moduleKeys.map((m) => `${m}.${action}`));
     const toggleAll    = () => toggleSet(allPermissions);
 
-    // Estado dos checkboxes "marca tudo" considera só o que é concedível.
     const groupAllOn = (perms) => {
         const targets = perms.filter(canGrant);
         return targets.length > 0 && targets.every((p) => has(p));
@@ -77,7 +78,7 @@ export default function Form({ role = null }) {
 
     const submit = (e) => {
         e.preventDefault();
-        if (locked) return;
+        if (locked || readonly) return;
         const handlers = {
             onError: () => toast.error("Verifique os campos e tente novamente."),
         };
@@ -95,7 +96,7 @@ export default function Form({ role = null }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? "Editar Perfil" : "Criar Perfil"}
+                        {readonly ? "Visualizar Perfil" : isEditing ? "Editar Perfil" : "Criar Perfil"}
                     </h2>
                 }
             >
@@ -105,7 +106,9 @@ export default function Form({ role = null }) {
                             <div className="p-6">
                                 <ValidationErrors errors={errors} className="mb-4" />
 
-                                {locked && (
+                                {readonly && <ReadonlyBanner />}
+
+                                {locked && !readonly && (
                                     <div className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-900/30 dark:text-amber-200">
                                         Este é um <strong>perfil de sistema</strong>: possui sempre todas as
                                         permissões e não pode ser alterado nem excluído.
@@ -121,7 +124,7 @@ export default function Form({ role = null }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing || locked}
+                                            disabled={processing || locked || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -143,7 +146,7 @@ export default function Form({ role = null }) {
                                                                     className="rounded text-red-600 focus:ring-red-600"
                                                                     checked={everythingOn}
                                                                     onChange={toggleAll}
-                                                                    disabled={processing || locked}
+                                                                    disabled={processing || locked || readonly}
                                                                 />
                                                                 Módulo
                                                             </label>
@@ -157,7 +160,7 @@ export default function Form({ role = null }) {
                                                                         className="rounded text-red-600 focus:ring-red-600"
                                                                         checked={colAllOn(action)}
                                                                         onChange={() => toggleColumn(action)}
-                                                                        disabled={processing || locked}
+                                                                        disabled={processing || locked || readonly}
                                                                     />
                                                                 </label>
                                                             </th>
@@ -174,7 +177,7 @@ export default function Form({ role = null }) {
                                                                         className="rounded text-red-600 focus:ring-red-600"
                                                                         checked={rowAllOn(module)}
                                                                         onChange={() => toggleRow(module)}
-                                                                        disabled={processing || locked}
+                                                                        disabled={processing || locked || readonly}
                                                                     />
                                                                     {modules[module]}
                                                                 </label>
@@ -189,8 +192,8 @@ export default function Form({ role = null }) {
                                                                             className="rounded text-red-600 focus:ring-red-600 disabled:opacity-50"
                                                                             checked={has(perm)}
                                                                             onChange={() => togglePermission(perm)}
-                                                                            disabled={processing || locked || !grantable}
-                                                                            title={!grantable && !locked ? "Você não possui esta permissão" : undefined}
+                                                                            disabled={processing || locked || readonly || !grantable}
+                                                                            title={!grantable && !locked && !readonly ? "Você não possui esta permissão" : undefined}
                                                                             aria-label={`${modules[module]} - ${ACTION_LABELS[action] ?? action}`}
                                                                         />
                                                                     </td>
@@ -201,7 +204,7 @@ export default function Form({ role = null }) {
                                                 </tbody>
                                             </table>
                                         </div>
-                                        {!isSuperAdmin && !locked && (
+                                        {!isSuperAdmin && !locked && !readonly && (
                                             <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                                                 Você só pode conceder permissões que já possui.
                                             </p>
@@ -209,15 +212,15 @@ export default function Form({ role = null }) {
                                     </div>
 
                                     <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.roles.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            {locked ? "Voltar" : "Cancelar"}
+                                            {locked || readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        {!locked && (
+                                        {!locked && !readonly && (
                                             <ActionButton
                                                 className={`ml-4 ${processing ? "opacity-40" : ""}`}
                                                 disabled={processing}

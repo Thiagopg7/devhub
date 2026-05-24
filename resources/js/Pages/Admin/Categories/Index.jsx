@@ -8,7 +8,7 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ToggleActive from "@/Components/Admin/ToggleActive";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
@@ -140,6 +140,14 @@ export default function Index({ categories, filter }) {
                                                                 />
                                                             </td>
                                                             <td className="px-6 py-4 flex gap-3 justify-end">
+                                                                {!can('categories.edit') && can('categories.view') && (
+                                                                    <NavButton
+                                                                        href={route("admin.categories.edit", category)}
+                                                                        title="Visualizar"
+                                                                    >
+                                                                        <FaEye />
+                                                                    </NavButton>
+                                                                )}
                                                                 {can('categories.edit') && (
                                                                     <NavButton
                                                                         href={route(

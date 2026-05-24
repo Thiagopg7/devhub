@@ -10,7 +10,7 @@ import SortableTr from "@/Components/Admin/SortableTr";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
@@ -41,6 +41,11 @@ function MenuRowCells({ item, isChild = false, onDeleteRequest }) {
             </td>
             <td className="px-6 py-3 text-right">
                 <div className="flex gap-2 justify-end">
+                    {!can('menu.edit') && can('menu.view') && (
+                        <NavButton href={route("admin.menu.edit", item.id)} title="Visualizar">
+                            <FaEye />
+                        </NavButton>
+                    )}
                     {can('menu.edit') && (
                         <NavButton href={route("admin.menu.edit", item.id)} title="Editar">
                             <FaPen />

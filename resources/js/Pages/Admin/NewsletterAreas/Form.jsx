@@ -2,15 +2,19 @@ import { Head, useForm } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ area = null }) {
+    const can = useCan();
     const isEditing = !!area?.id;
+    const readonly = isEditing && !can('newsletter_areas.edit');
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         name:      area?.name      ?? "",
@@ -40,7 +44,7 @@ export default function Form({ area = null }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? "Editar Área de Atuação" : "Nova Área de Atuação"}
+                        {readonly ? "Visualizar Área de Atuação" : isEditing ? "Editar Área de Atuação" : "Nova Área de Atuação"}
                     </h2>
                 }
             >
@@ -49,6 +53,7 @@ export default function Form({ area = null }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-4">
                                     <div>
@@ -59,7 +64,7 @@ export default function Form({ area = null }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -73,7 +78,7 @@ export default function Form({ area = null }) {
                                             value={data.order}
                                             className="mt-1 block w-32"
                                             onChange={(e) => setData("order", Number(e.target.value))}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                             Itens com menor número aparecem primeiro.
@@ -85,24 +90,27 @@ export default function Form({ area = null }) {
                                         <ToggleButton
                                             checked={data.is_active}
                                             onChange={(e) => setData("is_active", e.target.checked)}
+                                            disabled={readonly}
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-end mt-2">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.newsletter-areas.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

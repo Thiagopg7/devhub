@@ -11,7 +11,7 @@ import SortableTr from "@/Components/Admin/SortableTr";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
@@ -132,6 +132,11 @@ export default function Index({ areas, filter }) {
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <div className="flex gap-2 justify-end">
+                                                                    {!can('newsletter_areas.edit') && can('newsletter_areas.view') && (
+                                                                        <NavButton href={route("admin.newsletter-areas.edit", area.id)} title="Visualizar">
+                                                                            <FaEye />
+                                                                        </NavButton>
+                                                                    )}
                                                                     {can('newsletter_areas.edit') && (
                                                                         <NavButton href={route("admin.newsletter-areas.edit", area.id)} title="Editar">
                                                                             <FaPen />

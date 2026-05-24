@@ -8,7 +8,7 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ToggleActive from "@/Components/Admin/ToggleActive";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
@@ -136,6 +136,14 @@ export default function Index({ posts, filter }) {
                                                                 />
                                                             </td>
                                                             <td className="py-4 px-6 flex gap-3 justify-end">
+                                                                {!can('posts.edit') && can('posts.view') && (
+                                                                    <NavButton
+                                                                        href={route("admin.posts.edit", post)}
+                                                                        title="Visualizar"
+                                                                    >
+                                                                        <FaEye />
+                                                                    </NavButton>
+                                                                )}
                                                                 {can('posts.edit') && (
                                                                     <NavButton
                                                                         href={route(
