@@ -11,7 +11,7 @@ envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.
 
 # Aguarda o banco de dados ficar disponível
 echo "Aguardando o banco de dados..."
-until php artisan db:show > /dev/null 2>&1; do
+until php -r "try { new PDO('mysql:host='.getenv('DB_HOST').';port='.getenv('DB_PORT').';dbname='.getenv('DB_DATABASE'), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); } catch(Exception \$e) { exit(1); }" > /dev/null 2>&1; do
     echo "  banco não disponível ainda, tentando em 3s..."
     sleep 3
 done
