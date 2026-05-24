@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PostController extends Controller
@@ -14,8 +15,18 @@ class PostController extends Controller
         private readonly PostService $service
     ) {}
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection|JsonResponse
     {
+        if ($request->filled('category')) {
+            ['category' => $category, 'posts' => $posts] = $this->service->getByCategory($request->category);
+
+            if (!$category) {
+                return response()->json(['message' => 'Categoria não encontrada.'], 404);
+            }
+
+            return PostResource::collection($posts);
+        }
+
         return PostResource::collection($this->service->getAllActive());
     }
 
