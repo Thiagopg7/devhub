@@ -71,7 +71,14 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $status = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
-            if (in_array($status, [403, 404, 500, 503])) {
+            if ($status === 403) {
+                $toast = ['title' => 'Sem permissão', 'message' => 'Você não tem permissão para realizar esta ação.', 'type' => 'error'];
+                return $request->isMethod('GET')
+                    ? redirect()->route('admin.dashboard')->with('toast', $toast)
+                    : back()->with('toast', $toast);
+            }
+
+            if (in_array($status, [404, 500, 503])) {
                 return Inertia::render('Error', ['status' => $status])
                     ->toResponse($request)
                     ->setStatusCode($status);

@@ -69,12 +69,16 @@ mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
 - Regra prática: lógica de domínio (um `if`/`try` decidindo regra de negócio) nunca
   fica no controller; ou é trivial e fica no controller, ou vai para o service.
 
+## Branches
+- `main` — produção (Railway faz deploy automático). Só recebe merge da `dev`.
+- `dev` — branch de desenvolvimento padrão. Todo trabalho novo começa aqui.
+- Commitar na `dev`; merge para `main` apenas quando o usuário pedir para subir em produção.
+
 ## Regras de commits
 - Seguir Conventional Commits: `type(scope): descrição curta`
 - Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`
 - Título e mensagens de commit em PT-BR
 - Nunca incluir `Co-Authored-By: Claude` nem nenhuma assinatura do Claude nas mensagens de commit
-- Pode commitar direto na `main`; sincronizar com `origin/main` (fast-forward) antes de commitar
 
 ## Não fazer
 - Não editar `.env`

@@ -1,10 +1,14 @@
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
+import LoadingForm from "@/Components/Admin/LoadingForm";
+import ActionButton from "@/Components/Admin/ActionButton";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import TextareaAutosize from "react-textarea-autosize";
+import { useCan } from "@/hooks/useCan";
 
 function Section({ title, children }) {
     return (
@@ -28,7 +32,8 @@ function Field({ label, hint, children }) {
 }
 
 export default function Form({ values = {} }) {
-    const { props } = usePage();
+    const can = useCan();
+    const readonly = !can('configs.edit');
 
     const { data, setData, put, processing, errors } = useForm({
         config: {
@@ -72,6 +77,7 @@ export default function Form({ values = {} }) {
                 <div className="py-12">
                     <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
                         <ValidationErrors errors={errors} className="mb-4" />
+                        {readonly && <ReadonlyBanner />}
 
                         <form onSubmit={submit} className="flex flex-col gap-6">
 
@@ -84,7 +90,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("site_name")}
                                         placeholder="DevHub"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field label="Tagline do site" hint="Frase exibida como slogan principal do site.">
@@ -94,7 +100,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("site_tagline")}
                                         placeholder="Conectando ideias, pessoas e tecnologias…"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                             </Section>
@@ -108,7 +114,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("footer_facebook")}
                                         placeholder="https://facebook.com/perfil"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field label="Instagram">
@@ -118,7 +124,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("footer_instagram")}
                                         placeholder="https://instagram.com/perfil"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field label="YouTube">
@@ -128,7 +134,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("footer_youtube")}
                                         placeholder="https://youtube.com/@canal"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field label="Mensagem do rodapé" hint="Texto exibido na parte inferior do site, ex: © 2025 DevHub. Todos os direitos reservados.">
@@ -137,7 +143,7 @@ export default function Form({ values = {} }) {
                                         value={data.config.footer_message}
                                         onChange={set("footer_message")}
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                             </Section>
@@ -151,7 +157,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("contact_email")}
                                         placeholder="contato@exemplo.com"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field label="Endereço">
@@ -161,7 +167,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("contact_address")}
                                         placeholder="Rua Exemplo, 123 — São Paulo, SP"
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field label="Link do endereço" hint="URL do Google Maps ou similar.">
@@ -171,7 +177,7 @@ export default function Form({ values = {} }) {
                                         onChange={set("contact_address_link")}
                                         placeholder="https://maps.google.com/..."
                                         className="mt-1 block w-full"
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                             </Section>
@@ -189,7 +195,7 @@ export default function Form({ values = {} }) {
                                         minRows={4}
                                         maxRows={12}
                                         placeholder={"<!-- Google Tag Manager -->\n<script>...</script>"}
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                                 <Field
@@ -203,20 +209,19 @@ export default function Form({ values = {} }) {
                                         minRows={4}
                                         maxRows={12}
                                         placeholder={"<!-- Google Tag Manager (noscript) -->\n<noscript>...</noscript>"}
-                                        disabled={processing}
+                                        disabled={processing || readonly}
                                     />
                                 </Field>
                             </Section>
 
-                            <div className="flex justify-end">
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className={`px-6 py-2 bg-red-600 text-white text-sm font-semibold uppercase tracking-widest rounded-md hover:bg-red-700 transition-colors ${processing ? "opacity-40" : ""}`}
-                                >
-                                    {processing ? "Salvando…" : "Salvar"}
-                                </button>
-                            </div>
+                            {!readonly && (
+                                <div className="flex justify-end items-center gap-4">
+                                    {processing && <LoadingForm />}
+                                    <ActionButton disabled={processing} className={processing ? "opacity-40" : ""}>
+                                        Salvar
+                                    </ActionButton>
+                                </div>
+                            )}
                         </form>
                     </div>
                 </div>

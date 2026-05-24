@@ -2,19 +2,23 @@ import { Head, useForm, usePage } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ user = null, roles = [] }) {
+    const can = useCan();
     const isEditing = !!user?.id;
+    const readonly = isEditing && !can('users.edit');
     const currentUser = usePage().props.auth.user;
     const isSuperAdmin = usePage().props.auth.isSuperAdmin;
     const isSelf = isEditing && user.id === currentUser.id;
-    const canEditPrivileges = !isSelf;
+    const canEditPrivileges = !isSelf && !readonly;
 
     const { data, setData, post, put, processing, errors } = useForm({
         name:           user?.name           ?? "",
@@ -43,7 +47,7 @@ export default function Form({ user = null, roles = [] }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? "Editar Usuário" : "Criar Usuário"}
+                        {readonly ? "Visualizar Usuário" : isEditing ? "Editar Usuário" : "Criar Usuário"}
                     </h2>
                 }
             >
@@ -52,6 +56,7 @@ export default function Form({ user = null, roles = [] }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="p-6">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-5">
                                     <div>
@@ -62,7 +67,7 @@ export default function Form({ user = null, roles = [] }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -75,23 +80,25 @@ export default function Form({ user = null, roles = [] }) {
                                             value={data.email}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("email", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="password" value={isEditing ? "Nova senha" : "Senha *"} />
-                                        <Input
-                                            id="password"
-                                            type="password"
-                                            value={data.password}
-                                            className="mt-1 block w-full"
-                                            placeholder={isEditing ? "Deixe em branco para manter a atual" : ""}
-                                            onChange={(e) => setData("password", e.target.value)}
-                                            disabled={processing}
-                                            autoComplete="new-password"
-                                        />
-                                    </div>
+                                    {!readonly && (
+                                        <div>
+                                            <Label htmlFor="password" value={isEditing ? "Nova senha" : "Senha *"} />
+                                            <Input
+                                                id="password"
+                                                type="password"
+                                                value={data.password}
+                                                className="mt-1 block w-full"
+                                                placeholder={isEditing ? "Deixe em branco para manter a atual" : ""}
+                                                onChange={(e) => setData("password", e.target.value)}
+                                                disabled={processing}
+                                                autoComplete="new-password"
+                                            />
+                                        </div>
+                                    )}
 
                                     <div>
                                         <Label htmlFor="role_id" value="Perfil" />
@@ -107,7 +114,7 @@ export default function Form({ user = null, roles = [] }) {
                                                 <option key={role.id} value={role.id}>{role.name}</option>
                                             ))}
                                         </select>
-                                        {!canEditPrivileges && (
+                                        {!readonly && !canEditPrivileges && (
                                             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                 Você não pode alterar o próprio perfil.
                                             </p>
@@ -121,6 +128,7 @@ export default function Form({ user = null, roles = [] }) {
                                                 <ToggleButton
                                                     checked={!!data.is_super_admin}
                                                     onChange={(e) => setData("is_super_admin", e.target.checked)}
+                                                    disabled={readonly}
                                                 />
                                                 <span className="text-xs text-gray-500 dark:text-gray-400">
                                                     Acesso irrestrito ao painel; ignora permissões do perfil.
@@ -130,20 +138,22 @@ export default function Form({ user = null, roles = [] }) {
                                     )}
 
                                     <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-gray-700">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.users.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

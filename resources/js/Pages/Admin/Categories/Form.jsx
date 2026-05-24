@@ -2,6 +2,7 @@ import { Head, useForm } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
@@ -9,8 +10,13 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import TextareaAutosize from "react-textarea-autosize";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ category = {} }) {
+    const can = useCan();
+    const isEditing = !!category?.id;
+    const readonly = isEditing && !can('categories.edit');
+
     const {
         data,
         setData,
@@ -25,8 +31,6 @@ export default function Form({ category = {} }) {
         description: category?.description ?? "",
         is_active:   category?.is_active ?? true,
     });
-
-    const isEditing = !!category?.id;
 
     const submit = (e) => {
         e.preventDefault();
@@ -55,7 +59,7 @@ export default function Form({ category = {} }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">
-                            {isEditing ? "Editar Categoria" : "Criar Categoria"}
+                            {readonly ? "Visualizar Categoria" : isEditing ? "Editar Categoria" : "Criar Categoria"}
                         </h2>
                     </div>
                 }
@@ -65,6 +69,7 @@ export default function Form({ category = {} }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-4">
                                     <div>
@@ -75,7 +80,7 @@ export default function Form({ category = {} }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -88,14 +93,14 @@ export default function Form({ category = {} }) {
                                                 type="color"
                                                 value={data.color}
                                                 onChange={(e) => setData("color", e.target.value)}
-                                                disabled={processing}
+                                                disabled={processing || readonly}
                                                 className="h-10 w-14 cursor-pointer rounded border border-gray-300 dark:border-gray-600 p-0.5 dark:bg-gray-700"
                                             />
                                             <Input
                                                 type="text"
                                                 value={data.color}
                                                 onChange={(e) => setData("color", e.target.value)}
-                                                disabled={processing}
+                                                disabled={processing || readonly}
                                                 className="block w-36 font-mono uppercase"
                                                 maxLength={7}
                                             />
@@ -111,7 +116,7 @@ export default function Form({ category = {} }) {
                                             minRows={2}
                                             maxRows={6}
                                             onChange={(e) => setData("description", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
@@ -120,26 +125,29 @@ export default function Form({ category = {} }) {
                                         <ToggleButton
                                             checked={data.is_active}
                                             onChange={(e) => setData("is_active", e.target.checked)}
+                                            disabled={readonly}
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-end mt-2">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
 
                                         <NavButton
                                             href={route("admin.categories.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
 
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

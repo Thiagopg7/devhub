@@ -2,6 +2,7 @@ import { Head, useForm } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
@@ -9,9 +10,12 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import TextareaAutosize from "react-textarea-autosize";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ technology = null }) {
+    const can = useCan();
     const isEditing = !!technology?.id;
+    const readonly = isEditing && !can('technologies.edit');
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         name:           technology?.name           ?? "",
@@ -46,7 +50,7 @@ export default function Form({ technology = null }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? "Editar Tecnologia" : "Nova Tecnologia"}
+                        {readonly ? "Visualizar Tecnologia" : isEditing ? "Editar Tecnologia" : "Nova Tecnologia"}
                     </h2>
                 }
             >
@@ -55,6 +59,7 @@ export default function Form({ technology = null }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-4">
                                     <div>
@@ -65,7 +70,7 @@ export default function Form({ technology = null }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -79,7 +84,7 @@ export default function Form({ technology = null }) {
                                             minRows={2}
                                             maxRows={6}
                                             onChange={(e) => setData("description", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
@@ -92,7 +97,7 @@ export default function Form({ technology = null }) {
                                             className="mt-1 block w-full font-mono"
                                             placeholder="https://exemplo.com"
                                             onChange={(e) => setData("url", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
@@ -105,7 +110,7 @@ export default function Form({ technology = null }) {
                                             className="mt-1 block w-full font-mono"
                                             placeholder="https://exemplo.com/icon.png"
                                             onChange={(e) => setData("icon_url", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                         {data.icon_url && (
                                             <img
@@ -125,7 +130,7 @@ export default function Form({ technology = null }) {
                                             className="mt-1 block w-full font-mono"
                                             placeholder="https://exemplo.com/screenshot.png"
                                             onChange={(e) => setData("screenshot_url", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                         {data.screenshot_url && (
                                             <img
@@ -145,7 +150,7 @@ export default function Form({ technology = null }) {
                                             value={data.order}
                                             className="mt-1 block w-32"
                                             onChange={(e) => setData("order", Number(e.target.value))}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                             Itens com menor número aparecem primeiro.
@@ -157,24 +162,27 @@ export default function Form({ technology = null }) {
                                         <ToggleButton
                                             checked={data.is_active}
                                             onChange={(e) => setData("is_active", e.target.checked)}
+                                            disabled={readonly}
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-end mt-2">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.technologies.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

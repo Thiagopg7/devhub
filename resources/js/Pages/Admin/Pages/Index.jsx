@@ -8,7 +8,7 @@ import ToggleActive from "@/Components/Admin/ToggleActive";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
@@ -109,6 +109,11 @@ export default function Index({ pages, filter }) {
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <div className="flex gap-2 justify-end">
+                                                            {!can('pages.edit') && can('pages.view') && (
+                                                                <NavButton href={route("admin.pages.edit", page.id)} title="Visualizar">
+                                                                    <FaEye />
+                                                                </NavButton>
+                                                            )}
                                                             {can('pages.edit') && (
                                                                 <NavButton href={route("admin.pages.edit", page.id)} title="Editar">
                                                                     <FaPen />

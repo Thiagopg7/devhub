@@ -2,6 +2,7 @@ import { Head, useForm } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
@@ -9,8 +10,13 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import TextareaAutosize from "react-textarea-autosize";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ block = {} }) {
+    const can = useCan();
+    const isEditing = !!block?.id;
+    const readonly = isEditing && !can('blocks.edit');
+
     const {
         data,
         setData,
@@ -24,8 +30,6 @@ export default function Form({ block = {} }) {
         content:   block?.content ?? "",
         is_active: block?.is_active ?? true,
     });
-
-    const isEditing = !!block?.id;
 
     const submit = (e) => {
         e.preventDefault();
@@ -53,7 +57,7 @@ export default function Form({ block = {} }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">
-                            {isEditing ? "Editar Bloco" : "Criar Bloco"}
+                            {readonly ? "Visualizar Bloco" : isEditing ? "Editar Bloco" : "Criar Bloco"}
                         </h2>
                     </div>
                 }
@@ -63,6 +67,7 @@ export default function Form({ block = {} }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-4">
                                     <div>
@@ -73,7 +78,7 @@ export default function Form({ block = {} }) {
                                             value={data.name}
                                             className="mt-1 block w-full"
                                             onChange={(e) => setData("name", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -87,7 +92,7 @@ export default function Form({ block = {} }) {
                                             minRows={6}
                                             maxRows={24}
                                             onChange={(e) => setData("content", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
@@ -96,26 +101,29 @@ export default function Form({ block = {} }) {
                                         <ToggleButton
                                             checked={data.is_active}
                                             onChange={(e) => setData("is_active", e.target.checked)}
+                                            disabled={readonly}
                                         />
                                     </div>
 
                                     <div className="flex items-center justify-end mt-2">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
 
                                         <NavButton
                                             href={route("admin.blocks.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
 
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

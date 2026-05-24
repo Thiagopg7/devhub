@@ -2,15 +2,19 @@ import { Head, useForm } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
+import ReadonlyBanner from "@/Components/Admin/ReadonlyBanner";
 import LoadingForm from "@/Components/Admin/LoadingForm";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
+import { useCan } from "@/hooks/useCan";
 
 export default function Form({ item = null, roots = [] }) {
+    const can = useCan();
     const isEditing = !!item?.id;
+    const readonly = isEditing && !can('menu.edit');
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         label:           item?.label           ?? "",
@@ -44,7 +48,7 @@ export default function Form({ item = null, roots = [] }) {
             <AuthenticatedLayout
                 header={
                     <h2 className="font-semibold text-xl leading-tight">
-                        {isEditing ? "Editar Item de Menu" : "Novo Item de Menu"}
+                        {readonly ? "Visualizar Item de Menu" : isEditing ? "Editar Item de Menu" : "Novo Item de Menu"}
                     </h2>
                 }
             >
@@ -53,6 +57,7 @@ export default function Form({ item = null, roots = [] }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />
+                                {readonly && <ReadonlyBanner />}
 
                                 <form onSubmit={submit} className="flex flex-col gap-4">
                                     <div>
@@ -64,7 +69,7 @@ export default function Form({ item = null, roots = [] }) {
                                             className="mt-1 block w-full"
                                             placeholder="ex: Blog, Contato, Serviços"
                                             onChange={(e) => setData("label", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             autoFocus
                                         />
                                     </div>
@@ -78,7 +83,7 @@ export default function Form({ item = null, roots = [] }) {
                                             className="mt-1 block w-full font-mono"
                                             placeholder="/blog  ou  https://externo.com"
                                             onChange={(e) => setData("url", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                     </div>
 
@@ -88,7 +93,7 @@ export default function Form({ item = null, roots = [] }) {
                                             id="parent_id"
                                             value={data.parent_id}
                                             onChange={(e) => setData("parent_id", e.target.value)}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                             className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
                                         >
                                             <option value="">— Nenhum (item raiz) —</option>
@@ -114,7 +119,7 @@ export default function Form({ item = null, roots = [] }) {
                                             value={data.order}
                                             className="mt-1 block w-32"
                                             onChange={(e) => setData("order", Number(e.target.value))}
-                                            disabled={processing}
+                                            disabled={processing || readonly}
                                         />
                                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                             Itens com menor número aparecem primeiro.
@@ -127,6 +132,7 @@ export default function Form({ item = null, roots = [] }) {
                                             <ToggleButton
                                                 checked={data.is_active}
                                                 onChange={(e) => setData("is_active", e.target.checked)}
+                                                disabled={readonly}
                                             />
                                         </div>
                                         <div>
@@ -134,25 +140,28 @@ export default function Form({ item = null, roots = [] }) {
                                             <ToggleButton
                                                 checked={data.open_in_new_tab}
                                                 onChange={(e) => setData("open_in_new_tab", e.target.checked)}
+                                                disabled={readonly}
                                             />
                                         </div>
                                     </div>
 
                                     <div className="flex items-center justify-end mt-2">
-                                        {processing && <LoadingForm />}
+                                        {!readonly && processing && <LoadingForm />}
                                         <NavButton
                                             href={route("admin.menu.index")}
                                             variant="secondary"
                                             className={`ml-8 ${processing ? "opacity-40" : ""}`}
                                         >
-                                            Cancelar
+                                            {readonly ? "Voltar" : "Cancelar"}
                                         </NavButton>
-                                        <ActionButton
-                                            className={`ml-4 ${processing ? "opacity-40" : ""}`}
-                                            disabled={processing}
-                                        >
-                                            Salvar
-                                        </ActionButton>
+                                        {!readonly && (
+                                            <ActionButton
+                                                className={`ml-4 ${processing ? "opacity-40" : ""}`}
+                                                disabled={processing}
+                                            >
+                                                Salvar
+                                            </ActionButton>
+                                        )}
                                     </div>
                                 </form>
                             </div>

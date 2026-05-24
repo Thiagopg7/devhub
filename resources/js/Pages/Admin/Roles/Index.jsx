@@ -7,7 +7,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch, FaLock } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaLock, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
@@ -100,6 +100,11 @@ export default function Index({ roles, filter }) {
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.permissions_count}</td>
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.users_count}</td>
                                                     <td className="px-6 py-4 flex gap-3 justify-end">
+                                                        {!can('roles.edit') && can('roles.view') && (
+                                                            <NavButton href={route("admin.roles.edit", role.id)} title="Visualizar">
+                                                                <FaEye />
+                                                            </NavButton>
+                                                        )}
                                                         {can('roles.edit') && (
                                                             <NavButton
                                                                 href={route("admin.roles.edit", role.id)}

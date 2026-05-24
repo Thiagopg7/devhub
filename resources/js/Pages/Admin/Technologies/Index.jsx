@@ -11,7 +11,7 @@ import SortableTr from "@/Components/Admin/SortableTr";
 import Input from "@/Components/Admin/Input";
 import Label from "@/Components/Admin/Label";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
@@ -153,6 +153,11 @@ export default function Index({ technologies, filter }) {
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <div className="flex gap-2 justify-end">
+                                                                    {!can('technologies.edit') && can('technologies.view') && (
+                                                                        <NavButton href={route("admin.technologies.edit", tech.id)} title="Visualizar">
+                                                                            <FaEye />
+                                                                        </NavButton>
+                                                                    )}
                                                                     {can('technologies.edit') && (
                                                                         <NavButton href={route("admin.technologies.edit", tech.id)} title="Editar">
                                                                             <FaPen />

@@ -8,7 +8,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaSearch } from "react-icons/fa";
+import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { ShieldCheck } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -122,6 +122,11 @@ export default function Index({ users, filter }) {
                                                         <td className="px-6 py-4 flex gap-3 justify-end">
                                                             {canManage ? (
                                                                 <>
+                                                                    {!can('users.edit') && can('users.view') && (
+                                                                        <NavButton href={route("admin.users.edit", user.id)} title="Visualizar">
+                                                                            <FaEye />
+                                                                        </NavButton>
+                                                                    )}
                                                                     {can('users.edit') && (
                                                                         <NavButton href={route("admin.users.edit", user.id)} title="Editar">
                                                                             <FaPen />

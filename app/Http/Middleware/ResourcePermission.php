@@ -12,10 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
  * Uso: Route::resource('posts', PostController::class)->middleware('resource.permission:posts');
  *
  * Mapeamento HTTP method/route action → permission:
- *   index, show   → view
- *   create, store → create
- *   edit, update  → edit
- *   destroy       → delete
+ *   index, show        → view
+ *   create, store      → create
+ *   edit (GET form)    → view   (salvar via update ainda exige edit)
+ *   update             → edit
+ *   destroy            → delete
  */
 class ResourcePermission
 {
@@ -24,7 +25,7 @@ class ResourcePermission
         'show'    => 'view',
         'create'  => 'create',
         'store'   => 'create',
-        'edit'    => 'edit',
+        'edit'    => 'view',
         'update'  => 'edit',
         'destroy' => 'delete',
     ];
