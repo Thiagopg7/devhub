@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class Page extends Model
@@ -77,6 +78,9 @@ class Page extends Model
 
     protected static function booted(): void
     {
+        static::saved(fn (self $page) => Cache::forget("api.page.{$page->slug}"));
+        static::deleted(fn (self $page) => Cache::forget("api.page.{$page->slug}"));
+
         static::forceDeleted(function (self $page) {
             foreach (['banner_image', 'main_image'] as $field) {
                 if ($page->{$field} && Storage::disk('public')->exists($page->{$field})) {

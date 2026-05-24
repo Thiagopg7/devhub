@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -41,5 +42,17 @@ class Category extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $category) {
+            Cache::forget('api.categories');
+            Cache::forget("api.category.{$category->slug}");
+        });
+        static::deleted(function (self $category) {
+            Cache::forget('api.categories');
+            Cache::forget("api.category.{$category->slug}");
+        });
     }
 }

@@ -54,7 +54,13 @@ class MenuItem extends Model
             }
         });
 
-        static::saved(fn () => Cache::forget('menu.shared'));
-        static::deleted(fn () => Cache::forget('menu.shared'));
+        static::saved(function () {
+            Cache::forget('menu.shared');
+            Cache::forget('api.menu');
+        });
+        static::deleted(function () {
+            Cache::forget('menu.shared');
+            Cache::forget('api.menu');
+        });
     }
 }
