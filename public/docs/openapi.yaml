@@ -1,0 +1,447 @@
+openapi: 3.0.3
+
+info:
+  title: DevHub API
+  description: |
+    API REST do DevHub — plataforma de blog e portfólio.
+
+    ## Autenticação
+    Todos os endpoints (exceto `POST /auth/login`) exigem um token Bearer obtido via login.
+
+    Inclua o header em todas as requisições autenticadas:
+    ```
+    Authorization: Bearer {token}
+    ```
+  version: 1.0.0
+
+servers:
+  - url: https://devhub-production-a6a5.up.railway.app/api
+    description: Produção
+  - url: http://devhub.local/api
+    description: Local
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Autenticação e gerenciamento de sessão
+  - name: Posts
+    description: Artigos publicados
+  - name: Categories
+    description: Categorias de posts
+  - name: Pages
+    description: Páginas estáticas
+  - name: Menu
+    description: Itens de navegação
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Desenvolvimento Web
+        slug:
+          type: string
+          example: desenvolvimento-web
+        color:
+          type: string
+          example: "#3B82F6"
+        description:
+          type: string
+          nullable: true
+          example: Artigos sobre front-end, back-end e APIs.
+        posts_count:
+          type: integer
+          example: 5
+
+    PostSummary:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Começando com Laravel
+        slug:
+          type: string
+          example: comecando-com-laravel
+        description:
+          type: string
+          nullable: true
+        banner_image:
+          type: string
+          nullable: true
+          example: https://devhub-production-a6a5.up.railway.app/storage/posts/banner.jpg
+        category:
+          $ref: '#/components/schemas/CategoryRef'
+        meta_title:
+          type: string
+          nullable: true
+        meta_description:
+          type: string
+          nullable: true
+        published_at:
+          type: string
+          format: date-time
+          example: "2026-05-01T00:00:00+00:00"
+
+    PostDetail:
+      allOf:
+        - $ref: '#/components/schemas/PostSummary'
+        - type: object
+          properties:
+            content:
+              type: string
+              example: "<p>Conteúdo completo do post em HTML...</p>"
+
+    CategoryRef:
+      type: object
+      nullable: true
+      properties:
+        name:
+          type: string
+          example: Desenvolvimento Web
+        slug:
+          type: string
+          example: desenvolvimento-web
+        color:
+          type: string
+          example: "#3B82F6"
+
+    Page:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Sobre Nós
+        slug:
+          type: string
+          example: sobre-nos
+        subtitle:
+          type: string
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        banner_image:
+          type: string
+          nullable: true
+        main_image:
+          type: string
+          nullable: true
+        gallery:
+          type: array
+          items:
+            type: string
+          example: []
+        meta_title:
+          type: string
+          nullable: true
+        meta_description:
+          type: string
+          nullable: true
+
+    MenuItem:
+      type: object
+      properties:
+        label:
+          type: string
+          example: Blog
+        url:
+          type: string
+          example: /blog
+        open_in_new_tab:
+          type: boolean
+          example: false
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuItem'
+
+    Pagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        next_page_url:
+          type: string
+          nullable: true
+        prev_page_url:
+          type: string
+          nullable: true
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Realizar login
+      description: Autentica o usuário e retorna um token Sanctum.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: demo@devhub.com
+                password:
+                  type: string
+                  example: Demo@123
+                device_name:
+                  type: string
+                  example: meu-app
+                  description: Nome do dispositivo para identificar o token (opcional)
+      responses:
+        "200":
+          description: Login bem-sucedido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "1|abc123def456..."
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      name:
+                        type: string
+                      email:
+                        type: string
+        "422":
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "429":
+          description: "Muitas tentativas (limite: 10 por minuto)"
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Encerrar sessão
+      description: Revoga o token atual.
+      responses:
+        "200":
+          description: Sessão encerrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Sessão encerrada com sucesso.
+        "401":
+          description: Não autenticado
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Dados do usuário autenticado
+      description: Retorna perfil completo com papéis e permissões.
+      responses:
+        "200":
+          description: Dados do usuário
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  is_super_admin:
+                    type: boolean
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                    example: [Visualizador]
+                  permissions:
+                    type: array
+                    items:
+                      type: string
+                    example: [posts.view, categories.view]
+        "401":
+          description: Não autenticado
+
+  /posts:
+    get:
+      tags: [Posts]
+      summary: Listar posts
+      description: Retorna posts ativos paginados. Filtrável por categoria.
+      parameters:
+        - name: category
+          in: query
+          description: Slug da categoria para filtrar
+          required: false
+          schema:
+            type: string
+            example: desenvolvimento-web
+        - name: page
+          in: query
+          description: Número da página
+          required: false
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Lista de posts paginada
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/PostSummary'
+                  - $ref: '#/components/schemas/Pagination'
+        "404":
+          description: Categoria não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Não autenticado
+
+  /posts/{slug}:
+    get:
+      tags: [Posts]
+      summary: Detalhe de um post
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: comecando-com-laravel
+      responses:
+        "200":
+          description: Post encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PostDetail'
+        "404":
+          description: Post não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Não autenticado
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Listar categorias
+      description: Retorna todas as categorias ativas com contagem de posts.
+      responses:
+        "200":
+          description: Lista de categorias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Category'
+        "401":
+          description: Não autenticado
+
+  /pages/{slug}:
+    get:
+      tags: [Pages]
+      summary: Detalhe de uma página
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: sobre-nos
+      responses:
+        "200":
+          description: Página encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Page'
+        "404":
+          description: Página não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Não autenticado
+
+  /menu:
+    get:
+      tags: [Menu]
+      summary: Itens de navegação
+      description: Retorna a árvore de menu (raízes com seus filhos) ordenada.
+      responses:
+        "200":
+          description: Árvore de menu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MenuItem'
+        "401":
+          description: Não autenticado
