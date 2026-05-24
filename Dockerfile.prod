@@ -30,6 +30,9 @@ RUN docker-php-ext-install \
     zip \
     opcache
 
+# phpredis
+RUN pecl install redis && docker-php-ext-enable redis
+
 # Configs do PHP
 COPY docker/php/opcache.prod.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/production.ini   /usr/local/etc/php/conf.d/production.ini
