@@ -19,8 +19,13 @@ done
 echo "Banco disponível. Rodando migrations..."
 php artisan migrate --force
 
+echo "Ajustando permissões do storage..."
+mkdir -p /var/www/storage/app/public
+chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
+chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+
 echo "Criando link do storage..."
-php artisan storage:link 2>/dev/null || true
+php artisan storage:link --force 2>/dev/null || true
 
 echo "Cacheando configurações, rotas e views..."
 php artisan optimize
