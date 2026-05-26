@@ -3,7 +3,7 @@ import PublicLayout from '@/Layouts/PublicLayout';
 import HeroBanner from '@/Components/Public/HeroBanner';
 import PostCard from '@/Components/Public/PostCard';
 import TechCarousel from '@/Components/Public/TechCarousel';
-import Newsletter from '@/Components/Public/Newsletter';
+// import Newsletter from '@/Components/Public/Newsletter'; // desativado temporariamente — aguardando LGPD
 import { ArrowRight } from 'lucide-react';
 
 export default function Home({ featuredPosts = [], technologies = [] }) {
@@ -61,7 +61,7 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
 
             <TechCarousel technologies={technologies} />
 
-            <Newsletter />
+            {/* <Newsletter /> */}{/* desativado temporariamente — aguardando LGPD */}
         </PublicLayout>
     );
 }
