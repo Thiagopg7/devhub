@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\GalleryImageController;
 use App\Http\Controllers\Admin\ImageDeleteController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\NewsletterAreaController;
+use App\Http\Controllers\Admin\NewsletterCampaignController;
 use App\Http\Controllers\Admin\NewsletterSubscriberController;
 use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\PageController;
@@ -55,6 +56,13 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::resource('/newsletter-areas', NewsletterAreaController::class)
         ->except(['show'])
         ->middleware('resource.permission:newsletter_areas');
+
+    Route::resource('/newsletter-campaigns', NewsletterCampaignController::class)
+        ->only(['index', 'create', 'store', 'show', 'destroy'])
+        ->middleware('resource.permission:newsletter_campaigns');
+    Route::post('/newsletter-campaigns/{newsletterCampaign}/send', [NewsletterCampaignController::class, 'send'])
+        ->name('newsletter-campaigns.send')
+        ->middleware('can:newsletter_campaigns.edit');
 
     Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])
         ->name('newsletter-subscribers.index')

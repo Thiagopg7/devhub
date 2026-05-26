@@ -44,8 +44,9 @@ export default function AuthenticatedLayout({ header, children }) {
         {
             label: 'Newsletter',
             items: [
-                { permission: 'newsletter_areas.view',       label: 'Áreas',     routeName: 'admin.newsletter-areas.index',       activePattern: 'admin.newsletter-areas.*' },
-                { permission: 'newsletter_subscribers.view', label: 'Inscritos', routeName: 'admin.newsletter-subscribers.index', activePattern: 'admin.newsletter-subscribers.*' },
+                { permission: 'newsletter_areas.view',       label: 'Áreas',      routeName: 'admin.newsletter-areas.index',       activePattern: 'admin.newsletter-areas.*' },
+                { permission: 'newsletter_subscribers.view', label: 'Inscritos',  routeName: 'admin.newsletter-subscribers.index', activePattern: 'admin.newsletter-subscribers.*' },
+                { permission: 'newsletter_campaigns.view',   label: 'Campanhas',  routeName: 'admin.newsletter-campaigns.index',   activePattern: 'admin.newsletter-campaigns.*' },
             ],
         },
         {
