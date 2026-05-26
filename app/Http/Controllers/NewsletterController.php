@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\NewsletterSubscribeRequest;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 
 class NewsletterController extends Controller
 {
@@ -22,8 +24,19 @@ class NewsletterController extends Controller
             'email'              => $validated['email'],
             'newsletter_area_id' => $validated['newsletter_area_id'],
             'ip_address'         => $request->ip(),
+            'lgpd_consent'       => true,
+            'lgpd_consent_at'    => now(),
+            'unsubscribe_token'  => Str::random(48),
         ]);
 
         return response()->json(['message' => 'Inscrição realizada com sucesso!'], 201);
+    }
+
+    public function unsubscribe(string $token): RedirectResponse
+    {
+        $subscriber = NewsletterSubscriber::where('unsubscribe_token', $token)->firstOrFail();
+        $subscriber->delete();
+
+        return redirect('/')->with('unsubscribed', true);
     }
 }

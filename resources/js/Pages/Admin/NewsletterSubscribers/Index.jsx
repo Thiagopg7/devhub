@@ -81,6 +81,7 @@ export default function Index({ subscribers, filter, total }) {
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">E-mail</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Área</th>
+                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">LGPD</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Data</th>
                                                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
@@ -92,6 +93,16 @@ export default function Index({ subscribers, filter, total }) {
                                                     <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 font-mono">{sub.email}</td>
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                         {sub.area?.name ?? <span className="italic text-gray-300 dark:text-gray-600">—</span>}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm">
+                                                        {sub.lgpd_consent ? (
+                                                            <span title={sub.lgpd_consent_at ? new Date(sub.lgpd_consent_at).toLocaleString("pt-BR") : ""}
+                                                                  className="inline-flex items-center gap-1 text-green-600 dark:text-green-400 font-medium">
+                                                                ✓ Consentiu
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-gray-400 italic">—</span>
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                         {new Date(sub.created_at).toLocaleDateString("pt-BR")}

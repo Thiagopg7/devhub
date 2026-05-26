@@ -7,7 +7,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NewsletterSubscriber extends Model
 {
-    protected $fillable = ['name', 'email', 'newsletter_area_id', 'ip_address'];
+    protected $fillable = [
+        'name',
+        'email',
+        'newsletter_area_id',
+        'ip_address',
+        'lgpd_consent',
+        'lgpd_consent_at',
+        'unsubscribe_token',
+    ];
+
+    protected $casts = [
+        'lgpd_consent'    => 'boolean',
+        'lgpd_consent_at' => 'datetime',
+    ];
 
     public function area(): BelongsTo
     {

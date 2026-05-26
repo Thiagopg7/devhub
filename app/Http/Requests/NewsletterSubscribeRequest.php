@@ -17,6 +17,7 @@ class NewsletterSubscribeRequest extends FormRequest
             'name'               => ['required', 'string', 'min:2', 'max:100'],
             'email'              => ['required', 'email:rfc', 'max:254', 'unique:newsletter_subscribers,email'],
             'newsletter_area_id' => ['required', 'integer', 'exists:newsletter_areas,id'],
+            'lgpd_consent'       => ['required', 'accepted'],
             'website'            => ['nullable', 'string'],
         ];
     }
@@ -24,7 +25,9 @@ class NewsletterSubscribeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.unique' => 'Este e-mail já está inscrito.',
+            'email.unique'        => 'Este e-mail já está inscrito.',
+            'lgpd_consent.required' => 'É necessário aceitar o consentimento para continuar.',
+            'lgpd_consent.accepted' => 'É necessário aceitar o consentimento para continuar.',
         ];
     }
 

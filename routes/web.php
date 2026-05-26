@@ -15,6 +15,9 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])
     ->name('newsletter.subscribe')
     ->middleware('throttle:5,60');
 
+Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])
+    ->name('newsletter.unsubscribe');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
