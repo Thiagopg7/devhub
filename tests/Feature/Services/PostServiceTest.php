@@ -115,4 +115,112 @@ class PostServiceTest extends TestCase
 
         $this->assertSoftDeleted('posts', ['id' => $post->id]);
     }
+
+    public function test_purge_remove_banner_e_exclui_permanentemente(): void
+    {
+        Storage::fake('public');
+        $author  = $this->author();
+        $path    = 'posts/banner.jpg';
+        Storage::disk('public')->put($path, 'imagem');
+        $post    = Post::factory()->create(['user_id' => $author->id, 'banner_image' => $path]);
+        $service = $this->makeService();
+
+        $service->purge($post);
+
+        $this->assertDatabaseMissing('posts', ['id' => $post->id]);
+        Storage::disk('public')->assertMissing($path);
+    }
+
+    public function test_get_all_active_retorna_somente_posts_ativos(): void
+    {
+        $author  = $this->author();
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => true]);
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => false]);
+        $service = $this->makeService();
+
+        $result = $service->getAllActive(20);
+
+        $this->assertSame(1, $result->total());
+    }
+
+    public function test_get_all_active_filtra_por_busca(): void
+    {
+        $author = $this->author();
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => true, 'title' => 'Laravel Tips']);
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => true, 'title' => 'Vue Basics']);
+        $service = $this->makeService();
+
+        $result = $service->getAllActive(20, 'Laravel');
+
+        $this->assertSame(1, $result->total());
+    }
+
+    public function test_get_latest_retorna_posts_mais_recentes(): void
+    {
+        $author = $this->author();
+        Post::factory()->count(5)->create(['user_id' => $author->id, 'is_active' => true]);
+        $service = $this->makeService();
+
+        $result = $service->getLatest(3);
+
+        $this->assertCount(3, $result);
+    }
+
+    public function test_get_paginated_inclui_posts_inativos(): void
+    {
+        $author = $this->author();
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => true]);
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => false]);
+        $service = $this->makeService();
+
+        $result = $service->getPaginated(20);
+
+        $this->assertSame(2, $result->total());
+    }
+
+    public function test_find_by_slug_retorna_post_ativo(): void
+    {
+        $author  = $this->author();
+        $post    = Post::factory()->create(['user_id' => $author->id, 'is_active' => true]);
+        $service = $this->makeService();
+
+        $found = $service->findBySlug($post->slug);
+
+        $this->assertNotNull($found);
+        $this->assertSame($post->id, $found->id);
+    }
+
+    public function test_find_by_slug_retorna_null_para_post_inativo(): void
+    {
+        $author  = $this->author();
+        $post    = Post::factory()->create(['user_id' => $author->id, 'is_active' => false]);
+        $service = $this->makeService();
+
+        $found = $service->findBySlug($post->slug);
+
+        $this->assertNull($found);
+    }
+
+    public function test_get_by_category_retorna_posts_da_categoria(): void
+    {
+        $author   = $this->author();
+        $category = \App\Models\Category::create(['name' => 'Tech', 'color' => '#000', 'is_active' => true]);
+        Post::factory()->create(['user_id' => $author->id, 'is_active' => true, 'category_id' => $category->id]);
+        $service  = $this->makeService();
+
+        $result = $service->getByCategory($category->slug);
+
+        $this->assertNotNull($result['category']);
+        $this->assertSame(1, $result['posts']->total());
+    }
+
+    public function test_get_by_category_retorna_null_para_categoria_inexistente(): void
+    {
+        $service = $this->makeService();
+
+        $result = $service->getByCategory('slug-inexistente');
+
+        $this->assertNull($result['category']);
+        $this->assertNull($result['posts']);
+    }
 }

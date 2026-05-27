@@ -125,4 +125,77 @@ class PageControllerTest extends TestCase
         $this->get(route('admin.pages.index'))
             ->assertRedirect(route('login'));
     }
+
+    public function test_trashed_lista_paginas_excluidas(): void
+    {
+        $user = $this->adminUser(['pages.delete']);
+        $page = Page::create(['title' => 'Excluída', 'is_active' => true]);
+        $page->delete();
+
+        $this->actingAs($user)
+            ->get(route('admin.pages.trashed'))
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p->component('Admin/Pages/Trashed')
+                ->has('pages.data', 1)
+            );
+    }
+
+    public function test_restore_recupera_pagina_excluida(): void
+    {
+        $user = $this->adminUser(['pages.delete']);
+        $page = Page::create(['title' => 'Restaurar', 'is_active' => true]);
+        $page->delete();
+
+        $this->actingAs($user)
+            ->post(route('admin.pages.restore', $page->id))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertNotSoftDeleted('pages', ['id' => $page->id]);
+    }
+
+    public function test_purge_exclui_pagina_permanentemente(): void
+    {
+        Storage::fake('public');
+        $user    = $this->adminUser(['pages.delete']);
+        $banner  = 'pages/banner.jpg';
+        $main    = 'pages/main.jpg';
+        Storage::disk('public')->put($banner, 'imagem');
+        Storage::disk('public')->put($main, 'imagem');
+
+        $page = Page::create(['title' => 'Purgar', 'banner_image' => $banner, 'main_image' => $main, 'is_active' => true]);
+        $page->delete();
+
+        $this->actingAs($user)
+            ->delete(route('admin.pages.purge', $page->id))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertDatabaseMissing('pages', ['id' => $page->id]);
+        Storage::disk('public')->assertMissing($banner);
+        Storage::disk('public')->assertMissing($main);
+    }
+
+    public function test_create_renderiza_formulario(): void
+    {
+        $user = $this->adminUser(['pages.create']);
+
+        $this->actingAs($user)
+            ->get(route('admin.pages.create'))
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p->component('Admin/Pages/Form'));
+    }
+
+    public function test_edit_renderiza_formulario_com_pagina(): void
+    {
+        $user = $this->adminUser(['pages.view']);
+        $page = Page::create(['title' => 'Editar', 'is_active' => true]);
+
+        $this->actingAs($user)
+            ->get(route('admin.pages.edit', $page))
+            ->assertOk()
+            ->assertInertia(fn ($p) => $p->component('Admin/Pages/Form')
+                ->has('page')
+            );
+    }
 }

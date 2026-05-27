@@ -50,6 +50,6 @@ class ReorderControllerTest extends TestCase
                 'model' => 'invalido',
                 'items' => [['id' => 1, 'order' => 1]],
             ])
-            ->assertSessionHasErrors('model');
+            ->assertSessionHas('toast.type', 'error');
     }
 }

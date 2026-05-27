@@ -29,8 +29,9 @@ RUN docker-php-ext-install \
 COPY docker/php/production.ini /usr/local/etc/php/conf.d/production.ini
 COPY docker/php/opcache.ini    /usr/local/etc/php/conf.d/opcache.ini
 
-# Instalar phpredis
-RUN pecl install redis && docker-php-ext-enable redis
+# Instalar phpredis e PCOV (driver de coverage para testes)
+RUN pecl install redis pcov \
+    && docker-php-ext-enable redis pcov
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
