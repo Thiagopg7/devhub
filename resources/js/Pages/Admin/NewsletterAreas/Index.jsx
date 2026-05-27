@@ -112,17 +112,17 @@ export default function Index({ areas, filter }) {
                                 </form>
 
                                 {items.length > 0 ? (
-                                    <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead className="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                <th className="w-8" />
-                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
-                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                            <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                        <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                                            <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th className="w-8" />
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
+                                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                                     {items.map((area) => (
                                                         <SortableTr key={area.id} id={area.id} disabled={isFiltering}>
@@ -152,9 +152,9 @@ export default function Index({ areas, filter }) {
                                                         </SortableTr>
                                                     ))}
                                                 </tbody>
-                                            </SortableContext>
-                                        </DndContext>
-                                    </table>
+                                            </table>
+                                        </SortableContext>
+                                    </DndContext>
                                 ) : (
                                     <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
                                         Nenhuma área de atuação cadastrada.

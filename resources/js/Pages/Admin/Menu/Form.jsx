@@ -20,7 +20,7 @@ export default function Form({ item = null, roots = [] }) {
         label:           item?.label           ?? "",
         url:             item?.url             ?? "",
         parent_id:       item?.parent_id       ?? "",
-        order:           item?.order           ?? 0,
+        order:           item?.order           ?? "",
         is_active:       item?.is_active       ?? true,
         open_in_new_tab: item?.open_in_new_tab ?? false,
     });
@@ -118,7 +118,7 @@ export default function Form({ item = null, roots = [] }) {
                                             min="0"
                                             value={data.order}
                                             className="mt-1 block w-32"
-                                            onChange={(e) => setData("order", Number(e.target.value))}
+                                            onChange={(e) => setData("order", e.target.value === "" ? "" : Number(e.target.value))}
                                             disabled={processing || readonly}
                                         />
                                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

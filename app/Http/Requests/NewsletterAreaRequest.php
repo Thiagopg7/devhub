@@ -15,7 +15,7 @@ class NewsletterAreaRequest extends FormRequest
     {
         return [
             'name'      => ['required', 'string', 'max:100'],
-            'order'     => ['integer', 'min:0'],
+            'order'     => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];
     }

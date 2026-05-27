@@ -14,7 +14,7 @@ class MenuRequest extends FormRequest
             'label'           => ['required', 'string', 'max:100'],
             'url'             => ['required', 'string', 'max:500'],
             'parent_id'       => ['nullable', 'exists:menu_items,id'],
-            'order'           => ['integer', 'min:0'],
+            'order'           => ['nullable', 'integer', 'min:0'],
             'is_active'       => ['boolean'],
             'open_in_new_tab' => ['boolean'],
         ];

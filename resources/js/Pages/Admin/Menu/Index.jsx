@@ -178,7 +178,7 @@ export default function Index({ items: initialItems, filter }) {
                                                                 <MenuRowCells item={item} onDeleteRequest={handleDeleteRequest} />
                                                             </SortableTr>
                                                             {item.children?.map((child) => (
-                                                                <tr key={child.id} className="bg-gray-50 dark:bg-gray-750">
+                                                                <tr key={child.id} className="bg-gray-50 dark:bg-gray-700">
                                                                     <td className="pl-3 pr-1 py-4 w-8" />
                                                                     <MenuRowCells item={child} isChild onDeleteRequest={handleDeleteRequest} />
                                                                 </tr>
