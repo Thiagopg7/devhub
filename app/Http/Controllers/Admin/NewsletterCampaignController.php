@@ -39,11 +39,13 @@ class NewsletterCampaignController extends Controller
             'scheduled_at' => ['nullable', 'date', 'after:now'],
         ]);
 
+        $scheduledAt = $validated['scheduled_at'] ?? null;
+
         $campaign = NewsletterCampaign::create([
             'title'        => $validated['title'],
             'subject'      => $validated['subject'],
-            'status'       => $validated['scheduled_at'] ? 'scheduled' : 'draft',
-            'scheduled_at' => $validated['scheduled_at'] ?? null,
+            'status'       => $scheduledAt ? 'scheduled' : 'draft',
+            'scheduled_at' => $scheduledAt,
         ]);
 
         $campaign->posts()->sync($validated['post_ids']);
