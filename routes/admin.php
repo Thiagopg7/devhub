@@ -63,6 +63,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::post('/newsletter-campaigns/{newsletterCampaign}/send', [NewsletterCampaignController::class, 'send'])
         ->name('newsletter-campaigns.send')
         ->middleware('can:newsletter_campaigns.edit');
+    Route::get('/newsletter-campaigns/{newsletterCampaign}/preview', [NewsletterCampaignController::class, 'preview'])
+        ->name('newsletter-campaigns.preview')
+        ->middleware('can:newsletter_campaigns.view');
 
     Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])
         ->name('newsletter-subscribers.index')

@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\SendNewsletterCampaign;
+use App\Mail\NewsletterCampaignMail;
 use App\Models\NewsletterCampaign;
+use App\Models\NewsletterSubscriber;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -71,6 +74,22 @@ class NewsletterCampaignController extends Controller
                 'pending' => $newsletterCampaign->sendLogs()->where('status', 'pending')->count(),
             ],
         ]);
+    }
+
+    public function preview(NewsletterCampaign $newsletterCampaign): HttpResponse
+    {
+        $newsletterCampaign->load('posts');
+
+        $fakeMail = new NewsletterCampaignMail(
+            $newsletterCampaign,
+            new NewsletterSubscriber([
+                'name'              => 'Fulano de Tal',
+                'email'             => 'exemplo@exemplo.com',
+                'unsubscribe_token' => 'preview-token',
+            ])
+        );
+
+        return response($fakeMail->render(), 200, ['Content-Type' => 'text/html']);
     }
 
     public function send(NewsletterCampaign $newsletterCampaign): RedirectResponse
