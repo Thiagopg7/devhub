@@ -27,7 +27,7 @@ class ReorderController extends Controller
         $config = self::ALLOWED_MODELS[strtolower($request->model)] ?? null;
 
         if (!$config) {
-            return back()->withErrors(['model' => 'Módulo inválido.']);
+            return back()->with('toast', ['title' => 'Erro!', 'message' => 'Módulo inválido.', 'type' => 'error']);
         }
 
         abort_unless($request->user()?->can("{$config['module']}.edit"), 403);

@@ -36,21 +36,30 @@ class PageService
 
     public function update(Page $page, array $data, ?UploadedFile $banner, ?UploadedFile $mainImage): Page
     {
+        $oldBanner = $page->banner_image;
+        $oldMain   = $page->main_image;
+
         if ($banner?->isValid()) {
-            $this->uploadService->delete($page->banner_image);
             $data['banner_image'] = $this->uploadService->upload($banner, 'pages');
         } else {
             unset($data['banner_image']);
         }
 
         if ($mainImage?->isValid()) {
-            $this->uploadService->delete($page->main_image);
             $data['main_image'] = $this->uploadService->upload($mainImage, 'pages');
         } else {
             unset($data['main_image']);
         }
 
         $page->update($data);
+
+        if (isset($data['banner_image']) && $oldBanner) {
+            $this->uploadService->delete($oldBanner);
+        }
+
+        if (isset($data['main_image']) && $oldMain) {
+            $this->uploadService->delete($oldMain);
+        }
 
         return $page;
     }

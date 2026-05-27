@@ -28,7 +28,7 @@ class ImageDeleteController extends Controller
         $config = self::ALLOWED[$modelKey] ?? null;
 
         if (!$config || !in_array($field, $config['fields'], true)) {
-            return back()->withErrors(['field' => 'Operação inválida.']);
+            return back()->with('toast', ['title' => 'Erro!', 'message' => 'Operação inválida.', 'type' => 'error']);
         }
 
         abort_unless($request->user()?->can("{$config['module']}.edit"), 403);

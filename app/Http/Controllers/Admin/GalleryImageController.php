@@ -48,8 +48,10 @@ class GalleryImageController extends Controller
         }
     }
 
-    public function destroy(GalleryImage $galleryImage): RedirectResponse
+    public function destroy(Request $request, GalleryImage $galleryImage): RedirectResponse
     {
+        abort_unless($request->user()?->can('pages.edit'), 403);
+
         try {
             $galleryImage->delete();
 
