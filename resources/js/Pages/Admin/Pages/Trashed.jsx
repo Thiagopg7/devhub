@@ -53,6 +53,7 @@ export default function Trashed({ pages }) {
                                             <tr>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Título</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Slug</th>
+                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Excluído por</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Excluído em</th>
                                                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
@@ -62,6 +63,9 @@ export default function Trashed({ pages }) {
                                                 <tr key={page.id}>
                                                     <td className="px-6 py-4 font-medium dark:text-gray-100">{page.title}</td>
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-mono">{page.slug}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                                        {page.deleted_by_user?.name ?? '—'}
+                                                    </td>
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                         {new Date(page.deleted_at).toLocaleString("pt-BR")}
                                                     </td>

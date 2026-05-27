@@ -29,6 +29,7 @@ class PostController extends Controller
     {
         return Inertia::render('Admin/Posts/Trashed', [
             'posts' => Post::onlyTrashed()
+                ->with('deletedByUser:id,name')
                 ->orderByDesc('deleted_at')
                 ->paginate(20)
                 ->through(fn ($p) => $p->makeVisible('deleted_at')),

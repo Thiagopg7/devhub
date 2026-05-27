@@ -28,6 +28,7 @@ class PageController extends Controller
     {
         return Inertia::render('Admin/Pages/Trashed', [
             'pages' => Page::onlyTrashed()
+                ->with('deletedByUser:id,name')
                 ->orderByDesc('deleted_at')
                 ->paginate(20)
                 ->through(fn ($p) => $p->makeVisible('deleted_at')),

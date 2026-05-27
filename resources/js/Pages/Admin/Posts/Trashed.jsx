@@ -52,6 +52,7 @@ export default function Trashed({ posts }) {
                                         <thead className="bg-gray-50 dark:bg-gray-700">
                                             <tr>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Título</th>
+                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Excluído por</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Excluído em</th>
                                                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
@@ -60,6 +61,9 @@ export default function Trashed({ posts }) {
                                             {posts.data.map((post) => (
                                                 <tr key={post.id}>
                                                     <td className="px-6 py-4 font-medium dark:text-gray-100">{post.title}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                                        {post.deleted_by_user?.name ?? '—'}
+                                                    </td>
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                         {new Date(post.deleted_at).toLocaleString("pt-BR")}
                                                     </td>

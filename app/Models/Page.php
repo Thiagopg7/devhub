@@ -7,6 +7,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -26,6 +27,7 @@ class Page extends Model
         'is_searchable',
         'meta_title',
         'meta_description',
+        'deleted_by',
     ];
 
     protected $casts = [
@@ -71,6 +73,11 @@ class Page extends Model
         return $query->where('is_searchable', true);
     }
 
+    public function deletedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
     public function galleryImages()
     {
         return $this->morphMany(GalleryImage::class, 'imageable')->orderBy('order')->orderBy('id');
@@ -78,6 +85,11 @@ class Page extends Model
 
     protected static function booted(): void
     {
+        static::deleting(function (self $page) {
+            $page->deleted_by = auth()->id();
+            $page->saveQuietly();
+        });
+
         static::saved(fn (self $page) => Cache::forget("api.page.{$page->slug}"));
         static::deleted(fn (self $page) => Cache::forget("api.page.{$page->slug}"));
 

@@ -32,6 +32,7 @@ class CategoryController extends Controller
     {
         return Inertia::render('Admin/Categories/Trashed', [
             'categories' => Category::onlyTrashed()
+                ->with('deletedByUser:id,name')
                 ->orderByDesc('deleted_at')
                 ->paginate(20)
                 ->through(fn ($c) => $c->makeVisible('deleted_at')),

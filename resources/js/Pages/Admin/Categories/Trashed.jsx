@@ -53,6 +53,7 @@ export default function Trashed({ categories }) {
                                             <tr>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Cor</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
+                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Excluído por</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Excluído em</th>
                                                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
@@ -67,6 +68,9 @@ export default function Trashed({ categories }) {
                                                         />
                                                     </td>
                                                     <td className="px-6 py-4 font-medium dark:text-gray-100">{category.name}</td>
+                                                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                                        {category.deleted_by_user?.name ?? '—'}
+                                                    </td>
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                         {new Date(category.deleted_at).toLocaleString("pt-BR")}
                                                     </td>
