@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -12,6 +13,13 @@ use Illuminate\Support\Facades\Cache;
 class PostService
 {
     public function __construct(private readonly FileUploadService $uploadService) {}
+
+    private static function apiCache(): mixed
+    {
+        return Cache::getStore() instanceof TaggableStore
+            ? Cache::tags(['api-posts'])
+            : Cache::store();
+    }
     public function getAllActive(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
         $page     = request()->input('page', 1);
@@ -19,7 +27,7 @@ class PostService
             ? 'api.posts.search.' . md5($search) . ".p{$page}"
             : "api.posts.all.p{$page}";
 
-        return Cache::tags(['api-posts'])->remember($cacheKey, 1800, function () use ($perPage, $search) {
+        return self::apiCache()->remember($cacheKey, 1800, function () use ($perPage, $search) {
             return Post::active()
                 ->with('category')
                 ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
@@ -70,7 +78,7 @@ class PostService
         }
 
         $page  = request()->input('page', 1);
-        $posts = Cache::tags(['api-posts'])->remember("api.posts.cat.{$categorySlug}.p{$page}", 1800, function () use ($category, $perPage) {
+        $posts = self::apiCache()->remember("api.posts.cat.{$categorySlug}.p{$page}", 1800, function () use ($category, $perPage) {
             return Post::active()
                 ->with('category')
                 ->where('category_id', $category->id)

@@ -26,12 +26,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::get('/posts/trashed', [PostController::class, 'trashed'])->name('posts.trashed')->middleware('can:posts.delete');
     Route::post('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore')->middleware('can:posts.delete');
     Route::delete('/posts/{id}/purge', [PostController::class, 'purge'])->name('posts.purge')->middleware('can:posts.delete');
-    Route::resource('/posts', PostController::class)->middleware('resource.permission:posts');
+    Route::resource('/posts', PostController::class)->except(['show'])->middleware('resource.permission:posts');
 
     Route::get('/categories/trashed', [CategoryController::class, 'trashed'])->name('categories.trashed')->middleware('can:categories.delete');
     Route::post('/categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore')->middleware('can:categories.delete');
     Route::delete('/categories/{id}/purge', [CategoryController::class, 'purge'])->name('categories.purge')->middleware('can:categories.delete');
-    Route::resource('/categories', CategoryController::class)->middleware('resource.permission:categories');
+    Route::resource('/categories', CategoryController::class)->except(['show'])->middleware('resource.permission:categories');
     Route::resource('/blocks', BlockController::class)->middleware('resource.permission:blocks');
     Route::resource('/technologies', TechnologyController::class)
         ->except(['show'])
