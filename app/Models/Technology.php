@@ -35,10 +35,8 @@ class Technology extends Model
         return $query->orderBy('order')->orderBy('name');
     }
 
-    protected static function boot()
+    protected static function booted(): void
     {
-        parent::boot();
-
         static::creating(function ($model) {
             if (is_null($model->order)) {
                 $model->order = (static::max('order') ?? 0) + 1;
