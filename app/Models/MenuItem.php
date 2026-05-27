@@ -39,10 +39,8 @@ class MenuItem extends Model
         return $query->whereNull('parent_id');
     }
 
-    protected static function boot()
+    protected static function booted(): void
     {
-        parent::boot();
-
         static::creating(function ($model) {
             if (is_null($model->order)) {
                 $scope = static::when(

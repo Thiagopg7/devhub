@@ -14,14 +14,14 @@ class PostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'category_id'       => 'nullable|exists:categories,id',
-            'title'             => 'required|string|max:150',
-            'description'       => 'nullable|string|max:255',
-            'content'           => 'nullable|string',
-            'banner_image'      => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:8192',
-            'is_active'         => 'boolean',
-            'meta_title'        => 'nullable|string|max:150',
-            'meta_description'  => 'nullable|string|max:255',
+            'category_id'      => ['nullable', 'exists:categories,id'],
+            'title'            => ['required', 'string', 'max:150'],
+            'description'      => ['nullable', 'string', 'max:255'],
+            'content'          => ['nullable', 'string'],
+            'banner_image'     => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120'],
+            'is_active'        => ['boolean'],
+            'meta_title'       => ['nullable', 'string', 'max:150'],
+            'meta_description' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
