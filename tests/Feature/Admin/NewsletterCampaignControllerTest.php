@@ -5,30 +5,15 @@ namespace Tests\Feature\Admin;
 use App\Jobs\SendNewsletterCampaign;
 use App\Models\NewsletterCampaign;
 use App\Models\Post;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
-use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
+use Tests\Traits\CreatesAdminUser;
 
 class NewsletterCampaignControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private function adminUser(array $perms = []): User
-    {
-        $role = Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);
-
-        foreach ($perms as $name) {
-            $perm = Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-            $role->givePermissionTo($perm);
-        }
-
-        $user = User::factory()->create();
-        $user->assignRole($role);
-        return $user;
-    }
+    use RefreshDatabase, CreatesAdminUser;
 
     private function campaign(array $attrs = []): NewsletterCampaign
     {

@@ -5,31 +5,21 @@ namespace Tests\Feature\Admin;
 use App\Models\Technology;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
+use Tests\Traits\CreatesAdminUser;
 
 class ReorderControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, CreatesAdminUser;
 
-    private function adminUser(): User
+    private function reorderUser(): User
     {
-        $role = Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);
-        foreach (['technologies.edit', 'menu.edit'] as $name) {
-            $perm = Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-            $role->givePermissionTo($perm);
-        }
-
-        $user = User::factory()->create();
-        $user->assignRole($role);
-
-        return $user;
+        return $this->adminUser(['technologies.edit', 'menu.edit']);
     }
 
     public function test_reordena_em_uma_unica_transacao(): void
     {
-        $user = $this->adminUser();
+        $user = $this->reorderUser();
 
         $a = Technology::create(['name' => 'A', 'url' => 'https://a', 'order' => 1]);
         $b = Technology::create(['name' => 'B', 'url' => 'https://b', 'order' => 2]);
@@ -53,7 +43,7 @@ class ReorderControllerTest extends TestCase
 
     public function test_bloqueia_modulo_invalido(): void
     {
-        $user = $this->adminUser();
+        $user = $this->reorderUser();
 
         $this->actingAs($user)
             ->post(route('admin.reorder'), [
