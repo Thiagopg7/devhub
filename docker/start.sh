@@ -33,5 +33,8 @@ php artisan optimize
 echo "Iniciando PHP-FPM..."
 php-fpm -D
 
+echo "Iniciando queue worker..."
+php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &
+
 echo "Iniciando Nginx na porta ${PORT}..."
 exec nginx -g 'daemon off;'
