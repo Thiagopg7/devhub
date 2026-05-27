@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Cache;
-
 class Category extends Model
 {
     use HasActivityLog, HasFactory, Sluggable, SoftDeletes;
@@ -58,13 +56,5 @@ class Category extends Model
             $category->saveQuietly();
         });
 
-        static::saved(function (self $category) {
-            Cache::forget('api.categories');
-            Cache::forget("api.category.{$category->slug}");
-        });
-        static::deleted(function (self $category) {
-            Cache::forget('api.categories');
-            Cache::forget("api.category.{$category->slug}");
-        });
     }
 }

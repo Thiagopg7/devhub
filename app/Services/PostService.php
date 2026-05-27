@@ -4,37 +4,22 @@ namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Post;
-use Illuminate\Cache\TaggableStore;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Cache;
 
 class PostService
 {
     public function __construct(private readonly FileUploadService $uploadService) {}
 
-    private static function apiCache(): mixed
-    {
-        return Cache::getStore() instanceof TaggableStore
-            ? Cache::tags(['api-posts'])
-            : Cache::store();
-    }
     public function getAllActive(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
-        $page     = request()->input('page', 1);
-        $cacheKey = $search
-            ? 'api.posts.search.' . md5($search) . ".p{$page}"
-            : "api.posts.all.p{$page}";
-
-        return self::apiCache()->remember($cacheKey, 1800, function () use ($perPage, $search) {
-            return Post::active()
-                ->with('category')
-                ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
-                ->orderByDesc('created_at')
-                ->paginate($perPage)
-                ->withQueryString();
-        });
+        return Post::active()
+            ->with('category')
+            ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
+            ->orderByDesc('created_at')
+            ->paginate($perPage)
+            ->withQueryString();
     }
 
     public function getLatest(int $count = 3): Collection
@@ -62,29 +47,22 @@ class PostService
 
     public function findBySlug(string $slug): ?Post
     {
-        return Cache::remember("api.post.{$slug}", 3600, function () use ($slug) {
-            return Post::active()->with('category')->where('slug', $slug)->first();
-        });
+        return Post::active()->with('category')->where('slug', $slug)->first();
     }
 
     public function getByCategory(string $categorySlug, int $perPage = 12): array
     {
-        $category = Cache::remember("api.category.{$categorySlug}", 3600, function () use ($categorySlug) {
-            return Category::active()->where('slug', $categorySlug)->first();
-        });
+        $category = Category::active()->where('slug', $categorySlug)->first();
 
         if (!$category) {
             return ['category' => null, 'posts' => null];
         }
 
-        $page  = request()->input('page', 1);
-        $posts = self::apiCache()->remember("api.posts.cat.{$categorySlug}.p{$page}", 1800, function () use ($category, $perPage) {
-            return Post::active()
-                ->with('category')
-                ->where('category_id', $category->id)
-                ->orderByDesc('created_at')
-                ->paginate($perPage);
-        });
+        $posts = Post::active()
+            ->with('category')
+            ->where('category_id', $category->id)
+            ->orderByDesc('created_at')
+            ->paginate($perPage);
 
         return ['category' => $category, 'posts' => $posts];
     }
