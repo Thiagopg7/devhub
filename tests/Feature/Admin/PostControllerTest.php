@@ -208,4 +208,50 @@ class PostControllerTest extends TestCase
 
         $this->assertDatabaseHas('posts', ['title' => 'Post categorizado', 'category_id' => $category->id]);
     }
+
+    public function test_trashed_lista_posts_excluidos(): void
+    {
+        $user = $this->adminUser(['posts.delete']);
+        $post = Post::factory()->create();
+        $post->delete();
+
+        $this->actingAs($user)
+            ->get(route('admin.posts.trashed'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Admin/Posts/Trashed')
+                ->has('posts.data', 1)
+            );
+    }
+
+    public function test_restore_recupera_post_excluido(): void
+    {
+        $user = $this->adminUser(['posts.delete']);
+        $post = Post::factory()->create();
+        $post->delete();
+
+        $this->actingAs($user)
+            ->post(route('admin.posts.restore', $post->id))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertNotSoftDeleted('posts', ['id' => $post->id]);
+    }
+
+    public function test_purge_exclui_post_permanentemente(): void
+    {
+        Storage::fake('public');
+        $user    = $this->adminUser(['posts.delete']);
+        $oldPath = 'posts/banner.jpg';
+        Storage::disk('public')->put($oldPath, 'imagem');
+        $post = Post::factory()->create(['banner_image' => $oldPath]);
+        $post->delete();
+
+        $this->actingAs($user)
+            ->delete(route('admin.posts.purge', $post->id))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertDatabaseMissing('posts', ['id' => $post->id]);
+        Storage::disk('public')->assertMissing($oldPath);
+    }
 }
