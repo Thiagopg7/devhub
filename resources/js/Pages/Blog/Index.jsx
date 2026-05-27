@@ -27,7 +27,13 @@ export default function BlogIndex({ posts, filters = {} }) {
 
     return (
         <PublicLayout>
-            <Head title={`Blog — ${siteName}`} />
+            <Head title={`Blog — ${siteName}`}>
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta property="og:title" content={`Blog — ${siteName}`} />
+                <meta property="og:description" content="Artigos sobre tecnologia, inovação e negócios" />
+                <meta property="og:url" content={route('blog.index')} />
+            </Head>
 
             {/* Page header */}
             <div className="bg-slate-900 border-b border-slate-800">

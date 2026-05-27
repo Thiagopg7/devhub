@@ -67,12 +67,18 @@ export default function PageShow({ page }) {
 
     const metaTitle = page.meta_title || page.title;
 
+    const ogImage = page.banner_image_url || page.main_image_url;
+
     return (
         <PublicLayout>
             <Head title={`${metaTitle} — ${siteName}`}>
-                {page.meta_description && (
-                    <meta name="description" content={page.meta_description} />
-                )}
+                {page.meta_description && <meta name="description" content={page.meta_description} />}
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta property="og:title" content={metaTitle} />
+                {page.meta_description && <meta property="og:description" content={page.meta_description} />}
+                <meta property="og:url" content={route('pages.show', page.slug)} />
+                {ogImage && <meta property="og:image" content={ogImage} />}
             </Head>
 
             {/* Banner */}

@@ -10,9 +10,18 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
 
+    const homeTitle = `${siteName} — Hub de Inovação e Tecnologia`;
+
     return (
         <PublicLayout>
-            <Head title={`${siteName} — Hub de Inovação e Tecnologia`} />
+            <Head title={homeTitle}>
+                {siteConfig.site_tagline && <meta name="description" content={siteConfig.site_tagline} />}
+                <meta property="og:type" content="website" />
+                <meta property="og:site_name" content={siteName} />
+                <meta property="og:title" content={homeTitle} />
+                {siteConfig.site_tagline && <meta property="og:description" content={siteConfig.site_tagline} />}
+                <meta property="og:url" content={route('home')} />
+            </Head>
 
             <HeroBanner />
 
