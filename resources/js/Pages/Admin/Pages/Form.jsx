@@ -81,7 +81,6 @@ function GallerySection({ page, processing, readonly, onDeleteRequest }) {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success("Imagens adicionadas!");
                 reset();
                 if (inputRef.current) inputRef.current.value = "";
             },
@@ -100,7 +99,6 @@ function GallerySection({ page, processing, readonly, onDeleteRequest }) {
             message: "Remover esta imagem da galeria?",
             onConfirm: () => router.delete(route("admin.gallery-images.destroy", imageId), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Imagem removida!"),
                 onError: () => toast.error("Erro ao remover imagem."),
             }),
         });
