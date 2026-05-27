@@ -12,12 +12,20 @@ use Illuminate\Support\Facades\Cache;
 class PostService
 {
     public function __construct(private readonly FileUploadService $uploadService) {}
-    public function getAllActive(int $perPage = 15): LengthAwarePaginator
+    public function getAllActive(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
-        $page = request()->input('page', 1);
+        $page     = request()->input('page', 1);
+        $cacheKey = $search
+            ? 'api.posts.search.' . md5($search) . ".p{$page}"
+            : "api.posts.all.p{$page}";
 
-        return Cache::tags(['api-posts'])->remember("api.posts.all.p{$page}", 1800, function () use ($perPage) {
-            return Post::active()->with('category')->orderByDesc('created_at')->paginate($perPage);
+        return Cache::tags(['api-posts'])->remember($cacheKey, 1800, function () use ($perPage, $search) {
+            return Post::active()
+                ->with('category')
+                ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
+                ->orderByDesc('created_at')
+                ->paginate($perPage)
+                ->withQueryString();
         });
     }
 
