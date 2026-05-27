@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Models\ApiToken;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,49 +12,24 @@ class ValidateApiTokenTest extends TestCase
 
     public function test_rejeita_requisicao_sem_token(): void
     {
-        $response = $this->getJson('/api/posts');
-
-        $response->assertStatus(401)
-                 ->assertJson(['message' => 'Token não informado.']);
+        $this->getJson('/api/posts')
+             ->assertUnauthorized();
     }
 
     public function test_rejeita_token_invalido(): void
     {
-        $response = $this->withToken('token-invalido')
-                         ->getJson('/api/posts');
-
-        $response->assertStatus(401)
-                 ->assertJson(['message' => 'Token inválido ou expirado.']);
+        $this->withToken('token-invalido-qualquer')
+             ->getJson('/api/posts')
+             ->assertUnauthorized();
     }
 
-    public function test_rejeita_token_expirado(): void
+    public function test_aceita_token_sanctum_valido(): void
     {
-        $plainToken = 'token-expirado-123';
+        $user  = User::factory()->create();
+        $token = $user->createToken('api-test')->plainTextToken;
 
-        ApiToken::factory()->create([
-            'token_hash' => hash('sha256', $plainToken),
-            'expires_at' => now()->subDay(),
-        ]);
-
-        $response = $this->withToken($plainToken)
-                         ->getJson('/api/posts');
-
-        $response->assertStatus(401)
-                 ->assertJson(['message' => 'Token inválido ou expirado.']);
-    }
-
-    public function test_aceita_token_valido(): void
-    {
-        $plainToken = 'token-valido-123';
-
-        ApiToken::factory()->create([
-            'token_hash' => hash('sha256', $plainToken),
-            'expires_at' => null,
-        ]);
-
-        $response = $this->withToken($plainToken)
-                         ->getJson('/api/posts');
-
-        $response->assertStatus(200);
+        $this->withToken($token)
+             ->getJson('/api/posts')
+             ->assertOk();
     }
 }

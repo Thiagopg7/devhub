@@ -93,12 +93,12 @@ class CategoryControllerTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
-    public function test_sem_permissao_retorna_403(): void
+    public function test_sem_permissao_redireciona_para_dashboard(): void
     {
         $user = $this->adminUser([]);
 
         $this->actingAs($user)
             ->get(route('admin.categories.index'))
-            ->assertForbidden();
+            ->assertRedirect(route('admin.dashboard'));
     }
 }

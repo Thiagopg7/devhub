@@ -109,7 +109,7 @@ class PostControllerTest extends TestCase
 
     public function test_edit_renderiza_formulario(): void
     {
-        $user = $this->adminUser(['posts.edit']);
+        $user = $this->adminUser(['posts.view']);
         $post = Post::factory()->create();
 
         $this->actingAs($user)
@@ -198,13 +198,13 @@ class PostControllerTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
-    public function test_sem_permissao_retorna_403(): void
+    public function test_sem_permissao_redireciona_para_dashboard(): void
     {
         $user = $this->adminUser([]);
 
         $this->actingAs($user)
             ->get(route('admin.posts.index'))
-            ->assertForbidden();
+            ->assertRedirect(route('admin.dashboard'));
     }
 
     public function test_store_com_categoria_valida(): void

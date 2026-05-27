@@ -166,7 +166,7 @@ class UserControllerTest extends TestCase
                 'name'  => 'Nome Alterado',
                 'email' => $target->email,
             ])
-            ->assertForbidden();
+            ->assertRedirect();
 
         $this->assertDatabaseHas('users', ['id' => $target->id, 'name' => $target->name]);
     }

@@ -15,9 +15,11 @@ class ReorderControllerTest extends TestCase
 
     private function adminUser(): User
     {
-        $perm = Permission::firstOrCreate(['name' => 'technologies.edit', 'guard_name' => 'web']);
         $role = Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);
-        $role->givePermissionTo($perm);
+        foreach (['technologies.edit', 'menu.edit'] as $name) {
+            $perm = Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+            $role->givePermissionTo($perm);
+        }
 
         $user = User::factory()->create();
         $user->assignRole($role);

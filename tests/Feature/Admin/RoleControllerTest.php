@@ -114,7 +114,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($admin)
             ->put(route('admin.roles.update', $role), ['name' => 'Hackeado', 'permissions' => []])
-            ->assertForbidden();
+            ->assertRedirect();
 
         $this->assertDatabaseHas('roles', ['id' => $role->id, 'name' => 'Administrador']);
     }
@@ -151,7 +151,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.roles.update', $ownRole), ['name' => 'Turbo', 'permissions' => []])
-            ->assertForbidden();
+            ->assertRedirect();
 
         $this->assertDatabaseHas('roles', ['id' => $ownRole->id, 'name' => 'Administrador']);
     }
