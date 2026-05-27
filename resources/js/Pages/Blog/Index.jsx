@@ -1,7 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PostCard from '@/Components/Public/PostCard';
-// import Newsletter from '@/Components/Public/Newsletter'; // desativado temporariamente — aguardando LGPD
+import Newsletter from '@/Components/Public/Newsletter';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function BlogIndex({ posts }) {
@@ -80,7 +80,7 @@ export default function BlogIndex({ posts }) {
                 )}
             </section>
 
-            {/* <Newsletter /> */}{/* desativado temporariamente — aguardando LGPD */}
+            <Newsletter />
         </PublicLayout>
     );
 }

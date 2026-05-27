@@ -8,11 +8,11 @@ export default function Newsletter() {
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
-    const [form, setForm] = useState({ name: '', email: '', newsletter_area_id: '', website: '' });
+    const [form, setForm] = useState({ name: '', email: '', newsletter_area_id: '', lgpd_consent: false, website: '' });
 
     function handleChange(e) {
-        const { name, value } = e.target;
-        setForm((prev) => ({ ...prev, [name]: value }));
+        const { name, value, type, checked } = e.target;
+        setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
     }
 
@@ -26,6 +26,7 @@ export default function Newsletter() {
                 name:               form.name,
                 email:              form.email,
                 newsletter_area_id: form.newsletter_area_id,
+                lgpd_consent:       form.lgpd_consent,
                 website:            form.website, // honeypot — always empty for real users
             });
             setSubmitted(true);
@@ -125,6 +126,27 @@ export default function Newsletter() {
                                 ))}
                             </select>
                             {errors.newsletter_area_id && <p className="mt-1 text-xs text-red-400">{errors.newsletter_area_id[0]}</p>}
+                        </div>
+
+                        <div className="sm:col-span-2">
+                            <label className="flex items-start gap-3 cursor-pointer group">
+                                <input
+                                    type="checkbox"
+                                    name="lgpd_consent"
+                                    checked={form.lgpd_consent}
+                                    onChange={handleChange}
+                                    disabled={loading}
+                                    className="mt-0.5 h-4 w-4 shrink-0 rounded border-slate-500 bg-slate-900 text-sky-400 focus:ring-sky-400 focus:ring-offset-slate-800 disabled:opacity-50"
+                                />
+                                <span className="text-xs text-slate-400 leading-relaxed">
+                                    Concordo em receber comunicações por e-mail com artigos, novidades e conteúdos sobre tecnologia e inovação.
+                                    Meus dados serão usados exclusivamente para o envio da newsletter e posso me descadastrar a qualquer momento
+                                    pelo link presente em cada e-mail.
+                                </span>
+                            </label>
+                            {errors.lgpd_consent && (
+                                <p className="mt-1.5 text-xs text-red-400">{errors.lgpd_consent[0]}</p>
+                            )}
                         </div>
 
                         <div className="sm:col-span-2 flex justify-center pt-2">

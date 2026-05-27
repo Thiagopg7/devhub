@@ -1,7 +1,7 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PostCard from '@/Components/Public/PostCard';
-// import Newsletter from '@/Components/Public/Newsletter'; // desativado temporariamente — aguardando LGPD
+import Newsletter from '@/Components/Public/Newsletter';
 import { ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 
 export default function BlogCategory({ category, posts }) {
@@ -91,7 +91,7 @@ export default function BlogCategory({ category, posts }) {
                 )}
             </section>
 
-            {/* <Newsletter /> */}{/* desativado temporariamente — aguardando LGPD */}
+            <Newsletter />
         </PublicLayout>
     );
 }

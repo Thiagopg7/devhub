@@ -18,6 +18,7 @@ return [
         'configs'                => 'Configurações',
         'newsletter_areas'       => 'Áreas de newsletter',
         'newsletter_subscribers' => 'Inscritos da newsletter',
+        'newsletter_campaigns'   => 'Campanhas de newsletter',
         'users'                  => 'Usuários',
         'roles'                  => 'Perfis',
         'activity_log'           => 'Logs de atividade',
