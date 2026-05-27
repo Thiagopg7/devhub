@@ -1,6 +1,6 @@
 # DevHub
 
-CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada e frontend público com roteamento dinâmico.
+CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada com Sanctum, sistema de newsletter com conformidade LGPD e frontend público com roteamento dinâmico.
 
 > **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `demo@devhub.com` / `Demo@123` — acesso somente leitura)
 
@@ -14,7 +14,11 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 | Estilização | Tailwind CSS 3 |
 | Build | Vite 8 |
 | Banco de dados | MySQL 8 |
+| Cache / Queue broker | Redis |
+| Autenticação API | Laravel Sanctum |
+| Filas assíncronas | Laravel Queue (driver: database) |
 | Infra | Docker + Nginx |
+| Deploy | Railway |
 
 ## Funcionalidades
 
@@ -24,49 +28,77 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 - Listagem de posts por categoria
 - Menu de navegação dinâmico com suporte a submenus
 - Banner de privacidade (LGPD)
+- Formulário de newsletter com consentimento explícito (LGPD)
 
 ### Painel administrativo
 - **Posts** — CRUD completo com editor rich-text (TipTap), upload de banner, slug automático, toggle ativo/inativo
 - **Páginas** — CRUD de páginas estáticas com banner, imagem principal, galeria de fotos e campos de SEO
 - **Categorias** — CRUD com cor customizável
 - **Blocos de conteúdo** — trechos de HTML reutilizáveis identificados por slug
-- **Tecnologias** — vitrine de ferramentas com ícone, screenshot e link
-- **Menu** — gerenciamento de itens de navegação com suporte a hierarquia pai/filho e reordenação via drag-and-drop
+- **Tecnologias** — vitrine de ferramentas com ícone, screenshot e link, reordenáveis
+- **Menu** — gerenciamento de itens de navegação com suporte a hierarquia pai/filho e reordenação
 - **Configurações** — painel centralizado para nome do site, tagline, redes sociais, contato e scripts de terceiros
-- **Newsletter** — gerenciamento de áreas temáticas e lista de inscritos
+- **Newsletter** — áreas temáticas, inscritos com consentimento LGPD e campanhas de e-mail
 - **Permissões e Papéis** — controle de acesso baseado em papéis (via Spatie Laravel Permission)
 - **Usuários** — gerenciamento de usuários e atribuição de papéis
-- **Log de atividades** — histórico de ações dos usuários com diff de alterações (via Spatie Activity Log)
+- **Log de atividades** — histórico de ações com diff de alterações (via Spatie Activity Log)
+
+### Sistema de Newsletter
+- Inscrição com consentimento explícito: checkbox obrigatório (não pré-marcado), finalidade clara no formulário
+- Consentimento armazenado com timestamp (LGPD)
+- Link de descadastro funcional por token único em todos os e-mails
+- Campanhas vinculadas a posts do blog — o admin seleciona quais posts compõem cada edição
+- Envio assíncrono via Laravel Queue com log individual por inscrito
+- Agendamento de campanhas com scheduler automático
+- Poda automática de logs após 6 meses (minimização de dados — LGPD)
 
 ### API RESTful
-- Endpoints autenticados via token Bearer para consulta de posts
+- Autenticação via Bearer token (Laravel Sanctum)
+- Documentação Swagger UI disponível em `/api/docs`
+- Cache Redis em todos os endpoints com invalidação automática por observers
+
+| Método | Endpoint | Descrição |
+|--------|----------|-----------|
+| `POST` | `/api/auth/login` | Autenticação e geração de token |
+| `POST` | `/api/auth/logout` | Revogação do token |
+| `GET` | `/api/auth/me` | Dados do usuário autenticado |
+| `GET` | `/api/posts` | Lista posts ativos (paginado) |
+| `GET` | `/api/posts/{slug}` | Retorna um post pelo slug |
+| `GET` | `/api/categories` | Lista categorias |
+| `GET` | `/api/pages/{slug}` | Retorna uma página |
+| `GET` | `/api/menu` | Estrutura do menu |
 
 ## Arquitetura
 
 ```
 app/
+├── Console/Commands/
+│   ├── DispatchScheduledNewsletters.php  # Verifica campanhas agendadas (roda a cada minuto)
+│   └── GenerateApiToken.php
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Admin/       # PostController, PageController, CategoryController,
-│   │   │                # BlockController, TechnologyController, MenuController,
-│   │   │                # ConfigController, UserController, RoleController,
-│   │   │                # NewsletterAreaController, NewsletterSubscriberController,
-│   │   │                # ActivityLogController, GalleryImageController,
-│   │   │                # ToggleController, ReorderController
-│   │   ├── Api/         # PostController (API pública)
+│   │   ├── Admin/        # 18 controllers (Posts, Pages, Categories, Blocks,
+│   │   │                 # Technologies, Menu, Configs, Users, Roles,
+│   │   │                 # NewsletterAreas, NewsletterSubscribers,
+│   │   │                 # NewsletterCampaigns, ActivityLog, Gallery…)
+│   │   ├── Api/          # AuthController, PostController, CategoryController,
+│   │   │                 # PageController, MenuController
 │   │   └── BlogController, HomeController, NewsletterController
 │   ├── Middleware/
-│   │   ├── ValidateApiToken.php
-│   │   └── EnsureIsAdmin.php
-│   ├── Requests/        # Form Requests com validação por recurso
-│   └── Resources/
-│       └── PostResource.php
-├── Models/              # Post, Page, GalleryImage, Category, Block, Technology,
-│                        # MenuItem, Config, User, Role, ApiToken,
-│                        # NewsletterArea, NewsletterSubscriber
-├── Services/            # PostService, PageService, MenuService, RoleService,
-│                        # UserService, ConfigService, ActivityLogService,
-│                        # FileUploadService
+│   │   ├── EnsureAdmin.php
+│   │   └── ResourcePermission.php
+│   └── Requests/         # Form Requests por recurso
+├── Jobs/
+│   └── SendNewsletterCampaign.php   # Processamento assíncrono de campanhas
+├── Mail/
+│   └── NewsletterCampaignMail.php
+├── Models/               # Post, Page, GalleryImage, Category, Block, Technology,
+│                         # MenuItem, Config, User, Role,
+│                         # NewsletterArea, NewsletterSubscriber,
+│                         # NewsletterCampaign, NewsletterSendLog
+├── Services/             # PostService, PageService, MenuService, RoleService,
+│                         # UserService, ConfigService, ActivityLogService,
+│                         # FileUploadService
 └── Traits/
     └── HasActivityLog.php
 ```
@@ -76,16 +108,25 @@ O projeto segue o padrão **Controller → Service → Eloquent**: controllers s
 ## Decisões técnicas
 
 **Service layer em vez de Repository pattern**
-O Repository pattern adiciona uma camada de abstração que só se justifica quando você precisa trocar o mecanismo de persistência (ex: de Eloquent para uma API externa). Aqui, o banco é MySQL e o ORM é Eloquent — fixos. Criar repositórios seria burocracia sem benefício real. A camada de Service existe apenas onde há lógica de negócio genuína: orquestração de múltiplos models, transações, upload de arquivos. CRUD simples fica direto no controller.
+O Repository pattern adiciona uma camada de abstração que só se justifica quando você precisa trocar o mecanismo de persistência. Aqui, o banco é MySQL e o ORM é Eloquent — fixos. A camada de Service existe apenas onde há lógica de negócio genuína: orquestração de múltiplos models, transações, upload de arquivos.
 
 **Inertia.js em vez de API + SPA separado**
-O painel administrativo não precisa de uma API própria — é uma interface que consome os mesmos dados do backend. Inertia.js permite escrever o frontend em React com roteamento e estado gerenciados pelo Laravel, sem duplicar a camada de autenticação e autorização. A API RESTful existe separada para consumo externo, onde a separação de contexto faz sentido.
+O painel administrativo não precisa de uma API própria — é uma interface que consome os mesmos dados do backend. Inertia.js permite escrever o frontend em React com roteamento e estado gerenciados pelo Laravel, sem duplicar a camada de autenticação e autorização. A API RESTful existe separada para consumo externo.
+
+**Sanctum para autenticação da API**
+Tokens stateless gerados pelo próprio Laravel, sem dependência de pacote externo de JWT. O `personal_access_tokens` do Sanctum integra com o ecossistema Laravel nativamente e suporta revogação individual de tokens.
+
+**Queue assíncrona para campanhas de newsletter**
+O envio de e-mails para múltiplos inscritos é feito via Job enfileirado (Laravel Queue, driver `database`), evitando timeout na requisição HTTP e possibilitando retry automático em caso de falha. O worker roda em background no mesmo container via `start.sh`.
 
 **Spatie Permission e Activity Log**
-Controle de acesso baseado em papéis (RBAC) e log de auditoria são problemas resolvidos. Implementar do zero introduziria edge cases e surface de bug sem agregar diferencial. Os pacotes Spatie são padrão de mercado em projetos Laravel — conhecê-los e integrá-los é mais relevante para o dia a dia profissional do que reinventá-los.
+Controle de acesso baseado em papéis (RBAC) e log de auditoria são problemas resolvidos. Os pacotes Spatie são padrão de mercado em projetos Laravel.
+
+**Redis para cache da API**
+Todos os endpoints da API têm resposta cacheada no Redis com invalidação automática via Observers — a cada create/update/delete, o cache do recurso afetado é limpo, sem necessidade de TTL artificial.
 
 **SQLite in-memory para testes**
-Os testes de feature cobrem comportamento de rotas e regras de negócio, não detalhes de SQL. SQLite in-memory elimina a dependência de um banco real no CI, torna os testes mais rápidos e garante isolamento total entre suítes.
+Os testes de feature cobrem comportamento de rotas e regras de negócio, não detalhes de SQL. SQLite in-memory elimina a dependência de banco real, torna os testes rápidos e garante isolamento entre suítes.
 
 ## Screenshots
 
@@ -162,8 +203,8 @@ docker exec app php artisan db:seed
 Isso cria:
 - 1 usuário admin (`thiago@teste.com.br` / `Senha@123`)
 - 6 categorias e 6 posts com imagens
-- Páginas "Sobre Nós" (com galeria) e "Política de Privacidade"
-- 8 tecnologias e 8 áreas de newsletter
+- Páginas "Sobre Nós" e "Política de Privacidade"
+- 8 tecnologias e áreas de newsletter
 - Configurações do site e menu de navegação completo
 
 ### 6. Configure o host local
@@ -176,6 +217,16 @@ Adicione ao seu `/etc/hosts`:
 
 Acesse em **http://devhub.local** e o painel em **http://devhub.local/admin**
 
+### 7. (Opcional) Inicie filas e scheduler para o sistema de newsletter
+
+```bash
+# Queue worker — processa campanhas de e-mail
+docker exec app php artisan queue:work
+
+# Scheduler — despacha campanhas agendadas a cada minuto
+php artisan schedule:work   # roda no host
+```
+
 ## Containers
 
 | Container | Função | Porta |
@@ -183,6 +234,7 @@ Acesse em **http://devhub.local** e o painel em **http://devhub.local/admin**
 | `app` | PHP-FPM (Laravel) | — |
 | `webserver` | Nginx | 80 |
 | `db` | MySQL 8 | 3307 (host) |
+| `redis` | Cache + Queue | 6379 (host) |
 
 ## Comandos úteis
 
@@ -204,43 +256,6 @@ npm run build
 docker exec app php artisan test
 ```
 
-## API
-
-A API requer um token Bearer no header `Authorization`. Tokens são gerenciados pelo painel em `/admin`.
-
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| `GET` | `/api/posts` | Lista posts ativos (paginado) |
-| `GET` | `/api/posts/{slug}` | Retorna um post pelo slug |
-
-**Exemplo:**
-
-```bash
-curl -H "Authorization: Bearer SEU_TOKEN" http://devhub.local/api/posts
-```
-
-**Resposta:**
-
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "title": "Título do post",
-      "slug": "titulo-do-post",
-      "description": "...",
-      "banner_image": "http://devhub.local/storage/...",
-      "published_at": "2026-05-16T00:00:00Z"
-    }
-  ],
-  "meta": {
-    "current_page": 1,
-    "per_page": 15,
-    "total": 6
-  }
-}
-```
-
 ## Testes
 
 Os testes usam SQLite in-memory e não afetam o banco de desenvolvimento.
@@ -249,11 +264,23 @@ Os testes usam SQLite in-memory e não afetam o banco de desenvolvimento.
 docker exec app php artisan test
 ```
 
-Cobertura atual:
+**Resultado atual: 124 testes, 443 asserções — 100% passando**
 
-- Endpoints da API (autenticação, listagem, filtro de posts inativos, busca por slug)
-- Rotas de autenticação (login, registro, logout)
-- Perfil do usuário (atualização, exclusão)
+Cobertura por módulo:
+
+| Módulo | Testes |
+|--------|--------|
+| API (auth, posts, paginação, slug, 404) | `Api/PostApiTest`, `Api/ValidateApiTokenTest` |
+| Admin — Posts | CRUD completo, upload de banner, permissões |
+| Admin — Categories, Blocks, Pages, Technologies | CRUD e permissões |
+| Admin — Menu | CRUD e reordenação |
+| Admin — Newsletter areas e subscribers | CRUD e conformidade |
+| Admin — Roles e Users | Criação, proteção de perfis de sistema, controle de super admin |
+| Admin — Reorder | Transações e validação de módulos |
+| Auth | Login, registro, reset de senha, verificação de e-mail |
+| Perfil | Atualização e exclusão de conta |
+| Models | Limpeza de arquivos em Posts, Pages e GalleryImages |
+| Services | PostService (criação, atualização, deleção, upload) |
 
 ## Variáveis de ambiente relevantes
 
@@ -261,4 +288,8 @@ Cobertura atual:
 |----------|-----------|
 | `APP_URL` | URL base da aplicação |
 | `DB_*` | Conexão com MySQL |
+| `REDIS_URL` | Conexão com Redis (cache e filas) |
+| `CACHE_STORE` | Driver de cache (`redis` em produção) |
+| `QUEUE_CONNECTION` | Driver de fila (`database` em produção) |
+| `MAIL_*` | Configuração SMTP para envio de newsletters |
 | `FILESYSTEM_DISK` | Disco para upload de arquivos (padrão: `public`) |
