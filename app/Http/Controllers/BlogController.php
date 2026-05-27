@@ -12,8 +12,11 @@ class BlogController extends Controller
 
     public function index(Request $request)
     {
+        $search = $request->input('busca');
+
         return Inertia::render('Blog/Index', [
-            'posts' => $this->postService->getAllActive(12),
+            'posts'   => $this->postService->getAllActive(12, $search),
+            'filters' => ['busca' => $search],
         ]);
     }
 

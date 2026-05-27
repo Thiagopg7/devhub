@@ -23,7 +23,7 @@ export default function Form({ technology = null }) {
         url:            technology?.url            ?? "",
         icon_url:       technology?.icon_url       ?? "",
         screenshot_url: technology?.screenshot_url ?? "",
-        order:          technology?.order          ?? 0,
+        order:          technology?.order          ?? "",
         is_active:      technology?.is_active      ?? true,
     });
 
@@ -149,7 +149,7 @@ export default function Form({ technology = null }) {
                                             min="0"
                                             value={data.order}
                                             className="mt-1 block w-32"
-                                            onChange={(e) => setData("order", Number(e.target.value))}
+                                            onChange={(e) => setData("order", e.target.value === "" ? "" : Number(e.target.value))}
                                             disabled={processing || readonly}
                                         />
                                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

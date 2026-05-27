@@ -8,7 +8,7 @@ import { useCan } from "@/hooks/useCan";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaPaperPlane } from "react-icons/fa";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Eye } from "lucide-react";
 
 const STATUS_LABEL = {
     draft:     { label: 'Rascunho',  cls: 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300' },
@@ -51,6 +51,16 @@ export default function Show({ campaign, logs, stats }) {
                             </span>
                         </div>
                         <div className="flex gap-2">
+                            {can('newsletter_campaigns.view') && (
+                                <NavButton
+                                    href={route('admin.newsletter-campaigns.preview', campaign.id)}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    variant="secondary"
+                                >
+                                    <Eye size={15} className="mr-1.5" /> Pré-visualizar
+                                </NavButton>
+                            )}
                             {can('newsletter_campaigns.edit') && (campaign.status === 'draft' || campaign.status === 'scheduled') && (
                                 <ActionButton theme="light" onClick={confirmSend}>
                                     <FaPaperPlane className="text-white mr-1.5" /> Enviar agora

@@ -35,6 +35,14 @@ class GalleryImage extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (self $model) {
+            if (is_null($model->order)) {
+                $model->order = (static::where('imageable_type', $model->imageable_type)
+                    ->where('imageable_id', $model->imageable_id)
+                    ->max('order') ?? 0) + 1;
+            }
+        });
+
         static::deleted(function (self $galleryImage) {
             if ($galleryImage->image && Storage::disk('public')->exists($galleryImage->image)) {
                 Storage::disk('public')->delete($galleryImage->image);

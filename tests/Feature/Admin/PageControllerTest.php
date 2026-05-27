@@ -3,32 +3,18 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Page;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
+use Tests\Traits\CreatesAdminUser;
 
 class PageControllerTest extends TestCase
 {
+    use CreatesAdminUser;
+
     use RefreshDatabase;
-
-    private function adminUser(array $perms = []): User
-    {
-        $role = Role::firstOrCreate(['name' => 'Administrador', 'guard_name' => 'web']);
-
-        foreach ($perms as $name) {
-            $perm = Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
-            $role->givePermissionTo($perm);
-        }
-
-        $user = User::factory()->create();
-        $user->assignRole($role);
-
-        return $user;
-    }
 
     public function test_index_lista_paginas(): void
     {

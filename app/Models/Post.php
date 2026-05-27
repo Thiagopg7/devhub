@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
@@ -27,6 +26,7 @@ class Post extends Model
         'is_active',
         'meta_title',
         'meta_description',
+        'deleted_by',
     ];
 
     public function user(): BelongsTo
@@ -37,6 +37,11 @@ class Post extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function deletedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
     }
 
     protected $hidden = ['deleted_at', 'updated_at'];
@@ -70,14 +75,11 @@ class Post extends Model
 
     protected static function booted(): void
     {
-        static::saved(function (self $post) {
-            Cache::tags(['api-posts'])->flush();
-            Cache::forget("api.post.{$post->slug}");
+        static::deleting(function (self $post) {
+            $post->deleted_by = auth()->id();
+            $post->saveQuietly();
         });
-        static::deleted(function (self $post) {
-            Cache::tags(['api-posts'])->flush();
-            Cache::forget("api.post.{$post->slug}");
-        });
+
         static::forceDeleted(function (self $post) {
             if ($post->banner_image && Storage::disk('public')->exists($post->banner_image)) {
                 Storage::disk('public')->delete($post->banner_image);

@@ -13,7 +13,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
-export default function Index({ pages, filter }) {
+export default function Index({ pages, filter, trashedCount = 0 }) {
     const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [pending, setPending] = useState(null);
@@ -45,9 +45,16 @@ export default function Index({ pages, filter }) {
                 header={
                     <div className="flex w-full justify-between items-center">
                         <h2 className="font-semibold text-xl leading-tight">Páginas</h2>
-                        {can('pages.create') && (
-                            <NavButton href={route("admin.pages.create")}>Cadastrar</NavButton>
-                        )}
+                        <div className="flex gap-2">
+                            {can('pages.delete') && (
+                                <NavButton href={route("admin.pages.trashed")} variant="secondary">
+                                    Lixeira{trashedCount > 0 && ` (${trashedCount})`}
+                                </NavButton>
+                            )}
+                            {can('pages.create') && (
+                                <NavButton href={route("admin.pages.create")}>Cadastrar</NavButton>
+                            )}
+                        </div>
                     </div>
                 }
             >

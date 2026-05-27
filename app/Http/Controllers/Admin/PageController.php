@@ -18,9 +18,36 @@ class PageController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Pages/Index', [
-            'pages'  => $this->pageService->getPaginated(20, $request->input('q')),
-            'filter' => $request->only('q'),
+            'pages'        => $this->pageService->getPaginated(20, $request->input('q')),
+            'filter'       => $request->only('q'),
+            'trashedCount' => Page::onlyTrashed()->count(),
         ]);
+    }
+
+    public function trashed(): Response
+    {
+        return Inertia::render('Admin/Pages/Trashed', [
+            'pages' => Page::onlyTrashed()
+                ->with('deletedByUser:id,name')
+                ->orderByDesc('deleted_at')
+                ->paginate(20)
+                ->through(fn ($p) => $p->makeVisible('deleted_at')),
+        ]);
+    }
+
+    public function restore(int $id): RedirectResponse
+    {
+        Page::onlyTrashed()->findOrFail($id)->restore();
+
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Página restaurada.', 'type' => 'success']);
+    }
+
+    public function purge(int $id): RedirectResponse
+    {
+        $page = Page::onlyTrashed()->findOrFail($id);
+        $this->pageService->purge($page);
+
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Página excluída permanentemente.', 'type' => 'success']);
     }
 
     public function create(): Response

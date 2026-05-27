@@ -7,19 +7,48 @@ use App\Http\Requests\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Services\PostService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class PostController extends Controller
 {
     public function __construct(private readonly PostService $postService) {}
 
-    public function index(Request $request)
+    public function index(Request $request): Response
     {
         return Inertia::render('Admin/Posts/Index', [
-            'posts'  => $this->postService->getPaginated(20, $request->input('q')),
-            'filter' => $request->only('q'),
+            'posts'        => $this->postService->getPaginated(20, $request->input('q')),
+            'filter'       => $request->only('q'),
+            'trashedCount' => Post::onlyTrashed()->count(),
         ]);
+    }
+
+    public function trashed(): Response
+    {
+        return Inertia::render('Admin/Posts/Trashed', [
+            'posts' => Post::onlyTrashed()
+                ->with('deletedByUser:id,name')
+                ->orderByDesc('deleted_at')
+                ->paginate(20)
+                ->through(fn ($p) => $p->makeVisible('deleted_at')),
+        ]);
+    }
+
+    public function restore(int $id): RedirectResponse
+    {
+        Post::onlyTrashed()->findOrFail($id)->restore();
+
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Post restaurado.', 'type' => 'success']);
+    }
+
+    public function purge(int $id): RedirectResponse
+    {
+        $post = Post::onlyTrashed()->findOrFail($id);
+        $this->postService->purge($post);
+
+        return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Post excluído permanentemente.', 'type' => 'success']);
     }
 
     public function create()

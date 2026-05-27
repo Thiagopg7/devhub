@@ -19,7 +19,7 @@ class TechnologyRequest extends FormRequest
             'url'            => ['required', 'url', 'max:500'],
             'icon_url'       => ['nullable', 'url', 'max:500'],
             'screenshot_url' => ['nullable', 'url', 'max:500'],
-            'order'          => ['integer', 'min:0'],
+            'order'          => ['nullable', 'integer', 'min:0'],
             'is_active'      => ['boolean'],
         ];
     }

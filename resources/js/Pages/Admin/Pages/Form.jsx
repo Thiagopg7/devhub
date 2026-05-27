@@ -56,9 +56,22 @@ function GallerySection({ page, processing, readonly, onDeleteRequest }) {
         );
     }
 
+    const MAX_MB = 5;
+    const MAX_BYTES = MAX_MB * 1024 * 1024;
+
     const handleUpload = (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
+
+        const oversized = files.filter((f) => f.size > MAX_BYTES);
+        if (oversized.length) {
+            toast.error(
+                `${oversized.length > 1 ? `${oversized.length} imagens ultrapassam` : "Uma imagem ultrapassa"} o limite de ${MAX_MB} MB por arquivo.`
+            );
+            if (inputRef.current) inputRef.current.value = "";
+            return;
+        }
+
         setData("images", files);
     };
 
@@ -68,11 +81,16 @@ function GallerySection({ page, processing, readonly, onDeleteRequest }) {
             forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
-                toast.success("Imagens adicionadas!");
                 reset();
                 if (inputRef.current) inputRef.current.value = "";
             },
-            onError: () => toast.error("Erro ao enviar imagens."),
+            onError: (errs) => {
+                if (errs?.status === 413 || Object.keys(errs).length === 0) {
+                    toast.error(`Arquivo muito grande. O limite é ${MAX_MB} MB por envio.`);
+                } else {
+                    toast.error("Erro ao enviar imagens.");
+                }
+            },
         });
     };
 
@@ -81,7 +99,6 @@ function GallerySection({ page, processing, readonly, onDeleteRequest }) {
             message: "Remover esta imagem da galeria?",
             onConfirm: () => router.delete(route("admin.gallery-images.destroy", imageId), {
                 preserveScroll: true,
-                onSuccess: () => toast.success("Imagem removida!"),
                 onError: () => toast.error("Erro ao remover imagem."),
             }),
         });

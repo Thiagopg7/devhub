@@ -21,12 +21,19 @@ export default function BlogShow({ post }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
 
+    const ogTitle = post.meta_title || post.title;
+    const ogDescription = post.meta_description || post.description;
+
     return (
         <PublicLayout>
-            <Head title={`${post.meta_title || post.title} — ${siteName}`}>
-                {post.meta_description && (
-                    <meta name="description" content={post.meta_description} />
-                )}
+            <Head title={`${ogTitle} — ${siteName}`}>
+                {ogDescription && <meta name="description" content={ogDescription} />}
+                <meta property="og:type" content="article" />
+                <meta property="og:site_name" content={siteName} />
+                <meta property="og:title" content={ogTitle} />
+                {ogDescription && <meta property="og:description" content={ogDescription} />}
+                <meta property="og:url" content={route('blog.show', post.slug)} />
+                {post.banner_image_url && <meta property="og:image" content={post.banner_image_url} />}
             </Head>
 
             {/* Banner */}

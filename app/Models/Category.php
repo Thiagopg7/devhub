@@ -6,10 +6,9 @@ use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Cache;
-
 class Category extends Model
 {
     use HasActivityLog, HasFactory, Sluggable, SoftDeletes;
@@ -20,6 +19,7 @@ class Category extends Model
         'color',
         'description',
         'is_active',
+        'deleted_by',
     ];
 
     protected $hidden = ['deleted_at', 'updated_at'];
@@ -39,6 +39,11 @@ class Category extends Model
         return $this->hasMany(Post::class);
     }
 
+    public function deletedByUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'deleted_by');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
@@ -46,13 +51,10 @@ class Category extends Model
 
     protected static function booted(): void
     {
-        static::saved(function (self $category) {
-            Cache::forget('api.categories');
-            Cache::forget("api.category.{$category->slug}");
+        static::deleting(function (self $category) {
+            $category->deleted_by = auth()->id();
+            $category->saveQuietly();
         });
-        static::deleted(function (self $category) {
-            Cache::forget('api.categories');
-            Cache::forget("api.category.{$category->slug}");
-        });
+
     }
 }

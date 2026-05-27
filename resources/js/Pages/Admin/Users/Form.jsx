@@ -21,11 +21,12 @@ export default function Form({ user = null, roles = [] }) {
     const canEditPrivileges = !isSelf && !readonly;
 
     const { data, setData, post, put, processing, errors } = useForm({
-        name:           user?.name           ?? "",
-        email:          user?.email          ?? "",
-        password:       "",
-        role_id:        user?.role_id        ?? "",
-        is_super_admin: user?.is_super_admin ?? false,
+        name:                  user?.name           ?? "",
+        email:                 user?.email          ?? "",
+        password:              "",
+        password_confirmation: "",
+        role_id:               user?.role_id        ?? "",
+        is_super_admin:        user?.is_super_admin ?? false,
     });
 
     const submit = (e) => {
@@ -85,19 +86,36 @@ export default function Form({ user = null, roles = [] }) {
                                     </div>
 
                                     {!readonly && (
-                                        <div>
-                                            <Label htmlFor="password" value={isEditing ? "Nova senha" : "Senha *"} />
-                                            <Input
-                                                id="password"
-                                                type="password"
-                                                value={data.password}
-                                                className="mt-1 block w-full"
-                                                placeholder={isEditing ? "Deixe em branco para manter a atual" : ""}
-                                                onChange={(e) => setData("password", e.target.value)}
-                                                disabled={processing}
-                                                autoComplete="new-password"
-                                            />
-                                        </div>
+                                        <>
+                                            <div>
+                                                <Label htmlFor="password" value={isEditing ? "Nova senha" : "Senha *"} />
+                                                <Input
+                                                    id="password"
+                                                    type="password"
+                                                    value={data.password}
+                                                    className="mt-1 block w-full"
+                                                    placeholder={isEditing ? "Deixe em branco para manter a atual" : ""}
+                                                    onChange={(e) => setData("password", e.target.value)}
+                                                    disabled={processing}
+                                                    autoComplete="new-password"
+                                                />
+                                            </div>
+
+                                            {(!isEditing || data.password) && (
+                                                <div>
+                                                    <Label htmlFor="password_confirmation" value={isEditing ? "Confirmar nova senha" : "Confirmar senha *"} />
+                                                    <Input
+                                                        id="password_confirmation"
+                                                        type="password"
+                                                        value={data.password_confirmation}
+                                                        className="mt-1 block w-full"
+                                                        onChange={(e) => setData("password_confirmation", e.target.value)}
+                                                        disabled={processing}
+                                                        autoComplete="new-password"
+                                                    />
+                                                </div>
+                                            )}
+                                        </>
                                     )}
 
                                     <div>

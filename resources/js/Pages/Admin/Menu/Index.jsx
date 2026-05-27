@@ -158,19 +158,19 @@ export default function Index({ items: initialItems, filter }) {
                                 </form>
 
                                 {items.length > 0 ? (
-                                    <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead className="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                <th className="w-8" />
-                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Label</th>
-                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">URL</th>
-                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nova aba</th>
-                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                                            <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                                    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                                        <SortableContext items={items.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                                            <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                                    <tr>
+                                                        <th className="w-8" />
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Label</th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">URL</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nova aba</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
+                                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                                     {items.map((item) => (
                                                         <React.Fragment key={item.id}>
@@ -178,7 +178,7 @@ export default function Index({ items: initialItems, filter }) {
                                                                 <MenuRowCells item={item} onDeleteRequest={handleDeleteRequest} />
                                                             </SortableTr>
                                                             {item.children?.map((child) => (
-                                                                <tr key={child.id} className="bg-gray-50 dark:bg-gray-750">
+                                                                <tr key={child.id} className="bg-gray-50 dark:bg-gray-700">
                                                                     <td className="pl-3 pr-1 py-4 w-8" />
                                                                     <MenuRowCells item={child} isChild onDeleteRequest={handleDeleteRequest} />
                                                                 </tr>
@@ -186,9 +186,9 @@ export default function Index({ items: initialItems, filter }) {
                                                         </React.Fragment>
                                                     ))}
                                                 </tbody>
-                                            </SortableContext>
-                                        </DndContext>
-                                    </table>
+                                            </table>
+                                        </SortableContext>
+                                    </DndContext>
                                 ) : (
                                     <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
                                         Nenhum item de menu cadastrado.

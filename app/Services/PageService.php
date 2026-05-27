@@ -71,4 +71,11 @@ class PageService
     {
         $page->delete();
     }
+
+    public function purge(Page $page): void
+    {
+        $this->uploadService->delete($page->banner_image);
+        $this->uploadService->delete($page->main_image);
+        $page->forceDelete();
+    }
 }

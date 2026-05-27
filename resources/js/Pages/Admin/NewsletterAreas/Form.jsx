@@ -18,7 +18,7 @@ export default function Form({ area = null }) {
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         name:      area?.name      ?? "",
-        order:     area?.order     ?? 0,
+        order:     area?.order     ?? "",
         is_active: area?.is_active ?? true,
     });
 
@@ -77,7 +77,7 @@ export default function Form({ area = null }) {
                                             min="0"
                                             value={data.order}
                                             className="mt-1 block w-32"
-                                            onChange={(e) => setData("order", Number(e.target.value))}
+                                            onChange={(e) => setData("order", e.target.value === "" ? "" : Number(e.target.value))}
                                             disabled={processing || readonly}
                                         />
                                         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

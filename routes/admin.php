@@ -23,13 +23,23 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'verified', 'admin']], function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('/posts', PostController::class)->middleware('resource.permission:posts');
-    Route::resource('/categories', CategoryController::class)->middleware('resource.permission:categories');
+    Route::get('/posts/trashed', [PostController::class, 'trashed'])->name('posts.trashed')->middleware('can:posts.delete');
+    Route::post('/posts/{id}/restore', [PostController::class, 'restore'])->name('posts.restore')->middleware('can:posts.delete');
+    Route::delete('/posts/{id}/purge', [PostController::class, 'purge'])->name('posts.purge')->middleware('can:posts.delete');
+    Route::resource('/posts', PostController::class)->except(['show'])->middleware('resource.permission:posts');
+
+    Route::get('/categories/trashed', [CategoryController::class, 'trashed'])->name('categories.trashed')->middleware('can:categories.delete');
+    Route::post('/categories/{id}/restore', [CategoryController::class, 'restore'])->name('categories.restore')->middleware('can:categories.delete');
+    Route::delete('/categories/{id}/purge', [CategoryController::class, 'purge'])->name('categories.purge')->middleware('can:categories.delete');
+    Route::resource('/categories', CategoryController::class)->except(['show'])->middleware('resource.permission:categories');
     Route::resource('/blocks', BlockController::class)->middleware('resource.permission:blocks');
     Route::resource('/technologies', TechnologyController::class)
         ->except(['show'])
         ->middleware('resource.permission:technologies');
 
+    Route::get('/pages/trashed', [PageController::class, 'trashed'])->name('pages.trashed')->middleware('can:pages.delete');
+    Route::post('/pages/{id}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware('can:pages.delete');
+    Route::delete('/pages/{id}/purge', [PageController::class, 'purge'])->name('pages.purge')->middleware('can:pages.delete');
     Route::resource('/pages', PageController::class)
         ->except(['show'])
         ->middleware('resource.permission:pages');
@@ -63,6 +73,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::post('/newsletter-campaigns/{newsletterCampaign}/send', [NewsletterCampaignController::class, 'send'])
         ->name('newsletter-campaigns.send')
         ->middleware('can:newsletter_campaigns.edit');
+    Route::get('/newsletter-campaigns/{newsletterCampaign}/preview', [NewsletterCampaignController::class, 'preview'])
+        ->name('newsletter-campaigns.preview')
+        ->middleware('can:newsletter_campaigns.view');
 
     Route::get('/newsletter-subscribers', [NewsletterSubscriberController::class, 'index'])
         ->name('newsletter-subscribers.index')
