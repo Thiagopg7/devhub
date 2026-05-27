@@ -12,7 +12,7 @@ import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
-export default function Index({ categories, filter }) {
+export default function Index({ categories, filter, trashedCount = 0 }) {
     const can = useCan();
     const { data, setData, get } = useForm({
         q: filter?.q || "",
@@ -48,11 +48,18 @@ export default function Index({ categories, filter }) {
                         <h2 className="font-semibold text-xl leading-tight">
                             Categorias
                         </h2>
-                        {can('categories.create') && (
-                            <NavButton href={route("admin.categories.create")}>
-                                Cadastrar
-                            </NavButton>
-                        )}
+                        <div className="flex gap-2">
+                            {can('categories.delete') && (
+                                <NavButton href={route("admin.categories.trashed")} variant="secondary">
+                                    Lixeira{trashedCount > 0 && ` (${trashedCount})`}
+                                </NavButton>
+                            )}
+                            {can('categories.create') && (
+                                <NavButton href={route("admin.categories.create")}>
+                                    Cadastrar
+                                </NavButton>
+                            )}
+                        </div>
                     </div>
                 }
             >

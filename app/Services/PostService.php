@@ -114,4 +114,12 @@ class PostService
     {
         $post->delete();
     }
+
+    public function purge(Post $post): void
+    {
+        if ($post->banner_image) {
+            $this->uploadService->delete($post->banner_image);
+        }
+        $post->forceDelete();
+    }
 }
