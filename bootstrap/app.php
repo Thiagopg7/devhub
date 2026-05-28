@@ -79,6 +79,16 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if (in_array($status, [404, 500, 503])) {
+                if ($status === 500) {
+                    Log::error('Erro HTTP 500', [
+                        'exception' => $e,
+                        'url'       => $request->fullUrl(),
+                        'method'    => $request->method(),
+                        'user_id'   => $request->user()?->id,
+                        'ip'        => $request->ip(),
+                    ]);
+                }
+
                 return Inertia::render('Error', ['status' => $status])
                     ->toResponse($request)
                     ->setStatusCode($status);
