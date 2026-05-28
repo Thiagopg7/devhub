@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Admin;
 
-use App\Models\GalleryImage;
 use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -12,7 +11,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class GalleryImageControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     private function page(): Page
     {
@@ -73,7 +72,7 @@ class GalleryImageControllerTest extends TestCase
     {
         $user = $this->adminUser([]);
         $page = $this->page();
-        $gi   = $page->galleryImages()->create(['image' => 'gallery/foto.jpg']);
+        $gi = $page->galleryImages()->create(['image' => 'gallery/foto.jpg']);
 
         $this->actingAs($user)
             ->delete(route('admin.gallery-images.destroy', $gi))

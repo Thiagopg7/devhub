@@ -15,8 +15,10 @@ class SendNewsletterCampaign implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries   = 3;
-    public int $backoff  = 60;
+    public int $tries = 3;
+
+    public int $backoff = 60;
+
     public int $timeout = 3600;
 
     public function __construct(public readonly NewsletterCampaign $campaign) {}
@@ -33,8 +35,8 @@ class SendNewsletterCampaign implements ShouldQueue
                 foreach ($subscribers as $subscriber) {
                     $log = NewsletterSendLog::firstOrCreate(
                         [
-                            'newsletter_campaign_id'    => $this->campaign->id,
-                            'newsletter_subscriber_id'  => $subscriber->id,
+                            'newsletter_campaign_id' => $this->campaign->id,
+                            'newsletter_subscriber_id' => $subscriber->id,
                         ],
                         ['status' => 'pending']
                     );
@@ -61,7 +63,7 @@ class SendNewsletterCampaign implements ShouldQueue
         $hasFailed = $this->campaign->sendLogs()->where('status', 'failed')->exists();
 
         $this->campaign->update([
-            'status'  => $hasFailed ? 'failed' : 'sent',
+            'status' => $hasFailed ? 'failed' : 'sent',
             'sent_at' => now(),
         ]);
     }

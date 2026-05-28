@@ -30,7 +30,7 @@ class RolePolicy
             return true;
         }
 
-        return !$current->hasRole($role);
+        return ! $current->hasRole($role);
     }
 
     /**
@@ -40,6 +40,6 @@ class RolePolicy
      */
     public function update(User $current, Role $role): bool
     {
-        return !$current->hasRole($role);
+        return ! $current->hasRole($role);
     }
 }

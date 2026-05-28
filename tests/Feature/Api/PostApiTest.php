@@ -17,7 +17,7 @@ class PostApiTest extends TestCase
     {
         parent::setUp();
 
-        $user        = User::factory()->create();
+        $user = User::factory()->create();
         $this->token = $user->createToken('api-test')->plainTextToken;
     }
 
@@ -34,8 +34,8 @@ class PostApiTest extends TestCase
         Post::factory()->count(2)->create(['is_active' => false]);
 
         $this->autenticado()->getJson('/api/posts')
-             ->assertOk()
-             ->assertJsonCount(3, 'data');
+            ->assertOk()
+            ->assertJsonCount(3, 'data');
     }
 
     public function test_retorna_listagem_paginada(): void
@@ -43,12 +43,12 @@ class PostApiTest extends TestCase
         Post::factory()->count(5)->create(['is_active' => true]);
 
         $this->autenticado()->getJson('/api/posts')
-             ->assertOk()
-             ->assertJsonStructure([
-                 'data',
-                 'links',
-                 'meta' => ['current_page', 'per_page', 'total'],
-             ]);
+            ->assertOk()
+            ->assertJsonStructure([
+                'data',
+                'links',
+                'meta' => ['current_page', 'per_page', 'total'],
+            ]);
     }
 
     // --- GET /api/posts/{slug} ---
@@ -58,14 +58,14 @@ class PostApiTest extends TestCase
         $post = Post::factory()->create(['is_active' => true]);
 
         $this->autenticado()->getJson("/api/posts/{$post->slug}")
-             ->assertOk()
-             ->assertJsonFragment(['slug' => $post->slug]);
+            ->assertOk()
+            ->assertJsonFragment(['slug' => $post->slug]);
     }
 
     public function test_retorna_404_para_slug_inexistente(): void
     {
         $this->autenticado()->getJson('/api/posts/slug-que-nao-existe')
-             ->assertNotFound();
+            ->assertNotFound();
     }
 
     public function test_retorna_404_para_post_inativo(): void
@@ -73,6 +73,6 @@ class PostApiTest extends TestCase
         Post::factory()->create(['is_active' => false, 'slug' => 'post-inativo']);
 
         $this->autenticado()->getJson('/api/posts/post-inativo')
-             ->assertNotFound();
+            ->assertNotFound();
     }
 }

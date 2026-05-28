@@ -18,7 +18,7 @@ class NewsletterSubscriber extends Model
     ];
 
     protected $casts = [
-        'lgpd_consent'    => 'boolean',
+        'lgpd_consent' => 'boolean',
         'lgpd_consent_at' => 'datetime',
     ];
 

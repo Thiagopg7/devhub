@@ -28,9 +28,9 @@ class UserService
     {
         return DB::transaction(function () use ($data) {
             $user = User::create([
-                'name'           => $data['name'],
-                'email'          => $data['email'],
-                'password'       => Hash::make($data['password']),
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
                 'is_super_admin' => $data['is_super_admin'] ?? false,
             ]);
 
@@ -44,11 +44,11 @@ class UserService
     {
         return DB::transaction(function () use ($user, $data, $canEditPrivileges) {
             $payload = [
-                'name'  => $data['name'],
+                'name' => $data['name'],
                 'email' => $data['email'],
             ];
 
-            if (!empty($data['password'])) {
+            if (! empty($data['password'])) {
                 $payload['password'] = Hash::make($data['password']);
             }
 
@@ -73,8 +73,9 @@ class UserService
 
     private function syncRole(User $user, int|string|null $roleId): void
     {
-        if (!$roleId) {
+        if (! $roleId) {
             $user->syncRoles([]);
+
             return;
         }
 

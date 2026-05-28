@@ -19,7 +19,7 @@ class RoleController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Roles/Index', [
-            'roles'  => $this->roleService->getPaginated(20, request()->input('q')),
+            'roles' => $this->roleService->getPaginated(20, request()->input('q')),
             'filter' => request()->only('q'),
         ]);
     }
@@ -44,10 +44,10 @@ class RoleController extends Controller
 
         return Inertia::render('Admin/Roles/Form', [
             'role' => [
-                'id'          => $role->id,
-                'name'        => $role->name,
+                'id' => $role->id,
+                'name' => $role->name,
                 'permissions' => $role->permissions->pluck('name')->values(),
-                'is_system'   => $role->isSystem(),
+                'is_system' => $role->isSystem(),
             ],
         ]);
     }
@@ -70,17 +70,17 @@ class RoleController extends Controller
         // Invariante de domínio: imutável para todos, incluindo super admins.
         if ($role->isSystem()) {
             return back()->with('toast', [
-                'title'   => 'Erro!',
+                'title' => 'Erro!',
                 'message' => 'Este é um perfil de sistema e não pode ser excluído.',
-                'type'    => 'error',
+                'type' => 'error',
             ]);
         }
 
         if ($role->users()->exists()) {
             return back()->with('toast', [
-                'title'   => 'Erro!',
+                'title' => 'Erro!',
                 'message' => 'Existem usuários vinculados a este perfil.',
-                'type'    => 'error',
+                'type' => 'error',
             ]);
         }
 
@@ -91,7 +91,7 @@ class RoleController extends Controller
 
     private function capPermissions(array $data, User $current): array
     {
-        if (!$current->isSuperAdmin()) {
+        if (! $current->isSuperAdmin()) {
             $allowed = $current->getAllPermissions()->pluck('name')->all();
             $data['permissions'] = array_values(array_intersect($data['permissions'] ?? [], $allowed));
         }

@@ -18,7 +18,7 @@ class MenuController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Menu/Index', [
-            'items'  => $this->menuService->getAdminList($request->input('q')),
+            'items' => $this->menuService->getAdminList($request->input('q')),
             'filter' => $request->only('q'),
         ]);
     }
@@ -41,7 +41,7 @@ class MenuController extends Controller
     public function edit(MenuItem $menu): Response
     {
         return Inertia::render('Admin/Menu/Form', [
-            'item'  => $menu,
+            'item' => $menu,
             'roots' => $this->menuService->getRoots()->where('id', '!=', $menu->id)->values(),
         ]);
     }
@@ -58,9 +58,9 @@ class MenuController extends Controller
     {
         if ($menu->children()->exists()) {
             return back()->with('toast', [
-                'title'   => 'Erro!',
+                'title' => 'Erro!',
                 'message' => 'Remova os submenus antes de excluir este item.',
-                'type'    => 'error',
+                'type' => 'error',
             ]);
         }
 

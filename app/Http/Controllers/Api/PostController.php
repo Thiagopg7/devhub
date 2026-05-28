@@ -20,7 +20,7 @@ class PostController extends Controller
         if ($request->filled('category')) {
             ['category' => $category, 'posts' => $posts] = $this->service->getByCategory($request->category);
 
-            if (!$category) {
+            if (! $category) {
                 return response()->json(['message' => 'Categoria não encontrada.'], 404);
             }
 
@@ -34,7 +34,7 @@ class PostController extends Controller
     {
         $post = $this->service->findBySlug($slug);
 
-        if (!$post) {
+        if (! $post) {
             return response()->json(['message' => 'Post não encontrado.'], 404);
         }
 

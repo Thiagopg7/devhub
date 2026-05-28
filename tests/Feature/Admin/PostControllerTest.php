@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Category;
 use App\Models\Post;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -14,7 +13,6 @@ use Tests\Traits\CreatesAdminUser;
 class PostControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_posts(): void
@@ -48,7 +46,7 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.posts.store'), [
-                'title'     => 'Post de Teste',
+                'title' => 'Post de Teste',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.posts.index'))
@@ -63,12 +61,12 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.posts.store'), [
-                'title'     => 'Post com autor',
+                'title' => 'Post com autor',
                 'is_active' => true,
             ]);
 
         $this->assertDatabaseHas('posts', [
-            'title'   => 'Post com autor',
+            'title' => 'Post com autor',
             'user_id' => $user->id,
         ]);
     }
@@ -82,9 +80,9 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.posts.store'), [
-                'title'        => 'Post com banner',
+                'title' => 'Post com banner',
                 'banner_image' => $banner,
-                'is_active'    => true,
+                'is_active' => true,
             ])
             ->assertRedirect(route('admin.posts.index'));
 
@@ -114,7 +112,7 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.posts.update', $post), [
-                'title'     => 'Atualizado',
+                'title' => 'Atualizado',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.posts.index'))
@@ -136,9 +134,9 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.posts.update', $post), [
-                'title'        => $post->title,
+                'title' => $post->title,
                 'banner_image' => $newBanner,
-                'is_active'    => true,
+                'is_active' => true,
             ])
             ->assertRedirect(route('admin.posts.index'));
 
@@ -157,7 +155,7 @@ class PostControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.posts.update', $post), [
-                'title'     => 'Sem trocar banner',
+                'title' => 'Sem trocar banner',
                 'is_active' => true,
             ]);
 
@@ -195,14 +193,14 @@ class PostControllerTest extends TestCase
 
     public function test_store_com_categoria_valida(): void
     {
-        $user     = $this->adminUser(['posts.create']);
+        $user = $this->adminUser(['posts.create']);
         $category = Category::create(['name' => 'Tech', 'color' => '#000000', 'is_active' => true]);
 
         $this->actingAs($user)
             ->post(route('admin.posts.store'), [
-                'title'       => 'Post categorizado',
+                'title' => 'Post categorizado',
                 'category_id' => $category->id,
-                'is_active'   => true,
+                'is_active' => true,
             ])
             ->assertRedirect(route('admin.posts.index'));
 
@@ -240,7 +238,7 @@ class PostControllerTest extends TestCase
     public function test_purge_exclui_post_permanentemente(): void
     {
         Storage::fake('public');
-        $user    = $this->adminUser(['posts.delete']);
+        $user = $this->adminUser(['posts.delete']);
         $oldPath = 'posts/banner.jpg';
         Storage::disk('public')->put($oldPath, 'imagem');
         $post = Post::factory()->create(['banner_image' => $oldPath]);

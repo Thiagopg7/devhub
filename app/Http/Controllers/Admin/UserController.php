@@ -19,7 +19,7 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Users/Index', [
-            'users'  => $this->userService->getPaginated(20, $request->input('q')),
+            'users' => $this->userService->getPaginated(20, $request->input('q')),
             'filter' => $request->only('q'),
         ]);
     }
@@ -34,16 +34,16 @@ class UserController extends Controller
     public function store(UserRequest $request): RedirectResponse
     {
         $current = $request->user();
-        $data    = $request->validated();
+        $data = $request->validated();
 
-        if (!$current->isSuperAdmin()) {
+        if (! $current->isSuperAdmin()) {
             unset($data['is_super_admin']);
 
             if ($this->isSystemRole($data['role_id'] ?? null)) {
                 return back()->withInput()->with('toast', [
-                    'title'   => 'Erro!',
+                    'title' => 'Erro!',
                     'message' => 'Apenas um super admin pode atribuir um perfil de sistema.',
-                    'type'    => 'error',
+                    'type' => 'error',
                 ]);
             }
         }
@@ -60,11 +60,11 @@ class UserController extends Controller
 
         return Inertia::render('Admin/Users/Form', [
             'user' => [
-                'id'             => $user->id,
-                'name'           => $user->name,
-                'email'          => $user->email,
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
                 'is_super_admin' => $user->is_super_admin,
-                'role_id'        => $user->roles->first()?->id,
+                'role_id' => $user->roles->first()?->id,
             ],
             'roles' => $this->rolesPayload($request->user()),
         ]);
@@ -74,7 +74,7 @@ class UserController extends Controller
     {
         // Autorização delegada a UserPolicy via UserRequest::authorize().
         $current = $request->user();
-        $data    = $request->validated();
+        $data = $request->validated();
 
         // Auto-edição: o usuário não pode alterar os próprios privilégios.
         $canEditPrivileges = true;
@@ -83,14 +83,14 @@ class UserController extends Controller
             $canEditPrivileges = false;
         }
 
-        if (!$current->isSuperAdmin()) {
+        if (! $current->isSuperAdmin()) {
             unset($data['is_super_admin']);
 
             if ($canEditPrivileges && $this->isSystemRole($data['role_id'] ?? null)) {
                 return back()->withInput()->with('toast', [
-                    'title'   => 'Erro!',
+                    'title' => 'Erro!',
                     'message' => 'Apenas um super admin pode atribuir um perfil de sistema.',
-                    'type'    => 'error',
+                    'type' => 'error',
                 ]);
             }
         }
@@ -105,7 +105,7 @@ class UserController extends Controller
     {
         $current = $request->user();
 
-        if (!$current->can('delete', $user)) {
+        if (! $current->can('delete', $user)) {
             $message = $current->id === $user->id
                 ? 'Você não pode excluir o próprio usuário.'
                 : 'Apenas um super admin pode excluir um usuário administrador.';
@@ -122,7 +122,7 @@ class UserController extends Controller
     {
         $query = Role::orderBy('name');
 
-        if (!$current->isSuperAdmin()) {
+        if (! $current->isSuperAdmin()) {
             $query->where('is_system', false);
         }
 

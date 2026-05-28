@@ -15,7 +15,7 @@ class MenuItem extends Model
     protected $fillable = ['parent_id', 'label', 'url', 'order', 'is_active', 'open_in_new_tab'];
 
     protected $casts = [
-        'is_active'       => 'boolean',
+        'is_active' => 'boolean',
         'open_in_new_tab' => 'boolean',
     ];
 

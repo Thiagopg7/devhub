@@ -37,7 +37,7 @@ class PageService
     public function update(Page $page, array $data, ?UploadedFile $banner, ?UploadedFile $mainImage): Page
     {
         $oldBanner = $page->banner_image;
-        $oldMain   = $page->main_image;
+        $oldMain = $page->main_image;
 
         if ($banner?->isValid()) {
             $data['banner_image'] = $this->uploadService->upload($banner, 'pages');

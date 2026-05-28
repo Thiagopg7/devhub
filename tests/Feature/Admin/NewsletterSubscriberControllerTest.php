@@ -4,7 +4,6 @@ namespace Tests\Feature\Admin;
 
 use App\Models\NewsletterArea;
 use App\Models\NewsletterSubscriber;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesAdminUser;
@@ -12,7 +11,6 @@ use Tests\Traits\CreatesAdminUser;
 class NewsletterSubscriberControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     private function createSubscriber(array $attrs = []): NewsletterSubscriber
@@ -20,10 +18,10 @@ class NewsletterSubscriberControllerTest extends TestCase
         $area = NewsletterArea::create(['name' => 'Geral', 'is_active' => true]);
 
         return NewsletterSubscriber::create(array_merge([
-            'name'               => 'João Silva',
-            'email'              => 'joao@example.com',
+            'name' => 'João Silva',
+            'email' => 'joao@example.com',
             'newsletter_area_id' => $area->id,
-            'ip_address'         => '127.0.0.1',
+            'ip_address' => '127.0.0.1',
         ], $attrs));
     }
 
@@ -55,7 +53,7 @@ class NewsletterSubscriberControllerTest extends TestCase
 
     public function test_destroy_remove_inscrito(): void
     {
-        $user       = $this->adminUser(['newsletter_subscribers.delete']);
+        $user = $this->adminUser(['newsletter_subscribers.delete']);
         $subscriber = $this->createSubscriber();
 
         $this->actingAs($user)

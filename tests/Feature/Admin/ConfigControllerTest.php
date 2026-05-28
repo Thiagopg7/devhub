@@ -9,7 +9,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class ConfigControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     public function test_edit_renderiza_formulario(): void
     {
@@ -30,7 +30,7 @@ class ConfigControllerTest extends TestCase
         $this->actingAs($user)
             ->put(route('admin.configs.update'), [
                 'config' => [
-                    'site_name'    => 'Meu Portfólio',
+                    'site_name' => 'Meu Portfólio',
                     'site_tagline' => 'Dev PHP',
                 ],
             ])

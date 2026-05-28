@@ -11,9 +11,9 @@ use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\NewsletterAreaController;
 use App\Http\Controllers\Admin\NewsletterCampaignController;
 use App\Http\Controllers\Admin\NewsletterSubscriberController;
-use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\ToggleController;
@@ -95,7 +95,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::get('/activity-log', [ActivityLogController::class, 'index'])
         ->name('activity-log.index')
         ->middleware('can:activity_log.view');
-
 
     Route::post('/toggle-active', [ToggleController::class, 'update'])->name('toggle.active')->middleware('can:posts.edit');
     Route::post('/reorder', [ReorderController::class, 'update'])->name('reorder')->middleware('can:menu.edit');

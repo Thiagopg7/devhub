@@ -22,7 +22,7 @@ class NewsletterAreaController extends Controller
             ->withQueryString();
 
         return Inertia::render('Admin/NewsletterAreas/Index', [
-            'areas'  => $areas,
+            'areas' => $areas,
             'filter' => $request->only('q'),
         ]);
     }

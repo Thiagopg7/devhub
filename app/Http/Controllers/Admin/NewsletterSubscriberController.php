@@ -19,14 +19,14 @@ class NewsletterSubscriberController extends Controller
         if ($q = $request->input('q')) {
             $query->where(function ($q2) use ($q) {
                 $q2->where('name', 'like', "%{$q}%")
-                   ->orWhere('email', 'like', "%{$q}%");
+                    ->orWhere('email', 'like', "%{$q}%");
             });
         }
 
         return Inertia::render('Admin/NewsletterSubscribers/Index', [
             'subscribers' => $query->paginate(20)->withQueryString(),
-            'filter'      => $request->only('q'),
-            'total'       => NewsletterSubscriber::count(),
+            'filter' => $request->only('q'),
+            'total' => NewsletterSubscriber::count(),
         ]);
     }
 

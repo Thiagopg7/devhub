@@ -11,7 +11,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class ImageDeleteControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     public function test_remove_banner_de_post(): void
     {
@@ -25,7 +25,7 @@ class ImageDeleteControllerTest extends TestCase
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'post',
-                'id'    => $post->id,
+                'id' => $post->id,
                 'field' => 'banner_image',
             ])
             ->assertRedirect();
@@ -46,7 +46,7 @@ class ImageDeleteControllerTest extends TestCase
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'page',
-                'id'    => $page->id,
+                'id' => $page->id,
                 'field' => 'banner_image',
             ])
             ->assertRedirect();
@@ -62,7 +62,7 @@ class ImageDeleteControllerTest extends TestCase
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'invalido',
-                'id'    => 1,
+                'id' => 1,
                 'field' => 'banner_image',
             ])
             ->assertSessionHas('toast.type', 'error');
@@ -76,7 +76,7 @@ class ImageDeleteControllerTest extends TestCase
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'post',
-                'id'    => $post->id,
+                'id' => $post->id,
                 'field' => 'title',
             ])
             ->assertSessionHas('toast.type', 'error');
@@ -90,7 +90,7 @@ class ImageDeleteControllerTest extends TestCase
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'post',
-                'id'    => $post->id,
+                'id' => $post->id,
                 'field' => 'banner_image',
             ])
             ->assertRedirect()
@@ -105,7 +105,7 @@ class ImageDeleteControllerTest extends TestCase
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'post',
-                'id'    => $post->id,
+                'id' => $post->id,
                 'field' => 'banner_image',
             ])
             ->assertRedirect();

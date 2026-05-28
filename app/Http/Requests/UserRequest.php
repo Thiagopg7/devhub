@@ -12,7 +12,7 @@ class UserRequest extends FormRequest
         $target = $this->route('user');
 
         // store: sem alvo específico — a permission de módulo já é verificada pelo middleware.
-        if (!$target) {
+        if (! $target) {
             return true;
         }
 
@@ -22,11 +22,11 @@ class UserRequest extends FormRequest
 
     public function rules(): array
     {
-        $userId   = $this->route('user')?->id;
+        $userId = $this->route('user')?->id;
         $isCreate = $this->isMethod('POST');
 
         return [
-            'name'  => ['required', 'string', 'max:100'],
+            'name' => ['required', 'string', 'max:100'],
             'email' => [
                 'required',
                 'email:rfc',
@@ -40,7 +40,7 @@ class UserRequest extends FormRequest
                 'max:100',
                 'confirmed',
             ],
-            'role_id'        => ['nullable', 'integer', 'exists:roles,id'],
+            'role_id' => ['nullable', 'integer', 'exists:roles,id'],
             'is_super_admin' => ['boolean'],
         ];
     }

@@ -21,21 +21,21 @@ use Symfony\Component\HttpFoundation\Response;
 class ResourcePermission
 {
     private const ACTION_MAP = [
-        'index'   => 'view',
-        'show'    => 'view',
-        'create'  => 'create',
-        'store'   => 'create',
-        'edit'    => 'view',
-        'update'  => 'edit',
+        'index' => 'view',
+        'show' => 'view',
+        'create' => 'create',
+        'store' => 'create',
+        'edit' => 'view',
+        'update' => 'edit',
         'destroy' => 'delete',
     ];
 
     public function handle(Request $request, Closure $next, string $module): Response
     {
         $routeName = $request->route()?->getName() ?? '';
-        $segments  = explode('.', $routeName);
-        $action    = end($segments) ?: 'index';
-        $perm      = self::ACTION_MAP[$action] ?? 'view';
+        $segments = explode('.', $routeName);
+        $action = end($segments) ?: 'index';
+        $perm = self::ACTION_MAP[$action] ?? 'view';
 
         $user = $request->user();
         abort_unless($user?->can("{$module}.{$perm}"), 403);

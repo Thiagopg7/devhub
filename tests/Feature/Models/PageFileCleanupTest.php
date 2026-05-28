@@ -14,7 +14,7 @@ class PageFileCleanupTest extends TestCase
     private function makePage(array $extra = []): Page
     {
         return Page::create(array_merge([
-            'title'   => 'Sobre',
+            'title' => 'Sobre',
             'content' => '<p>x</p>',
         ], $extra));
     }
@@ -27,7 +27,7 @@ class PageFileCleanupTest extends TestCase
 
         $page = $this->makePage([
             'banner_image' => 'pages/banner.jpg',
-            'main_image'   => 'pages/main.jpg',
+            'main_image' => 'pages/main.jpg',
         ]);
 
         $page->delete();
@@ -45,7 +45,7 @@ class PageFileCleanupTest extends TestCase
 
         $page = $this->makePage([
             'banner_image' => 'pages/banner.jpg',
-            'main_image'   => 'pages/main.jpg',
+            'main_image' => 'pages/main.jpg',
         ]);
 
         $page->forceDelete();

@@ -10,7 +10,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class UserControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     public function test_index_lista_usuarios(): void
     {
@@ -30,9 +30,9 @@ class UserControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.users.store'), [
-                'name'                  => 'Novo Usuário',
-                'email'                 => 'novo@exemplo.com',
-                'password'              => 'senha123456',
+                'name' => 'Novo Usuário',
+                'email' => 'novo@exemplo.com',
+                'password' => 'senha123456',
                 'password_confirmation' => 'senha123456',
             ])
             ->assertRedirect(route('admin.users.index'));
@@ -42,12 +42,12 @@ class UserControllerTest extends TestCase
 
     public function test_update_edita_usuario(): void
     {
-        $admin  = $this->adminUser(['users.edit']);
+        $admin = $this->adminUser(['users.edit']);
         $target = User::factory()->create(['name' => 'Antigo Nome']);
 
         $this->actingAs($admin)
             ->put(route('admin.users.update', $target), [
-                'name'  => 'Novo Nome',
+                'name' => 'Novo Nome',
                 'email' => $target->email,
             ])
             ->assertRedirect(route('admin.users.index'));
@@ -57,7 +57,7 @@ class UserControllerTest extends TestCase
 
     public function test_destroy_remove_usuario(): void
     {
-        $admin  = $this->adminUser(['users.delete']);
+        $admin = $this->adminUser(['users.delete']);
         $target = User::factory()->create();
 
         $this->actingAs($admin)
@@ -85,10 +85,10 @@ class UserControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.users.update', $user), [
-                'name'           => $user->name,
-                'email'          => $user->email,
+                'name' => $user->name,
+                'email' => $user->email,
                 'is_super_admin' => true,
-                'role_id'        => $role->id,
+                'role_id' => $role->id,
             ])
             ->assertRedirect(route('admin.users.index'));
 
@@ -97,7 +97,7 @@ class UserControllerTest extends TestCase
 
     public function test_nao_super_admin_nao_pode_excluir_super_admin(): void
     {
-        $admin  = $this->adminUser(['users.delete']);
+        $admin = $this->adminUser(['users.delete']);
         $target = User::factory()->superAdmin()->create();
 
         $this->actingAs($admin)
@@ -109,7 +109,7 @@ class UserControllerTest extends TestCase
 
     public function test_nao_super_admin_nao_pode_excluir_usuario_com_perfil_de_sistema(): void
     {
-        $admin  = $this->adminUser(['users.delete']);
+        $admin = $this->adminUser(['users.delete']);
         $target = User::factory()->create();
         $target->assignRole($this->systemRole());
 
@@ -122,7 +122,7 @@ class UserControllerTest extends TestCase
 
     public function test_super_admin_pode_excluir_super_admin(): void
     {
-        $admin  = User::factory()->superAdmin()->create();
+        $admin = User::factory()->superAdmin()->create();
         $target = User::factory()->superAdmin()->create();
 
         $this->actingAs($admin)
@@ -134,12 +134,12 @@ class UserControllerTest extends TestCase
 
     public function test_nao_super_admin_nao_pode_editar_super_admin(): void
     {
-        $admin  = $this->adminUser(['users.edit']);
+        $admin = $this->adminUser(['users.edit']);
         $target = User::factory()->superAdmin()->create();
 
         $this->actingAs($admin)
             ->put(route('admin.users.update', $target), [
-                'name'  => 'Nome Alterado',
+                'name' => 'Nome Alterado',
                 'email' => $target->email,
             ])
             ->assertRedirect();
@@ -150,15 +150,15 @@ class UserControllerTest extends TestCase
     public function test_nao_super_admin_nao_pode_atribuir_perfil_de_sistema(): void
     {
         $admin = $this->adminUser(['users.create']);
-        $role  = $this->systemRole();
+        $role = $this->systemRole();
 
         $this->actingAs($admin)
             ->post(route('admin.users.store'), [
-                'name'                  => 'Intruso',
-                'email'                 => 'intruso@exemplo.com',
-                'password'              => 'senha123456',
+                'name' => 'Intruso',
+                'email' => 'intruso@exemplo.com',
+                'password' => 'senha123456',
                 'password_confirmation' => 'senha123456',
-                'role_id'               => $role->id,
+                'role_id' => $role->id,
             ])
             ->assertSessionHas('toast.type', 'error');
 
@@ -168,15 +168,15 @@ class UserControllerTest extends TestCase
     public function test_super_admin_pode_atribuir_perfil_de_sistema(): void
     {
         $admin = User::factory()->superAdmin()->create();
-        $role  = $this->systemRole();
+        $role = $this->systemRole();
 
         $this->actingAs($admin)
             ->post(route('admin.users.store'), [
-                'name'                  => 'Novo Admin',
-                'email'                 => 'novoadmin@exemplo.com',
-                'password'              => 'senha123456',
+                'name' => 'Novo Admin',
+                'email' => 'novoadmin@exemplo.com',
+                'password' => 'senha123456',
                 'password_confirmation' => 'senha123456',
-                'role_id'               => $role->id,
+                'role_id' => $role->id,
             ])
             ->assertRedirect(route('admin.users.index'));
 

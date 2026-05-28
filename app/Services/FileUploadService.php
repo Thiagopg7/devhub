@@ -9,7 +9,7 @@ class FileUploadService
 {
     public function upload(?UploadedFile $file, string $path = 'uploads', string $disk = 'public'): ?string
     {
-        if (!$file || !$file->isValid()) {
+        if (! $file || ! $file->isValid()) {
             return null;
         }
 

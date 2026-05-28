@@ -22,8 +22,8 @@ class CategoryController extends Controller
             ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
-            'categories'  => $categories,
-            'filter'      => $request->only('q'),
+            'categories' => $categories,
+            'filter' => $request->only('q'),
             'trashedCount' => Category::onlyTrashed()->count(),
         ]);
     }
@@ -63,9 +63,9 @@ class CategoryController extends Controller
         Category::create($request->validated());
 
         return redirect()->route('admin.categories.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Categoria criada com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 
@@ -81,9 +81,9 @@ class CategoryController extends Controller
         $category->update($request->validated());
 
         return redirect()->route('admin.categories.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Categoria atualizada com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 
@@ -92,9 +92,9 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Categoria excluída com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 }

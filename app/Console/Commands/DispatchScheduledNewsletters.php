@@ -20,6 +20,7 @@ class DispatchScheduledNewsletters extends Command
 
         if ($campaigns->isEmpty()) {
             $this->line('Nenhuma campanha agendada para disparar.');
+
             return self::SUCCESS;
         }
 

@@ -15,7 +15,7 @@ class BlogController extends Controller
         $search = $request->input('busca');
 
         return Inertia::render('Blog/Index', [
-            'posts'   => $this->postService->getAllActive(12, $search),
+            'posts' => $this->postService->getAllActive(12, $search),
             'filters' => ['busca' => $search],
         ]);
     }
@@ -24,7 +24,7 @@ class BlogController extends Controller
     {
         $post = $this->postService->findBySlug($slug);
 
-        if (!$post) {
+        if (! $post) {
             abort(404);
         }
 
@@ -37,13 +37,13 @@ class BlogController extends Controller
     {
         ['category' => $category, 'posts' => $posts] = $this->postService->getByCategory($slug);
 
-        if (!$category) {
+        if (! $category) {
             abort(404);
         }
 
         return Inertia::render('Blog/Category', [
             'category' => $category,
-            'posts'    => $posts,
+            'posts' => $posts,
         ]);
     }
 }

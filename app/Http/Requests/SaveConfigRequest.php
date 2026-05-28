@@ -33,11 +33,11 @@ class SaveConfigRequest extends FormRequest
             $rules["config.{$key}"] = ['nullable', 'string', 'max:5000'];
         }
 
-        $rules['config.contact_email']        = ['nullable', 'email', 'max:255'];
-        $rules['config.footer_facebook']       = ['nullable', 'url', 'max:500'];
-        $rules['config.footer_instagram']      = ['nullable', 'url', 'max:500'];
-        $rules['config.footer_youtube']        = ['nullable', 'url', 'max:500'];
-        $rules['config.contact_address_link']  = ['nullable', 'url', 'max:500'];
+        $rules['config.contact_email'] = ['nullable', 'email', 'max:255'];
+        $rules['config.footer_facebook'] = ['nullable', 'url', 'max:500'];
+        $rules['config.footer_instagram'] = ['nullable', 'url', 'max:500'];
+        $rules['config.footer_youtube'] = ['nullable', 'url', 'max:500'];
+        $rules['config.contact_address_link'] = ['nullable', 'url', 'max:500'];
 
         return $rules;
     }
@@ -45,11 +45,11 @@ class SaveConfigRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'config.contact_email.email'           => 'Informe um e-mail válido.',
-            'config.footer_facebook.url'           => 'Informe uma URL válida para o Facebook.',
-            'config.footer_instagram.url'          => 'Informe uma URL válida para o Instagram.',
-            'config.footer_youtube.url'            => 'Informe uma URL válida para o YouTube.',
-            'config.contact_address_link.url'      => 'Informe uma URL válida para o link do endereço.',
+            'config.contact_email.email' => 'Informe um e-mail válido.',
+            'config.footer_facebook.url' => 'Informe uma URL válida para o Facebook.',
+            'config.footer_instagram.url' => 'Informe uma URL válida para o Instagram.',
+            'config.footer_youtube.url' => 'Informe uma URL válida para o YouTube.',
+            'config.contact_address_link.url' => 'Informe uma URL válida para o link do endereço.',
         ];
     }
 

@@ -19,8 +19,8 @@ class PageApiTest extends TestCase
     public function test_retorna_pagina_pelo_slug(): void
     {
         Page::create([
-            'title'     => 'Sobre Nós',
-            'slug'      => 'sobre-nos',
+            'title' => 'Sobre Nós',
+            'slug' => 'sobre-nos',
             'is_active' => true,
         ]);
 

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Page;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +12,6 @@ use Tests\Traits\CreatesAdminUser;
 class PageControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_paginas(): void
@@ -35,7 +33,7 @@ class PageControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.pages.store'), [
-                'title'     => 'Contato',
+                'title' => 'Contato',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.pages.index'))
@@ -49,15 +47,15 @@ class PageControllerTest extends TestCase
         Storage::fake('public');
         $user = $this->adminUser(['pages.create']);
 
-        $banner    = UploadedFile::fake()->create('banner.jpg', 512, 'image/jpeg');
+        $banner = UploadedFile::fake()->create('banner.jpg', 512, 'image/jpeg');
         $mainImage = UploadedFile::fake()->create('main.jpg', 512, 'image/jpeg');
 
         $this->actingAs($user)
             ->post(route('admin.pages.store'), [
-                'title'        => 'Portfólio',
+                'title' => 'Portfólio',
                 'banner_image' => $banner,
-                'main_image'   => $mainImage,
-                'is_active'    => true,
+                'main_image' => $mainImage,
+                'is_active' => true,
             ])
             ->assertRedirect(route('admin.pages.index'));
 
@@ -75,7 +73,7 @@ class PageControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.pages.update', $page), [
-                'title'     => 'Nova',
+                'title' => 'Nova',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.pages.index'))
@@ -97,9 +95,9 @@ class PageControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.pages.update', $page), [
-                'title'        => 'Página',
+                'title' => 'Página',
                 'banner_image' => $newBanner,
-                'is_active'    => true,
+                'is_active' => true,
             ])
             ->assertRedirect(route('admin.pages.index'));
 
@@ -157,9 +155,9 @@ class PageControllerTest extends TestCase
     public function test_purge_exclui_pagina_permanentemente(): void
     {
         Storage::fake('public');
-        $user    = $this->adminUser(['pages.delete']);
-        $banner  = 'pages/banner.jpg';
-        $main    = 'pages/main.jpg';
+        $user = $this->adminUser(['pages.delete']);
+        $banner = 'pages/banner.jpg';
+        $main = 'pages/main.jpg';
         Storage::disk('public')->put($banner, 'imagem');
         Storage::disk('public')->put($main, 'imagem');
 

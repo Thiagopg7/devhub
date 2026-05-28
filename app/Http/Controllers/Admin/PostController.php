@@ -19,8 +19,8 @@ class PostController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Posts/Index', [
-            'posts'        => $this->postService->getPaginated(20, $request->input('q')),
-            'filter'       => $request->only('q'),
+            'posts' => $this->postService->getPaginated(20, $request->input('q')),
+            'filter' => $request->only('q'),
             'trashedCount' => Post::onlyTrashed()->count(),
         ]);
     }
@@ -64,16 +64,16 @@ class PostController extends Controller
         $this->postService->create($data, $request->file('banner_image'));
 
         return redirect()->route('admin.posts.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Post criado com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 
     public function edit(Post $post)
     {
         return Inertia::render('Admin/Posts/Form', [
-            'post'       => $post,
+            'post' => $post,
             'categories' => Category::active()->orderBy('name')->get(['id', 'name', 'color']),
         ]);
     }
@@ -83,9 +83,9 @@ class PostController extends Controller
         $this->postService->update($post, $request->validated(), $request->file('banner_image'));
 
         return redirect()->route('admin.posts.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Post atualizado com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 
@@ -94,9 +94,9 @@ class PostController extends Controller
         $this->postService->delete($post);
 
         return redirect()->route('admin.posts.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Post excluído com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 }

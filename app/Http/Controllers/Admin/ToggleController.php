@@ -2,32 +2,39 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Block;
+use App\Models\Category;
+use App\Models\MenuItem;
+use App\Models\NewsletterArea;
+use App\Models\Page;
+use App\Models\Post;
+use App\Models\Technology;
+use Illuminate\Http\Request;
 
 class ToggleController extends Controller
 {
     private const ALLOWED_MODELS = [
-        'post'            => ['class' => \App\Models\Post::class,           'module' => 'posts'],
-        'category'        => ['class' => \App\Models\Category::class,       'module' => 'categories'],
-        'block'           => ['class' => \App\Models\Block::class,          'module' => 'blocks'],
-        'menu_item'       => ['class' => \App\Models\MenuItem::class,       'module' => 'menu'],
-        'technology'      => ['class' => \App\Models\Technology::class,     'module' => 'technologies'],
-        'page'            => ['class' => \App\Models\Page::class,           'module' => 'pages'],
-        'newsletter_area' => ['class' => \App\Models\NewsletterArea::class, 'module' => 'newsletter_areas'],
+        'post' => ['class' => Post::class,           'module' => 'posts'],
+        'category' => ['class' => Category::class,       'module' => 'categories'],
+        'block' => ['class' => Block::class,          'module' => 'blocks'],
+        'menu_item' => ['class' => MenuItem::class,       'module' => 'menu'],
+        'technology' => ['class' => Technology::class,     'module' => 'technologies'],
+        'page' => ['class' => Page::class,           'module' => 'pages'],
+        'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas'],
     ];
 
     public function update(Request $request)
     {
         $request->validate([
-            'id'        => 'required',
-            'model'     => 'required|string',
+            'id' => 'required',
+            'model' => 'required|string',
             'is_active' => 'required|boolean',
         ]);
 
         $config = self::ALLOWED_MODELS[strtolower($request->model)] ?? null;
 
-        if (!$config) {
+        if (! $config) {
             return back()->with('toast', ['title' => 'Erro!', 'message' => 'Módulo inválido.', 'type' => 'error']);
         }
 
@@ -35,7 +42,7 @@ class ToggleController extends Controller
 
         $item = $config['class']::find($request->id);
 
-        if (!$item) {
+        if (! $item) {
             return back()->with('toast', ['title' => 'Erro!', 'message' => 'Item não encontrado.', 'type' => 'error']);
         }
 

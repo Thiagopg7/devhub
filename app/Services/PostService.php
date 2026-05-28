@@ -54,7 +54,7 @@ class PostService
     {
         $category = Category::active()->where('slug', $categorySlug)->first();
 
-        if (!$category) {
+        if (! $category) {
             return ['category' => null, 'posts' => null];
         }
 

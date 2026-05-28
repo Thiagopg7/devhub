@@ -15,7 +15,7 @@ class AuthApiTest extends TestCase
         $user = User::factory()->create(['password' => bcrypt('senha123')]);
 
         $this->postJson('/api/auth/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'senha123',
         ])
             ->assertOk()
@@ -31,7 +31,7 @@ class AuthApiTest extends TestCase
         User::factory()->create(['email' => 'user@exemplo.com']);
 
         $this->postJson('/api/auth/login', [
-            'email'    => 'user@exemplo.com',
+            'email' => 'user@exemplo.com',
             'password' => 'senha-errada',
         ])
             ->assertUnprocessable()
@@ -47,13 +47,13 @@ class AuthApiTest extends TestCase
 
     public function test_me_retorna_dados_do_usuario_autenticado(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withToken($token)->getJson('/api/auth/me')
             ->assertOk()
             ->assertJsonFragment([
-                'id'    => $user->id,
+                'id' => $user->id,
                 'email' => $user->email,
             ])
             ->assertJsonStructure(['id', 'name', 'email', 'is_super_admin', 'roles', 'permissions']);
@@ -67,7 +67,7 @@ class AuthApiTest extends TestCase
 
     public function test_logout_revoga_token(): void
     {
-        $user  = User::factory()->create();
+        $user = User::factory()->create();
         $token = $user->createToken('test')->plainTextToken;
 
         $this->withToken($token)->postJson('/api/auth/logout')
