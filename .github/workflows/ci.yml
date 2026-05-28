@@ -54,9 +54,6 @@ jobs:
       - name: Rodar migrations
         run: php artisan migrate --force
 
-      - name: Criar manifest Vite para testes
-        run: mkdir -p public/build && echo '{}' > public/build/manifest.json
-
       - name: Rodar testes com cobertura
         run: php artisan test --coverage --min=70
 
