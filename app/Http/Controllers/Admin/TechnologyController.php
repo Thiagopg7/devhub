@@ -23,7 +23,7 @@ class TechnologyController extends Controller
 
         return Inertia::render('Admin/Technologies/Index', [
             'technologies' => $technologies,
-            'filter'       => $request->only('q'),
+            'filter' => $request->only('q'),
         ]);
     }
 

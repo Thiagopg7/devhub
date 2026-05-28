@@ -30,7 +30,7 @@ class Page extends Model
     ];
 
     protected $casts = [
-        'is_active'     => 'boolean',
+        'is_active' => 'boolean',
         'is_searchable' => 'boolean',
     ];
 
@@ -42,7 +42,7 @@ class Page extends Model
     {
         return [
             'slug' => [
-                'source'   => 'title',
+                'source' => 'title',
                 'onUpdate' => true,
             ],
         ];
@@ -51,14 +51,14 @@ class Page extends Model
     protected function bannerImageUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->banner_image ? asset('storage/' . $this->banner_image) : null
+            fn () => $this->banner_image ? asset('storage/'.$this->banner_image) : null
         );
     }
 
     protected function mainImageUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->main_image ? asset('storage/' . $this->main_image) : null
+            fn () => $this->main_image ? asset('storage/'.$this->main_image) : null
         );
     }
 

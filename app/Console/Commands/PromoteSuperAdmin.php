@@ -14,21 +14,24 @@ class PromoteSuperAdmin extends Command
     public function handle(): int
     {
         $email = $this->argument('email');
-        $user  = User::where('email', $email)->first();
+        $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("Usuário com e-mail {$email} não encontrado.");
+
             return self::FAILURE;
         }
 
         if ($user->isSuperAdmin()) {
             $this->info("Usuário {$user->name} já é super admin.");
+
             return self::SUCCESS;
         }
 
         $user->update(['is_super_admin' => true]);
 
         $this->info("Usuário {$user->name} promovido a super admin.");
+
         return self::SUCCESS;
     }
 }

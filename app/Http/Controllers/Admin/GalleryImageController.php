@@ -18,7 +18,7 @@ class GalleryImageController extends Controller
     public function store(Request $request, Page $page): RedirectResponse
     {
         $request->validate([
-            'images'   => ['required', 'array', 'min:1'],
+            'images' => ['required', 'array', 'min:1'],
             'images.*' => ['image', 'max:5120'],
         ]);
 
@@ -27,7 +27,7 @@ class GalleryImageController extends Controller
             DB::transaction(function () use ($request, $page, &$uploaded) {
                 foreach ($request->file('images') as $file) {
                     if ($file->isValid()) {
-                        $path       = $this->uploadService->upload($file, 'gallery');
+                        $path = $this->uploadService->upload($file, 'gallery');
                         $uploaded[] = $path;
                         $page->galleryImages()->create(['image' => $path]);
                     }
@@ -40,10 +40,11 @@ class GalleryImageController extends Controller
                 $this->uploadService->delete($path);
             }
             Log::error('Erro ao fazer upload de imagens da galeria', ['exception' => $e, 'page_id' => $page->id]);
+
             return back()->with('toast', [
-                'title'   => 'Erro!',
+                'title' => 'Erro!',
                 'message' => 'Ocorreu um erro ao fazer upload das imagens. Tente novamente.',
-                'type'    => 'error',
+                'type' => 'error',
             ]);
         }
     }
@@ -58,10 +59,11 @@ class GalleryImageController extends Controller
             return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Imagem removida com sucesso.', 'type' => 'success']);
         } catch (\Exception $e) {
             Log::error('Erro ao excluir imagem da galeria', ['exception' => $e, 'gallery_image_id' => $galleryImage->id]);
+
             return back()->with('toast', [
-                'title'   => 'Erro!',
+                'title' => 'Erro!',
                 'message' => 'Ocorreu um erro ao remover a imagem. Tente novamente.',
-                'type'    => 'error',
+                'type' => 'error',
             ]);
         }
     }

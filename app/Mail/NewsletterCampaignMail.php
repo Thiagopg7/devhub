@@ -15,7 +15,7 @@ class NewsletterCampaignMail extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public readonly NewsletterCampaign   $campaign,
+        public readonly NewsletterCampaign $campaign,
         public readonly NewsletterSubscriber $subscriber,
     ) {}
 
@@ -29,8 +29,8 @@ class NewsletterCampaignMail extends Mailable
         return new Content(
             markdown: 'emails.newsletter.campaign',
             with: [
-                'campaign'       => $this->campaign,
-                'posts'          => $this->campaign->posts,
+                'campaign' => $this->campaign,
+                'posts' => $this->campaign->posts,
                 'unsubscribeUrl' => route('newsletter.unsubscribe', $this->subscriber->unsubscribe_token),
             ],
         );

@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\MenuItem;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesAdminUser;
@@ -11,7 +10,6 @@ use Tests\Traits\CreatesAdminUser;
 class MenuControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_itens(): void
@@ -31,8 +29,8 @@ class MenuControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.menu.store'), [
-                'label'     => 'Blog',
-                'url'       => '/blog',
+                'label' => 'Blog',
+                'url' => '/blog',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.menu.index'))
@@ -43,13 +41,13 @@ class MenuControllerTest extends TestCase
 
     public function test_store_cria_submenu(): void
     {
-        $user   = $this->adminUser(['menu.create']);
+        $user = $this->adminUser(['menu.create']);
         $parent = MenuItem::create(['label' => 'Sobre', 'url' => '/sobre', 'is_active' => true]);
 
         $this->actingAs($user)
             ->post(route('admin.menu.store'), [
-                'label'     => 'A empresa',
-                'url'       => '/sobre/empresa',
+                'label' => 'A empresa',
+                'url' => '/sobre/empresa',
                 'parent_id' => $parent->id,
                 'is_active' => true,
             ])
@@ -61,14 +59,14 @@ class MenuControllerTest extends TestCase
 
     public function test_store_bloqueia_terceiro_nivel(): void
     {
-        $user   = $this->adminUser(['menu.create']);
-        $root   = MenuItem::create(['label' => 'Raiz', 'url' => '/raiz', 'is_active' => true]);
-        $child  = MenuItem::create(['label' => 'Filho', 'url' => '/filho', 'parent_id' => $root->id, 'is_active' => true]);
+        $user = $this->adminUser(['menu.create']);
+        $root = MenuItem::create(['label' => 'Raiz', 'url' => '/raiz', 'is_active' => true]);
+        $child = MenuItem::create(['label' => 'Filho', 'url' => '/filho', 'parent_id' => $root->id, 'is_active' => true]);
 
         $this->actingAs($user)
             ->post(route('admin.menu.store'), [
-                'label'     => 'Neto',
-                'url'       => '/neto',
+                'label' => 'Neto',
+                'url' => '/neto',
                 'parent_id' => $child->id,
                 'is_active' => true,
             ])
@@ -82,8 +80,8 @@ class MenuControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.menu.update', $item), [
-                'label'     => 'Novo',
-                'url'       => '/novo',
+                'label' => 'Novo',
+                'url' => '/novo',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.menu.index'))
@@ -94,7 +92,7 @@ class MenuControllerTest extends TestCase
 
     public function test_destroy_com_filhos_retorna_erro(): void
     {
-        $user   = $this->adminUser(['menu.delete']);
+        $user = $this->adminUser(['menu.delete']);
         $parent = MenuItem::create(['label' => 'Pai', 'url' => '/pai', 'is_active' => true]);
         MenuItem::create(['label' => 'Filho', 'url' => '/filho', 'parent_id' => $parent->id, 'is_active' => true]);
 

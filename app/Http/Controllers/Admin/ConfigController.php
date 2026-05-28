@@ -13,17 +13,17 @@ use Inertia\Response;
 class ConfigController extends Controller
 {
     private const KEY_GROUPS = [
-        'site_name'            => 'general',
-        'site_tagline'         => 'general',
-        'footer_facebook'      => 'footer',
-        'footer_instagram'     => 'footer',
-        'footer_youtube'       => 'footer',
-        'footer_message'       => 'footer',
-        'contact_email'        => 'contact',
-        'contact_address'      => 'contact',
+        'site_name' => 'general',
+        'site_tagline' => 'general',
+        'footer_facebook' => 'footer',
+        'footer_instagram' => 'footer',
+        'footer_youtube' => 'footer',
+        'footer_message' => 'footer',
+        'contact_email' => 'contact',
+        'contact_address' => 'contact',
         'contact_address_link' => 'contact',
-        'scripts_head'         => 'scripts',
-        'scripts_body'         => 'scripts',
+        'scripts_head' => 'scripts',
+        'scripts_body' => 'scripts',
     ];
 
     public function edit(): Response
@@ -46,10 +46,10 @@ class ConfigController extends Controller
                 $oldValue = Config::find($key)?->value;
                 if ($oldValue !== $newValue) {
                     Log::warning('Config sensível alterada', [
-                        'key'        => $key,
-                        'user_id'    => $request->user()?->id,
+                        'key' => $key,
+                        'user_id' => $request->user()?->id,
                         'user_email' => $request->user()?->email,
-                        'ip'         => $request->ip(),
+                        'ip' => $request->ip(),
                         'old_length' => is_string($oldValue) ? strlen($oldValue) : null,
                         'new_length' => is_string($newValue) ? strlen($newValue) : null,
                     ]);
@@ -60,9 +60,9 @@ class ConfigController extends Controller
         }
 
         return back()->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Configurações salvas com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 }

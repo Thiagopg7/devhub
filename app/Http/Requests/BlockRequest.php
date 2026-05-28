@@ -14,8 +14,8 @@ class BlockRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => ['required', 'string', 'max:150'],
-            'content'   => ['nullable', 'string'],
+            'name' => ['required', 'string', 'max:150'],
+            'content' => ['nullable', 'string'],
             'is_active' => ['boolean'],
         ];
     }

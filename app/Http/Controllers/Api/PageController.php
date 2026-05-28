@@ -13,7 +13,7 @@ class PageController extends Controller
     {
         $page = Page::active()->with('galleryImages')->where('slug', $slug)->first();
 
-        if (!$page) {
+        if (! $page) {
             return response()->json(['message' => 'Página não encontrada.'], 404);
         }
 

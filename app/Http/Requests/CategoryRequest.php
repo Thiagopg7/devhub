@@ -14,10 +14,10 @@ class CategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'        => 'required|string|max:100',
-            'color'       => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'name' => 'required|string|max:100',
+            'color' => ['required', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'description' => 'nullable|string|max:255',
-            'is_active'   => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 }

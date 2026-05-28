@@ -12,7 +12,7 @@ class RoleRequest extends FormRequest
         $role = $this->route('role');
 
         // store: sem alvo específico — middleware já verificou a permission.
-        if (!$role) {
+        if (! $role) {
             return true;
         }
 
@@ -31,7 +31,7 @@ class RoleRequest extends FormRequest
                 'max:100',
                 Rule::unique('roles', 'name')->ignore($roleId),
             ],
-            'permissions'   => ['array'],
+            'permissions' => ['array'],
             'permissions.*' => ['string'],
         ];
     }

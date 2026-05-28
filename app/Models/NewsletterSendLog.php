@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class NewsletterSendLog extends Model
 {
     use MassPrunable;
+
     protected $fillable = [
         'newsletter_campaign_id',
         'newsletter_subscriber_id',

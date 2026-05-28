@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  tests:
+    name: Testes PHP
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: app_db_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo, pdo_mysql, pcov, zip, dom
+          coverage: pcov
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Instalar dependências PHP
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copiar .env de CI
+        run: cp .env.ci .env
+
+      - name: Gerar chave da aplicação
+        run: php artisan key:generate
+
+      - name: Rodar migrations
+        run: php artisan migrate --force
+
+      - name: Rodar testes com cobertura
+        run: php artisan test --coverage --min=70
+
+  lint:
+    name: Lint PHP (Pint)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Instalar dependências PHP
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Verificar estilo de código (Pint)
+        run: ./vendor/bin/pint --test

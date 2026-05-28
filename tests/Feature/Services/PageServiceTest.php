@@ -22,7 +22,7 @@ class PageServiceTest extends TestCase
     public function test_create_sem_imagens_salva_pagina(): void
     {
         $service = $this->makeService();
-        $page    = $service->create(['title' => 'Sobre', 'is_active' => true], null, null);
+        $page = $service->create(['title' => 'Sobre', 'is_active' => true], null, null);
 
         $this->assertInstanceOf(Page::class, $page);
         $this->assertDatabaseHas('pages', ['title' => 'Sobre', 'banner_image' => null, 'main_image' => null]);
@@ -31,8 +31,8 @@ class PageServiceTest extends TestCase
     public function test_create_faz_upload_de_banner_e_imagem_principal(): void
     {
         Storage::fake('public');
-        $service   = $this->makeService();
-        $banner    = UploadedFile::fake()->create('banner.jpg', 512, 'image/jpeg');
+        $service = $this->makeService();
+        $banner = UploadedFile::fake()->create('banner.jpg', 512, 'image/jpeg');
         $mainImage = UploadedFile::fake()->create('main.jpg', 512, 'image/jpeg');
 
         $page = $service->create(['title' => 'Portfólio', 'is_active' => true], $banner, $mainImage);
@@ -48,7 +48,7 @@ class PageServiceTest extends TestCase
         Storage::fake('public');
         $oldPath = 'pages/old-banner.jpg';
         Storage::disk('public')->put($oldPath, 'antigo');
-        $page    = Page::create(['title' => 'Página', 'banner_image' => $oldPath, 'is_active' => true]);
+        $page = Page::create(['title' => 'Página', 'banner_image' => $oldPath, 'is_active' => true]);
         $service = $this->makeService();
 
         $newBanner = UploadedFile::fake()->create('new-banner.jpg', 512, 'image/jpeg');
@@ -64,7 +64,7 @@ class PageServiceTest extends TestCase
         Storage::fake('public');
         $oldPath = 'pages/old-main.jpg';
         Storage::disk('public')->put($oldPath, 'antigo');
-        $page    = Page::create(['title' => 'Página', 'main_image' => $oldPath, 'is_active' => true]);
+        $page = Page::create(['title' => 'Página', 'main_image' => $oldPath, 'is_active' => true]);
         $service = $this->makeService();
 
         $newMain = UploadedFile::fake()->create('new-main.jpg', 512, 'image/jpeg');
@@ -78,10 +78,10 @@ class PageServiceTest extends TestCase
     {
         Storage::fake('public');
         $bannerPath = 'pages/banner.jpg';
-        $mainPath   = 'pages/main.jpg';
+        $mainPath = 'pages/main.jpg';
         Storage::disk('public')->put($bannerPath, 'b');
         Storage::disk('public')->put($mainPath, 'm');
-        $page    = Page::create(['title' => 'Página', 'banner_image' => $bannerPath, 'main_image' => $mainPath, 'is_active' => true]);
+        $page = Page::create(['title' => 'Página', 'banner_image' => $bannerPath, 'main_image' => $mainPath, 'is_active' => true]);
         $service = $this->makeService();
 
         $service->update($page, ['title' => 'Atualizada'], null, null);
@@ -95,7 +95,7 @@ class PageServiceTest extends TestCase
     public function test_delete_aplica_soft_delete(): void
     {
         $service = $this->makeService();
-        $page    = Page::create(['title' => 'Remover', 'is_active' => true]);
+        $page = Page::create(['title' => 'Remover', 'is_active' => true]);
 
         $service->delete($page);
 
@@ -106,10 +106,10 @@ class PageServiceTest extends TestCase
     {
         Storage::fake('public');
         $bannerPath = 'pages/banner.jpg';
-        $mainPath   = 'pages/main.jpg';
+        $mainPath = 'pages/main.jpg';
         Storage::disk('public')->put($bannerPath, 'b');
         Storage::disk('public')->put($mainPath, 'm');
-        $page    = Page::create(['title' => 'Purgar', 'banner_image' => $bannerPath, 'main_image' => $mainPath, 'is_active' => true]);
+        $page = Page::create(['title' => 'Purgar', 'banner_image' => $bannerPath, 'main_image' => $mainPath, 'is_active' => true]);
         $service = $this->makeService();
 
         $service->purge($page);

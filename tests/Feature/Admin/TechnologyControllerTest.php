@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Technology;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesAdminUser;
@@ -11,7 +10,6 @@ use Tests\Traits\CreatesAdminUser;
 class TechnologyControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_tecnologias(): void
@@ -33,8 +31,8 @@ class TechnologyControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.technologies.store'), [
-                'name'      => 'Vue.js',
-                'url'       => 'https://vuejs.org',
+                'name' => 'Vue.js',
+                'url' => 'https://vuejs.org',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.technologies.index'))
@@ -50,8 +48,8 @@ class TechnologyControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.technologies.store'), [
-                'name'      => 'B',
-                'url'       => 'https://b.com',
+                'name' => 'B',
+                'url' => 'https://b.com',
                 'is_active' => true,
             ]);
 
@@ -65,8 +63,8 @@ class TechnologyControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.technologies.update', $tech), [
-                'name'      => 'React 19',
-                'url'       => 'https://react.dev',
+                'name' => 'React 19',
+                'url' => 'https://react.dev',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.technologies.index'))

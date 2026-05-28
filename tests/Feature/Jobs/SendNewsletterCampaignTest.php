@@ -20,37 +20,38 @@ class SendNewsletterCampaignTest extends TestCase
     private function campaign(): NewsletterCampaign
     {
         $campaign = NewsletterCampaign::create([
-            'title'   => 'Edição de Teste',
+            'title' => 'Edição de Teste',
             'subject' => 'Novidades da semana',
-            'status'  => 'draft',
+            'status' => 'draft',
         ]);
         $campaign->posts()->attach(Post::factory()->create());
+
         return $campaign;
     }
 
     private function subscriber(array $attrs = []): NewsletterSubscriber
     {
         $area = NewsletterArea::create(['name' => 'Geral', 'is_active' => true]);
+
         return NewsletterSubscriber::create(array_merge([
-            'name'               => 'Fulano',
-            'email'              => 'fulano@exemplo.com',
+            'name' => 'Fulano',
+            'email' => 'fulano@exemplo.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => true,
-            'lgpd_consent_at'    => now(),
-            'unsubscribe_token'  => 'token-abc',
+            'lgpd_consent' => true,
+            'lgpd_consent_at' => now(),
+            'unsubscribe_token' => 'token-abc',
         ], $attrs));
     }
 
     public function test_envia_email_para_inscritos_com_consentimento(): void
     {
         Mail::fake();
-        $campaign   = $this->campaign();
+        $campaign = $this->campaign();
         $subscriber = $this->subscriber();
 
         (new SendNewsletterCampaign($campaign))->handle();
 
-        Mail::assertSent(NewsletterCampaignMail::class, fn ($mail) =>
-            $mail->hasTo($subscriber->email)
+        Mail::assertSent(NewsletterCampaignMail::class, fn ($mail) => $mail->hasTo($subscriber->email)
         );
     }
 
@@ -104,29 +105,29 @@ class SendNewsletterCampaignTest extends TestCase
     public function test_registra_log_de_envio_por_inscrito(): void
     {
         Mail::fake();
-        $campaign   = $this->campaign();
+        $campaign = $this->campaign();
         $subscriber = $this->subscriber();
 
         (new SendNewsletterCampaign($campaign))->handle();
 
         $this->assertDatabaseHas('newsletter_send_logs', [
-            'newsletter_campaign_id'   => $campaign->id,
+            'newsletter_campaign_id' => $campaign->id,
             'newsletter_subscriber_id' => $subscriber->id,
-            'status'                   => 'sent',
+            'status' => 'sent',
         ]);
     }
 
     public function test_nao_reprocessa_log_ja_enviado(): void
     {
         Mail::fake();
-        $campaign   = $this->campaign();
+        $campaign = $this->campaign();
         $subscriber = $this->subscriber();
 
         NewsletterSendLog::create([
-            'newsletter_campaign_id'   => $campaign->id,
+            'newsletter_campaign_id' => $campaign->id,
             'newsletter_subscriber_id' => $subscriber->id,
-            'status'                   => 'sent',
-            'sent_at'                  => now()->subMinute(),
+            'status' => 'sent',
+            'sent_at' => now()->subMinute(),
         ]);
 
         (new SendNewsletterCampaign($campaign))->handle();

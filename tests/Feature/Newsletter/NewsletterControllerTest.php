@@ -23,10 +23,10 @@ class NewsletterControllerTest extends TestCase
         $area = $this->area();
 
         $this->postJson(route('newsletter.subscribe'), [
-            'name'               => 'Thiago',
-            'email'              => 'thiago@exemplo.com',
+            'name' => 'Thiago',
+            'email' => 'thiago@exemplo.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => true,
+            'lgpd_consent' => true,
         ])->assertStatus(201)->assertJson(['message' => 'Inscrição realizada com sucesso!']);
 
         $subscriber = NewsletterSubscriber::where('email', 'thiago@exemplo.com')->firstOrFail();
@@ -40,10 +40,10 @@ class NewsletterControllerTest extends TestCase
         $area = $this->area();
 
         $this->postJson(route('newsletter.subscribe'), [
-            'name'               => 'Thiago',
-            'email'              => 'thiago@exemplo.com',
+            'name' => 'Thiago',
+            'email' => 'thiago@exemplo.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => false,
+            'lgpd_consent' => false,
         ])->assertUnprocessable()->assertJsonValidationErrors(['lgpd_consent']);
     }
 
@@ -51,19 +51,19 @@ class NewsletterControllerTest extends TestCase
     {
         $area = $this->area();
         NewsletterSubscriber::create([
-            'name'               => 'Outro',
-            'email'              => 'thiago@exemplo.com',
+            'name' => 'Outro',
+            'email' => 'thiago@exemplo.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => true,
-            'lgpd_consent_at'    => now(),
-            'unsubscribe_token'  => 'token-existente',
+            'lgpd_consent' => true,
+            'lgpd_consent_at' => now(),
+            'unsubscribe_token' => 'token-existente',
         ]);
 
         $this->postJson(route('newsletter.subscribe'), [
-            'name'               => 'Thiago',
-            'email'              => 'thiago@exemplo.com',
+            'name' => 'Thiago',
+            'email' => 'thiago@exemplo.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => true,
+            'lgpd_consent' => true,
         ])->assertUnprocessable()->assertJsonValidationErrors(['email']);
     }
 
@@ -72,11 +72,11 @@ class NewsletterControllerTest extends TestCase
         $area = $this->area();
 
         $this->postJson(route('newsletter.subscribe'), [
-            'name'               => 'Bot',
-            'email'              => 'bot@spam.com',
+            'name' => 'Bot',
+            'email' => 'bot@spam.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => true,
-            'website'            => 'http://spam.com',
+            'lgpd_consent' => true,
+            'website' => 'http://spam.com',
         ])->assertOk()->assertJson(['message' => 'Inscrição realizada com sucesso!']);
 
         $this->assertDatabaseMissing('newsletter_subscribers', ['email' => 'bot@spam.com']);
@@ -95,12 +95,12 @@ class NewsletterControllerTest extends TestCase
     {
         $area = $this->area();
         $subscriber = NewsletterSubscriber::create([
-            'name'               => 'Thiago',
-            'email'              => 'thiago@exemplo.com',
+            'name' => 'Thiago',
+            'email' => 'thiago@exemplo.com',
             'newsletter_area_id' => $area->id,
-            'lgpd_consent'       => true,
-            'lgpd_consent_at'    => now(),
-            'unsubscribe_token'  => 'token-valido-abc123',
+            'lgpd_consent' => true,
+            'lgpd_consent_at' => now(),
+            'unsubscribe_token' => 'token-valido-abc123',
         ]);
 
         $this->get(route('newsletter.unsubscribe', 'token-valido-abc123'))

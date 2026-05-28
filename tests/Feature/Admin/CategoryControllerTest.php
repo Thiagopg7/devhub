@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesAdminUser;
@@ -11,7 +10,6 @@ use Tests\Traits\CreatesAdminUser;
 class CategoryControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_categorias(): void
@@ -33,8 +31,8 @@ class CategoryControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.categories.store'), [
-                'name'      => 'Laravel',
-                'color'     => '#FF0000',
+                'name' => 'Laravel',
+                'color' => '#FF0000',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.categories.index'))
@@ -45,13 +43,13 @@ class CategoryControllerTest extends TestCase
 
     public function test_update_atualiza_categoria(): void
     {
-        $user     = $this->adminUser(['categories.edit']);
+        $user = $this->adminUser(['categories.edit']);
         $category = Category::create(['name' => 'Python', 'color' => '#3B82F6', 'is_active' => true]);
 
         $this->actingAs($user)
             ->put(route('admin.categories.update', $category), [
-                'name'      => 'Python 3',
-                'color'     => '#3B82F6',
+                'name' => 'Python 3',
+                'color' => '#3B82F6',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.categories.index'))
@@ -62,7 +60,7 @@ class CategoryControllerTest extends TestCase
 
     public function test_destroy_remove_categoria(): void
     {
-        $user     = $this->adminUser(['categories.delete']);
+        $user = $this->adminUser(['categories.delete']);
         $category = Category::create(['name' => 'Ruby', 'color' => '#EF4444', 'is_active' => true]);
 
         $this->actingAs($user)

@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Config extends Model
 {
     protected $primaryKey = 'key';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = ['key', 'group', 'value'];
@@ -24,7 +27,7 @@ class Config extends Model
         static::updateOrCreate(['key' => $key], ['value' => $value, 'group' => $group]);
     }
 
-    public static function getGroup(string $group): \Illuminate\Support\Collection
+    public static function getGroup(string $group): Collection
     {
         return static::where('group', $group)->get()->keyBy('key');
     }

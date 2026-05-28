@@ -8,16 +8,17 @@ use Illuminate\Support\Str;
 
 class GenerateApiToken extends Command
 {
-    protected $signature   = 'api:generate-token {name : Nome identificador do token}';
+    protected $signature = 'api:generate-token {name : Nome identificador do token}';
+
     protected $description = 'Gera um novo token de API e salva o hash no banco';
 
     public function handle(): int
     {
         $plainToken = Str::random(64);
-        $hash       = hash('sha256', $plainToken);
+        $hash = hash('sha256', $plainToken);
 
         ApiToken::create([
-            'name'       => $this->argument('name'),
+            'name' => $this->argument('name'),
             'token_hash' => $hash,
         ]);
 

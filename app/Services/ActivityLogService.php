@@ -10,9 +10,9 @@ use Spatie\Activitylog\Models\Activity;
 class ActivityLogService
 {
     public const EVENT_LABELS = [
-        'created'  => 'Criado',
-        'updated'  => 'Atualizado',
-        'deleted'  => 'Excluído',
+        'created' => 'Criado',
+        'updated' => 'Atualizado',
+        'deleted' => 'Excluído',
         'restored' => 'Restaurado',
     ];
 
@@ -71,7 +71,7 @@ class ActivityLogService
             ->when($filters['date_from'] ?? null, fn ($q, $v) => $q->whereDate('created_at', '>=', $v))
             ->when($filters['date_to'] ?? null, fn ($q, $v) => $q->whereDate('created_at', '<=', $v))
             ->when($filters['search'] ?? null, function ($q, $v) {
-                $term = '%' . $v . '%';
+                $term = '%'.$v.'%';
                 $q->where(fn ($qq) => $qq
                     ->where('description', 'like', $term)
                     ->orWhere('log_name', 'like', $term)
@@ -84,24 +84,24 @@ class ActivityLogService
     private function mapLog(Activity $log): array
     {
         return [
-            'id'          => $log->id,
-            'log_name'    => $log->log_name,
-            'event'       => $log->event,
+            'id' => $log->id,
+            'log_name' => $log->log_name,
+            'event' => $log->event,
             'event_label' => self::EVENT_LABELS[$log->event] ?? $log->event,
             'description' => $log->description,
-            'subject'     => $this->describeSubject($log),
-            'causer'      => $log->causer ? [
-                'id'   => $log->causer->id,
+            'subject' => $this->describeSubject($log),
+            'causer' => $log->causer ? [
+                'id' => $log->causer->id,
                 'name' => $log->causer->name,
             ] : null,
-            'changes'    => $log->properties->toArray(),
+            'changes' => $log->properties->toArray(),
             'created_at' => $log->created_at?->toIso8601String(),
         ];
     }
 
     private function describeSubject(Activity $log): ?array
     {
-        if (!$log->subject_type) {
+        if (! $log->subject_type) {
             return null;
         }
 
@@ -114,8 +114,8 @@ class ActivityLogService
         }
 
         return [
-            'type'  => class_basename($log->subject_type),
-            'id'    => $log->subject_id,
+            'type' => class_basename($log->subject_type),
+            'id' => $log->subject_id,
             'title' => $title,
         ];
     }

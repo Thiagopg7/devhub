@@ -10,7 +10,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class ToggleControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     public function test_ativa_model_valido(): void
     {
@@ -19,8 +19,8 @@ class ToggleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.toggle.active'), [
-                'model'     => 'post',
-                'id'        => $post->id,
+                'model' => 'post',
+                'id' => $post->id,
                 'is_active' => true,
             ])
             ->assertRedirect();
@@ -35,8 +35,8 @@ class ToggleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.toggle.active'), [
-                'model'     => 'post',
-                'id'        => $post->id,
+                'model' => 'post',
+                'id' => $post->id,
                 'is_active' => false,
             ])
             ->assertRedirect();
@@ -50,8 +50,8 @@ class ToggleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.toggle.active'), [
-                'model'     => 'invalido',
-                'id'        => 1,
+                'model' => 'invalido',
+                'id' => 1,
                 'is_active' => true,
             ])
             ->assertSessionHas('toast.type', 'error');
@@ -63,8 +63,8 @@ class ToggleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.toggle.active'), [
-                'model'     => 'post',
-                'id'        => 99999,
+                'model' => 'post',
+                'id' => 99999,
                 'is_active' => true,
             ])
             ->assertSessionHas('toast.type', 'error');
@@ -77,8 +77,8 @@ class ToggleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.toggle.active'), [
-                'model'     => 'post',
-                'id'        => $post->id,
+                'model' => 'post',
+                'id' => $post->id,
                 'is_active' => true,
             ])
             ->assertRedirect()
@@ -93,8 +93,8 @@ class ToggleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.toggle.active'), [
-                'model'     => 'technology',
-                'id'        => $tech->id,
+                'model' => 'technology',
+                'id' => $tech->id,
                 'is_active' => true,
             ])
             ->assertRedirect();

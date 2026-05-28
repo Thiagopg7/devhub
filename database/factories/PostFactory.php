@@ -20,14 +20,14 @@ class PostFactory extends Factory
         $title = fake()->sentence(4);
 
         return [
-            'title'            => $title,
-            'description'      => fake()->sentence(),
+            'title' => $title,
+            'description' => fake()->sentence(),
             // 'slug'             => str($title)->slug(),
-            'banner_image'     => null,
-            'content'          => fake()->paragraphs(3, true),
-            'meta_title'       => null,
+            'banner_image' => null,
+            'content' => fake()->paragraphs(3, true),
+            'meta_title' => null,
             'meta_description' => null,
-            'is_active'        => true,
+            'is_active' => true,
         ];
     }
 }

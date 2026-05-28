@@ -11,11 +11,11 @@ trait HasActivityLog
 
     public function getActivitylogOptions(): LogOptions
     {
-        $attributes = property_exists($this, 'logAttributes') && !empty($this->logAttributes)
+        $attributes = property_exists($this, 'logAttributes') && ! empty($this->logAttributes)
             ? $this->logAttributes
             : ['*'];
 
-        $ignored = property_exists($this, 'logAttributesToIgnore') && !empty($this->logAttributesToIgnore)
+        $ignored = property_exists($this, 'logAttributesToIgnore') && ! empty($this->logAttributesToIgnore)
             ? $this->logAttributesToIgnore
             : ['updated_at', 'created_at', 'deleted_at', 'remember_token', 'password'];
 

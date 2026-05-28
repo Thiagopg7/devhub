@@ -14,8 +14,8 @@ class NewsletterAreaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'      => ['required', 'string', 'max:100'],
-            'order'     => ['nullable', 'integer', 'min:0'],
+            'name' => ['required', 'string', 'max:100'],
+            'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];
     }

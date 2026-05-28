@@ -10,7 +10,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class ReorderControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     private function reorderUser(): User
     {

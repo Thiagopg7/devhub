@@ -29,7 +29,7 @@ class GalleryImage extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->image ? asset('storage/' . $this->image) : null
+            fn () => $this->image ? asset('storage/'.$this->image) : null
         );
     }
 

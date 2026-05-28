@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Block;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesAdminUser;
@@ -11,7 +10,6 @@ use Tests\Traits\CreatesAdminUser;
 class BlockControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_blocos(): void
@@ -33,8 +31,8 @@ class BlockControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.blocks.store'), [
-                'name'      => 'Rodapé',
-                'content'   => '<p>Conteúdo</p>',
+                'name' => 'Rodapé',
+                'content' => '<p>Conteúdo</p>',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.blocks.index'))
@@ -45,13 +43,13 @@ class BlockControllerTest extends TestCase
 
     public function test_update_atualiza_bloco(): void
     {
-        $user  = $this->adminUser(['blocks.edit']);
+        $user = $this->adminUser(['blocks.edit']);
         $block = Block::create(['name' => 'Antigo', 'content' => 'x', 'is_active' => true]);
 
         $this->actingAs($user)
             ->put(route('admin.blocks.update', $block), [
-                'name'      => 'Atualizado',
-                'content'   => '<p>Novo</p>',
+                'name' => 'Atualizado',
+                'content' => '<p>Novo</p>',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.blocks.index'))
@@ -62,7 +60,7 @@ class BlockControllerTest extends TestCase
 
     public function test_destroy_remove_bloco(): void
     {
-        $user  = $this->adminUser(['blocks.delete']);
+        $user = $this->adminUser(['blocks.delete']);
         $block = Block::create(['name' => 'Temporário', 'content' => 'x', 'is_active' => true]);
 
         $this->actingAs($user)

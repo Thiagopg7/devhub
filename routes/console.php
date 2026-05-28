@@ -17,4 +17,3 @@ Schedule::command('newsletter:dispatch-scheduled')
 // Remove logs de envio com mais de 6 meses (LGPD — minimização de dados)
 Schedule::command('model:prune', ['--model' => 'App\\Models\\NewsletterSendLog'])
     ->monthly();
-

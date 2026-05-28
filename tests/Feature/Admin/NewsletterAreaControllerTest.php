@@ -3,7 +3,6 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\NewsletterArea;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\Traits\CreatesAdminUser;
@@ -11,7 +10,6 @@ use Tests\Traits\CreatesAdminUser;
 class NewsletterAreaControllerTest extends TestCase
 {
     use CreatesAdminUser;
-
     use RefreshDatabase;
 
     public function test_index_lista_areas(): void
@@ -33,7 +31,7 @@ class NewsletterAreaControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.newsletter-areas.store'), [
-                'name'      => 'Carreira',
+                'name' => 'Carreira',
                 'is_active' => true,
             ])
             ->assertRedirect(route('admin.newsletter-areas.index'))
@@ -49,7 +47,7 @@ class NewsletterAreaControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.newsletter-areas.store'), [
-                'name'      => 'Segunda',
+                'name' => 'Segunda',
                 'is_active' => true,
             ]);
 
@@ -63,7 +61,7 @@ class NewsletterAreaControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.newsletter-areas.update', $area), [
-                'name'      => 'Atualizada',
+                'name' => 'Atualizada',
                 'is_active' => false,
             ])
             ->assertRedirect(route('admin.newsletter-areas.index'))

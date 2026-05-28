@@ -11,11 +11,11 @@ class MenuRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'label'           => ['required', 'string', 'max:100'],
-            'url'             => ['required', 'string', 'max:500'],
-            'parent_id'       => ['nullable', 'exists:menu_items,id'],
-            'order'           => ['nullable', 'integer', 'min:0'],
-            'is_active'       => ['boolean'],
+            'label' => ['required', 'string', 'max:100'],
+            'url' => ['required', 'string', 'max:500'],
+            'parent_id' => ['nullable', 'exists:menu_items,id'],
+            'order' => ['nullable', 'integer', 'min:0'],
+            'is_active' => ['boolean'],
             'open_in_new_tab' => ['boolean'],
         ];
     }
@@ -28,7 +28,7 @@ class MenuRequest extends FormRequest
         $validator->after(function (Validator $validator) {
             $parentId = $this->input('parent_id');
 
-            if (!$parentId) {
+            if (! $parentId) {
                 return;
             }
 

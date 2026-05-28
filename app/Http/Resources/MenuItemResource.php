@@ -10,10 +10,10 @@ class MenuItemResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'label'          => $this->label,
-            'url'            => $this->url,
+            'label' => $this->label,
+            'url' => $this->url,
             'open_in_new_tab' => $this->open_in_new_tab,
-            'children'       => $this->whenLoaded('children',
+            'children' => $this->whenLoaded('children',
                 fn () => MenuItemResource::collection($this->children)
             ),
         ];

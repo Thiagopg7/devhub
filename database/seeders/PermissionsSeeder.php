@@ -20,7 +20,7 @@ class PermissionsSeeder extends Seeder
         $all = [];
         foreach ($modules as $module) {
             foreach ($actions as $action) {
-                $name  = "{$module}.{$action}";
+                $name = "{$module}.{$action}";
                 $all[] = $name;
                 Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
             }
@@ -36,7 +36,7 @@ class PermissionsSeeder extends Seeder
         $viewer = Role::firstOrCreate(['name' => 'Visualizador', 'guard_name' => 'web']);
         $viewer->is_system = true;
         $viewer->save();
-        $viewOnly = array_values(array_filter($all, fn($p) => str_ends_with($p, '.view')));
+        $viewOnly = array_values(array_filter($all, fn ($p) => str_ends_with($p, '.view')));
         $viewer->syncPermissions($viewOnly);
     }
 }

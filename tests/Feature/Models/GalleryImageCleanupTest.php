@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Models;
 
-use App\Models\GalleryImage;
 use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;

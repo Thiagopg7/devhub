@@ -35,19 +35,19 @@ class NewsletterCampaignController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'title'        => ['required', 'string', 'max:200'],
-            'subject'      => ['required', 'string', 'max:200'],
-            'post_ids'     => ['required', 'array', 'min:1'],
-            'post_ids.*'   => ['integer', 'exists:posts,id'],
+            'title' => ['required', 'string', 'max:200'],
+            'subject' => ['required', 'string', 'max:200'],
+            'post_ids' => ['required', 'array', 'min:1'],
+            'post_ids.*' => ['integer', 'exists:posts,id'],
             'scheduled_at' => ['nullable', 'date', 'after:now'],
         ]);
 
         $scheduledAt = $validated['scheduled_at'] ?? null;
 
         $campaign = NewsletterCampaign::create([
-            'title'        => $validated['title'],
-            'subject'      => $validated['subject'],
-            'status'       => $scheduledAt ? 'scheduled' : 'draft',
+            'title' => $validated['title'],
+            'subject' => $validated['subject'],
+            'status' => $scheduledAt ? 'scheduled' : 'draft',
             'scheduled_at' => $scheduledAt,
         ]);
 
@@ -63,14 +63,14 @@ class NewsletterCampaignController extends Controller
 
         return Inertia::render('Admin/NewsletterCampaigns/Show', [
             'campaign' => $newsletterCampaign,
-            'logs'     => $newsletterCampaign->sendLogs()
+            'logs' => $newsletterCampaign->sendLogs()
                 ->with('subscriber:id,name,email')
                 ->orderByDesc('created_at')
                 ->paginate(50),
-            'stats'    => [
-                'total'   => $newsletterCampaign->sendLogs()->count(),
-                'sent'    => $newsletterCampaign->sendLogs()->where('status', 'sent')->count(),
-                'failed'  => $newsletterCampaign->sendLogs()->where('status', 'failed')->count(),
+            'stats' => [
+                'total' => $newsletterCampaign->sendLogs()->count(),
+                'sent' => $newsletterCampaign->sendLogs()->where('status', 'sent')->count(),
+                'failed' => $newsletterCampaign->sendLogs()->where('status', 'failed')->count(),
                 'pending' => $newsletterCampaign->sendLogs()->where('status', 'pending')->count(),
             ],
         ]);
@@ -83,8 +83,8 @@ class NewsletterCampaignController extends Controller
         $fakeMail = new NewsletterCampaignMail(
             $newsletterCampaign,
             new NewsletterSubscriber([
-                'name'              => 'Fulano de Tal',
-                'email'             => 'exemplo@exemplo.com',
+                'name' => 'Fulano de Tal',
+                'email' => 'exemplo@exemplo.com',
                 'unsubscribe_token' => 'preview-token',
             ])
         );

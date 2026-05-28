@@ -23,15 +23,15 @@ class PageSeeder extends Seeder
         $page = Page::firstOrCreate(
             ['slug' => 'sobre-nos'],
             [
-                'title'            => 'Sobre Nós',
-                'subtitle'         => 'Conheça um pouco mais sobre este projeto',
-                'slug'             => 'sobre-nos',
-                'banner_image'     => Storage::disk('public')->exists('pages/sobre-nos-banner.jpg') ? 'pages/sobre-nos-banner.jpg' : null,
-                'main_image'       => Storage::disk('public')->exists('pages/sobre-nos-main.jpg') ? 'pages/sobre-nos-main.jpg' : null,
-                'content'          => $this->sobreNosContent(),
-                'is_active'        => true,
-                'is_searchable'    => true,
-                'meta_title'       => 'Sobre Nós — DevHub',
+                'title' => 'Sobre Nós',
+                'subtitle' => 'Conheça um pouco mais sobre este projeto',
+                'slug' => 'sobre-nos',
+                'banner_image' => Storage::disk('public')->exists('pages/sobre-nos-banner.jpg') ? 'pages/sobre-nos-banner.jpg' : null,
+                'main_image' => Storage::disk('public')->exists('pages/sobre-nos-main.jpg') ? 'pages/sobre-nos-main.jpg' : null,
+                'content' => $this->sobreNosContent(),
+                'is_active' => true,
+                'is_searchable' => true,
+                'meta_title' => 'Sobre Nós — DevHub',
                 'meta_description' => 'Saiba mais sobre o DevHub, um portfólio e blog de desenvolvimento web focado em PHP, Laravel e React.',
             ]
         );
@@ -61,12 +61,12 @@ class PageSeeder extends Seeder
         Page::firstOrCreate(
             ['slug' => 'politica-de-privacidade'],
             [
-                'title'            => 'Política de Privacidade',
-                'slug'             => 'politica-de-privacidade',
-                'content'          => $this->privacidadeContent(),
-                'is_active'        => true,
-                'is_searchable'    => true,
-                'meta_title'       => 'Política de Privacidade — DevHub',
+                'title' => 'Política de Privacidade',
+                'slug' => 'politica-de-privacidade',
+                'content' => $this->privacidadeContent(),
+                'is_active' => true,
+                'is_searchable' => true,
+                'meta_title' => 'Política de Privacidade — DevHub',
                 'meta_description' => 'Entenda como coletamos, usamos e protegemos suas informações no DevHub.',
             ]
         );
@@ -95,7 +95,7 @@ class PageSeeder extends Seeder
 
     private function sobreNosContent(): string
     {
-        return <<<HTML
+        return <<<'HTML'
 <h2>Olá, seja bem-vindo ao DevHub!</h2>
 <p>O <strong>DevHub</strong> é um espaço criado para compartilhar conhecimento, projetos e aprendizados sobre desenvolvimento web. Aqui você encontra artigos práticos sobre PHP, Laravel, React, DevOps e muito mais.</p>
 
@@ -126,7 +126,7 @@ HTML;
 
     private function privacidadeContent(): string
     {
-        return <<<HTML
+        return <<<'HTML'
 <h2>Política de Privacidade</h2>
 <p><em>Última atualização: janeiro de 2026</em></p>
 <p>Esta Política de Privacidade descreve como o <strong>DevHub</strong> coleta, usa e protege as informações fornecidas pelos visitantes deste site.</p>

@@ -18,8 +18,8 @@ class PageController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Pages/Index', [
-            'pages'        => $this->pageService->getPaginated(20, $request->input('q')),
-            'filter'       => $request->only('q'),
+            'pages' => $this->pageService->getPaginated(20, $request->input('q')),
+            'filter' => $request->only('q'),
             'trashedCount' => Page::onlyTrashed()->count(),
         ]);
     }

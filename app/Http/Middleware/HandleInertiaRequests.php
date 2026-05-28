@@ -22,19 +22,19 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $isAdmin = $request->routeIs('admin.*');
-        $user    = $request->user();
+        $user = $request->user();
 
         return [
             ...parent::share($request),
             'auth' => [
-                'user'         => $user,
+                'user' => $user,
                 'isSuperAdmin' => (bool) $user?->isSuperAdmin(),
-                'permissions'  => $user
+                'permissions' => $user
                     ? $user->getAllPermissions()->pluck('name')->values()->all()
                     : [],
             ],
-            'siteConfig'      => Config::pluck('value', 'key'),
-            'menuItems'       => $isAdmin ? [] : app(MenuService::class)->getPublicTree(),
+            'siteConfig' => Config::pluck('value', 'key'),
+            'menuItems' => $isAdmin ? [] : app(MenuService::class)->getPublicTree(),
             'newsletterAreas' => $isAdmin ? [] : Cache::remember('newsletter_areas.active', 3600, function () {
                 return NewsletterArea::active()->ordered()->get()->toArray();
             }),

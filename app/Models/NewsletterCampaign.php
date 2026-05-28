@@ -18,7 +18,7 @@ class NewsletterCampaign extends Model
 
     protected $casts = [
         'scheduled_at' => 'datetime',
-        'sent_at'      => 'datetime',
+        'sent_at' => 'datetime',
     ];
 
     public function posts(): BelongsToMany

@@ -11,7 +11,7 @@ use Tests\Traits\CreatesAdminUser;
 
 class RoleControllerTest extends TestCase
 {
-    use RefreshDatabase, CreatesAdminUser;
+    use CreatesAdminUser, RefreshDatabase;
 
     public function test_index_lista_perfis(): void
     {
@@ -34,7 +34,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.roles.store'), [
-                'name'        => 'Editor',
+                'name' => 'Editor',
                 'permissions' => ['posts.view'],
             ])
             ->assertRedirect(route('admin.roles.index'));
@@ -49,7 +49,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('admin.roles.update', $role), [
-                'name'        => 'Editor Sênior',
+                'name' => 'Editor Sênior',
                 'permissions' => [],
             ])
             ->assertRedirect(route('admin.roles.index'));
@@ -73,7 +73,7 @@ class RoleControllerTest extends TestCase
     {
         $user = $this->adminUser(['roles.delete']);
 
-        $role    = Role::firstOrCreate(['name' => 'Ocupado', 'guard_name' => 'web']);
+        $role = Role::firstOrCreate(['name' => 'Ocupado', 'guard_name' => 'web']);
         $another = User::factory()->create();
         $another->assignRole($role);
 
@@ -87,7 +87,7 @@ class RoleControllerTest extends TestCase
     public function test_update_bloqueia_perfil_de_sistema(): void
     {
         $admin = User::factory()->superAdmin()->create();
-        $role  = $this->systemRole('Administrador');
+        $role = $this->systemRole('Administrador');
 
         $this->actingAs($admin)
             ->put(route('admin.roles.update', $role), ['name' => 'Hackeado', 'permissions' => []])
@@ -99,7 +99,7 @@ class RoleControllerTest extends TestCase
     public function test_edit_perfil_de_sistema_renderiza_em_modo_leitura(): void
     {
         $admin = User::factory()->superAdmin()->create();
-        $role  = $this->systemRole('Administrador');
+        $role = $this->systemRole('Administrador');
 
         $this->actingAs($admin)
             ->get(route('admin.roles.edit', $role))
@@ -112,7 +112,7 @@ class RoleControllerTest extends TestCase
     public function test_destroy_bloqueia_perfil_de_sistema(): void
     {
         $admin = User::factory()->superAdmin()->create();
-        $role  = $this->systemRole('Administrador');
+        $role = $this->systemRole('Administrador');
 
         $this->actingAs($admin)
             ->delete(route('admin.roles.destroy', $role))
@@ -123,7 +123,7 @@ class RoleControllerTest extends TestCase
 
     public function test_usuario_nao_pode_editar_o_proprio_perfil(): void
     {
-        $user    = $this->adminUser(['roles.edit']);
+        $user = $this->adminUser(['roles.edit']);
         $ownRole = Role::where('name', 'Administrador')->firstOrFail();
 
         $this->actingAs($user)
@@ -139,7 +139,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($user)
             ->post(route('admin.roles.store'), [
-                'name'        => 'Editor',
+                'name' => 'Editor',
                 'permissions' => ['posts.view', 'users.delete'],
             ])
             ->assertRedirect(route('admin.roles.index'));
@@ -155,7 +155,7 @@ class RoleControllerTest extends TestCase
 
         $this->actingAs($admin)
             ->post(route('admin.roles.store'), [
-                'name'        => 'Gerente',
+                'name' => 'Gerente',
                 'permissions' => ['users.delete'],
             ])
             ->assertRedirect(route('admin.roles.index'));

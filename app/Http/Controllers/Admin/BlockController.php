@@ -35,9 +35,9 @@ class BlockController extends Controller
         Block::create($request->validated());
 
         return redirect()->route('admin.blocks.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Bloco criado com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 
@@ -53,9 +53,9 @@ class BlockController extends Controller
         $block->update($request->validated());
 
         return redirect()->route('admin.blocks.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Bloco atualizado com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 
@@ -64,9 +64,9 @@ class BlockController extends Controller
         $block->delete();
 
         return redirect()->route('admin.blocks.index')->with('toast', [
-            'title'   => 'Sucesso!',
+            'title' => 'Sucesso!',
             'message' => 'Bloco excluído com sucesso.',
-            'type'    => 'success',
+            'type' => 'success',
         ]);
     }
 }

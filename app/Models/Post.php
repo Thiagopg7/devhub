@@ -51,7 +51,7 @@ class Post extends Model
     protected function bannerImageUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->banner_image ? asset('storage/' . $this->banner_image) : null
+            fn () => $this->banner_image ? asset('storage/'.$this->banner_image) : null
         );
     }
 
