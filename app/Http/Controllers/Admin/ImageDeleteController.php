@@ -13,8 +13,8 @@ use Illuminate\Http\Request;
 class ImageDeleteController extends Controller
 {
     private const ALLOWED = [
-        'post'       => ['fields' => ['banner_image'],                        'class' => Post::class,       'module' => 'posts'],
-        'page'       => ['fields' => ['banner_image', 'main_image'],          'class' => Page::class,       'module' => 'pages'],
+        'post' => ['fields' => ['banner_image'],                        'class' => Post::class,       'module' => 'posts'],
+        'page' => ['fields' => ['banner_image', 'main_image'],          'class' => Page::class,       'module' => 'pages'],
         'technology' => ['fields' => ['icon_image', 'screenshot_image'],      'class' => Technology::class, 'module' => 'technologies'],
     ];
 

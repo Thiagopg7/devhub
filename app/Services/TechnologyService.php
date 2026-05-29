@@ -24,7 +24,7 @@ class TechnologyService
 
     public function update(Technology $technology, array $data, ?UploadedFile $icon = null, ?UploadedFile $screenshot = null): Technology
     {
-        $oldIcon       = $technology->icon_image;
+        $oldIcon = $technology->icon_image;
         $oldScreenshot = $technology->screenshot_image;
 
         if ($icon?->isValid()) {
