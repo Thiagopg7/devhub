@@ -27,7 +27,6 @@ class ConfigService
         $config = Config::create(['key' => $key, 'value' => $value, 'group' => $group]);
         Cache::forget("config.{$key}");
         Cache::forget("config.group.{$group}");
-        Cache::forget('configs.all');
 
         return $config;
     }
@@ -40,7 +39,6 @@ class ConfigService
         Cache::forget("config.{$config->key}");
         Cache::forget("config.group.{$oldGroup}");
         Cache::forget("config.group.{$group}");
-        Cache::forget('configs.all');
 
         return $config;
     }
@@ -49,7 +47,6 @@ class ConfigService
     {
         Cache::forget("config.{$config->key}");
         Cache::forget("config.group.{$config->group}");
-        Cache::forget('configs.all');
         $config->delete();
     }
 

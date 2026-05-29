@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class Config extends Model
 {
@@ -30,5 +31,11 @@ class Config extends Model
     public static function getGroup(string $group): Collection
     {
         return static::where('group', $group)->get()->keyBy('key');
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(fn () => Cache::forget('configs.all'));
+        static::deleted(fn () => Cache::forget('configs.all'));
     }
 }
