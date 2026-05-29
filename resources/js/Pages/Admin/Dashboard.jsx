@@ -4,20 +4,20 @@ import { FileText, Users, Mail, Megaphone, Activity, ArrowRight } from 'lucide-r
 
 function StatCard({ icon: Icon, label, value, sub, color, href }) {
     const content = (
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
-            <div className={`p-3 rounded-lg ${color}`}>
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 flex items-center gap-4 hover:shadow-md transition-shadow h-full">
+            <div className={`p-3 rounded-lg shrink-0 ${color}`}>
                 <Icon size={22} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
                 <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{label}</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
-                {sub && <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub}</p>}
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{sub ?? ' '}</p>
             </div>
             {href && <ArrowRight size={16} className="text-gray-400 flex-shrink-0" />}
         </div>
     );
 
-    return href ? <Link href={href}>{content}</Link> : content;
+    return href ? <Link href={href} className="h-full block">{content}</Link> : content;
 }
 
 function ActivityBadge({ description }) {
