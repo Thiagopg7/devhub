@@ -96,9 +96,9 @@ app/
 │                         # MenuItem, Config, User, Role,
 │                         # NewsletterArea, NewsletterSubscriber,
 │                         # NewsletterCampaign, NewsletterSendLog
-├── Services/             # PostService, PageService, MenuService, RoleService,
-│                         # UserService, ConfigService, ActivityLogService,
-│                         # FileUploadService
+├── Services/             # PostService, PageService, TechnologyService,
+│                         # MenuService, RoleService, UserService,
+│                         # ConfigService, ActivityLogService, FileUploadService
 └── Traits/
     └── HasActivityLog.php
 ```
@@ -264,7 +264,7 @@ Os testes usam SQLite in-memory e não afetam o banco de desenvolvimento.
 docker exec app php artisan test
 ```
 
-**Resultado atual: 124 testes, 443 asserções — 100% passando**
+**Resultado atual: 242 testes, 856 asserções — 100% passando**
 
 Cobertura por módulo:
 
@@ -272,15 +272,16 @@ Cobertura por módulo:
 |--------|--------|
 | API (auth, posts, paginação, slug, 404) | `Api/PostApiTest`, `Api/ValidateApiTokenTest` |
 | Admin — Posts | CRUD completo, upload de banner, permissões |
-| Admin — Categories, Blocks, Pages, Technologies | CRUD e permissões |
+| Admin — Categories, Blocks, Pages, Technologies | CRUD, upload de imagens e permissões |
 | Admin — Menu | CRUD e reordenação |
 | Admin — Newsletter areas e subscribers | CRUD e conformidade |
 | Admin — Roles e Users | Criação, proteção de perfis de sistema, controle de super admin |
 | Admin — Reorder | Transações e validação de módulos |
+| Admin — ImageDelete | Remoção de imagens avulsas em Posts, Pages e Technologies |
 | Auth | Login, registro, reset de senha, verificação de e-mail |
 | Perfil | Atualização e exclusão de conta |
 | Models | Limpeza de arquivos em Posts, Pages e GalleryImages |
-| Services | PostService (criação, atualização, deleção, upload) |
+| Services | PostService, PageService e TechnologyService (criação, atualização, deleção, upload) |
 
 ## Variáveis de ambiente relevantes
 
