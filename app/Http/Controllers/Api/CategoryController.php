@@ -5,14 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Support\ApiCache;
+use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
-    public function index(): AnonymousResourceCollection
+    public function index(): JsonResponse
     {
-        $categories = Category::active()->withCount('posts')->orderBy('name')->get();
+        $payload = ApiCache::remember(ApiCache::CATEGORIES, 'index', function () {
+            $categories = Category::active()->withCount('posts')->orderBy('name')->get();
 
-        return CategoryResource::collection($categories);
+            return CategoryResource::collection($categories)->response()->getData(true);
+        });
+
+        return response()->json($payload);
     }
 }

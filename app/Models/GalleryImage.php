@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -48,5 +49,8 @@ class GalleryImage extends Model
                 Storage::disk('public')->delete($galleryImage->image);
             }
         });
+
+        static::saved(fn () => ApiCache::flush(ApiCache::PAGES));
+        static::deleted(fn () => ApiCache::flush(ApiCache::PAGES));
     }
 }

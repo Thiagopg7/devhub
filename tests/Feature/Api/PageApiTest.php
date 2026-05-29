@@ -4,7 +4,9 @@ namespace Tests\Feature\Api;
 
 use App\Models\Page;
 use App\Models\User;
+use App\Support\ApiCache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class PageApiTest extends TestCase
@@ -50,5 +52,34 @@ class PageApiTest extends TestCase
     {
         $this->getJson('/api/pages/qualquer')
             ->assertUnauthorized();
+    }
+
+    // --- cache ---
+
+    public function test_e_cacheada_e_invalidada_ao_atualizar(): void
+    {
+        $page = Page::create(['title' => 'Servicos', 'slug' => 'servicos', 'subtitle' => 'Antigo', 'is_active' => true]);
+
+        $this->withToken($this->token())->getJson('/api/pages/servicos')
+            ->assertJsonPath('data.subtitle', 'Antigo');
+        $this->assertTrue(Cache::tags(ApiCache::PAGES)->has('show.servicos'));
+
+        $page->update(['subtitle' => 'Novo']);
+
+        $this->withToken($this->token())->getJson('/api/pages/servicos')
+            ->assertJsonPath('data.subtitle', 'Novo');
+    }
+
+    public function test_cache_invalidado_ao_alterar_galeria(): void
+    {
+        $page = Page::create(['title' => 'Galeria', 'slug' => 'galeria', 'is_active' => true]);
+
+        $this->withToken($this->token())->getJson('/api/pages/galeria')
+            ->assertJsonPath('data.gallery', []);
+
+        $page->galleryImages()->create(['image' => 'gallery/foto.jpg']);
+
+        $response = $this->withToken($this->token())->getJson('/api/pages/galeria')->assertOk();
+        $this->assertCount(1, $response->json('data.gallery'));
     }
 }

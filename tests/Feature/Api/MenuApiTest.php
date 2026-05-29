@@ -4,12 +4,15 @@ namespace Tests\Feature\Api;
 
 use App\Models\MenuItem;
 use App\Models\User;
+use App\Support\ApiCache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
+use Tests\Traits\CreatesAdminUser;
 
 class MenuApiTest extends TestCase
 {
-    use RefreshDatabase;
+    use CreatesAdminUser, RefreshDatabase;
 
     private function token(): string
     {
@@ -57,5 +60,43 @@ class MenuApiTest extends TestCase
     {
         $this->getJson('/api/menu')
             ->assertUnauthorized();
+    }
+
+    public function test_resposta_e_servida_do_cache(): void
+    {
+        $token = $this->token();
+        MenuItem::create(['label' => 'Blog', 'url' => '/blog', 'order' => 1, 'is_active' => true]);
+
+        $this->withToken($token)->getJson('/api/menu')->assertJsonCount(1, 'data');
+
+        DB::table('menu_items')->insert([
+            'label' => 'Sobre', 'url' => '/sobre', 'order' => 2, 'is_active' => true,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        $this->withToken($token)->getJson('/api/menu')->assertJsonCount(1, 'data');
+
+        ApiCache::flush(ApiCache::MENU);
+        $this->withToken($token)->getJson('/api/menu')->assertJsonCount(2, 'data');
+    }
+
+    public function test_cache_invalidado_no_reorder(): void
+    {
+        $token = $this->token();
+        $a = MenuItem::create(['label' => 'A', 'url' => '/a', 'order' => 1, 'is_active' => true]);
+        $b = MenuItem::create(['label' => 'B', 'url' => '/b', 'order' => 2, 'is_active' => true]);
+
+        $this->withToken($token)->getJson('/api/menu')->assertJsonPath('data.0.label', 'A');
+
+        $this->actingAs($this->adminUser(['menu.edit']))
+            ->post(route('admin.reorder'), [
+                'model' => 'menu_item',
+                'items' => [
+                    ['id' => $a->id, 'order' => 2],
+                    ['id' => $b->id, 'order' => 1],
+                ],
+            ])->assertRedirect();
+
+        $this->withToken($token)->getJson('/api/menu')->assertJsonPath('data.0.label', 'B');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -85,5 +86,8 @@ class Post extends Model
                 Storage::disk('public')->delete($post->banner_image);
             }
         });
+
+        static::saved(fn () => ApiCache::flush(ApiCache::POSTS, ApiCache::CATEGORIES));
+        static::deleted(fn () => ApiCache::flush(ApiCache::POSTS, ApiCache::CATEGORIES));
     }
 }

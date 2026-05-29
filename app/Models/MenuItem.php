@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use App\Traits\HasActivityLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -54,9 +55,11 @@ class MenuItem extends Model
 
         static::saved(function () {
             Cache::forget('menu.shared');
+            ApiCache::flush(ApiCache::MENU);
         });
         static::deleted(function () {
             Cache::forget('menu.shared');
+            ApiCache::flush(ApiCache::MENU);
         });
     }
 }

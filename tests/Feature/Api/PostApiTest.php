@@ -2,9 +2,12 @@
 
 namespace Tests\Feature\Api;
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\ApiCache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class PostApiTest extends TestCase
@@ -74,5 +77,34 @@ class PostApiTest extends TestCase
 
         $this->autenticado()->getJson('/api/posts/post-inativo')
             ->assertNotFound();
+    }
+
+    // --- cache ---
+
+    public function test_listagem_e_cacheada_e_invalidada_ao_salvar(): void
+    {
+        Post::factory()->create(['is_active' => true]);
+        $this->autenticado()->getJson('/api/posts')->assertJsonCount(1, 'data');
+
+        $this->assertTrue(Cache::tags(ApiCache::POSTS)->has('index.all.page.1'));
+
+        Post::factory()->create(['is_active' => true]);
+        $this->assertFalse(Cache::tags(ApiCache::POSTS)->has('index.all.page.1'));
+
+        $this->autenticado()->getJson('/api/posts')->assertJsonCount(2, 'data');
+    }
+
+    public function test_cache_de_posts_invalidado_ao_renomear_categoria(): void
+    {
+        $category = Category::create(['name' => 'Tech', 'color' => '#000', 'is_active' => true]);
+        $post = Post::factory()->create(['is_active' => true, 'category_id' => $category->id]);
+
+        $this->autenticado()->getJson("/api/posts/{$post->slug}")
+            ->assertJsonPath('data.category.name', 'Tech');
+
+        $category->update(['name' => 'Tecnologia']);
+
+        $this->autenticado()->getJson("/api/posts/{$post->slug}")
+            ->assertJsonPath('data.category.name', 'Tecnologia');
     }
 }

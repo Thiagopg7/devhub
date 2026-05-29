@@ -3,8 +3,11 @@
 namespace Tests\Feature\Api;
 
 use App\Models\Category;
+use App\Models\Post;
 use App\Models\User;
+use App\Support\ApiCache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class CategoryApiTest extends TestCase
@@ -49,5 +52,58 @@ class CategoryApiTest extends TestCase
         $this->withToken($this->token())->getJson('/api/categories')
             ->assertOk()
             ->assertJsonCount(0, 'data');
+    }
+
+    public function test_resposta_e_servida_do_cache(): void
+    {
+        $token = $this->token();
+        Category::create(['name' => 'A', 'color' => '#000', 'is_active' => true]);
+
+        $this->withToken($token)->getJson('/api/categories')->assertJsonCount(1, 'data');
+
+        // INSERT direto no banco não dispara model events: o cache não é invalidado.
+        DB::table('categories')->insert([
+            'name' => 'B', 'slug' => 'b', 'color' => '#000', 'is_active' => true,
+            'created_at' => now(), 'updated_at' => now(),
+        ]);
+
+        // Ainda servindo a versão cacheada (1 item), provando que houve cache.
+        $this->withToken($token)->getJson('/api/categories')->assertJsonCount(1, 'data');
+
+        // Após invalidar, a resposta reflete o banco (2 itens).
+        ApiCache::flush(ApiCache::CATEGORIES);
+        $this->withToken($token)->getJson('/api/categories')->assertJsonCount(2, 'data');
+    }
+
+    public function test_cache_invalidado_ao_salvar_categoria(): void
+    {
+        $token = $this->token();
+        Category::create(['name' => 'A', 'color' => '#000', 'is_active' => true]);
+        $this->withToken($token)->getJson('/api/categories')->assertJsonCount(1, 'data');
+
+        // Criar via model dispara o evento saved -> invalida o cache.
+        Category::create(['name' => 'B', 'color' => '#000', 'is_active' => true]);
+        $this->withToken($token)->getJson('/api/categories')->assertJsonCount(2, 'data');
+    }
+
+    public function test_cache_invalidado_ao_mudar_contagem_de_posts(): void
+    {
+        $token = $this->token();
+        $category = Category::create(['name' => 'A', 'color' => '#000', 'is_active' => true]);
+        $user = User::factory()->create();
+
+        $this->withToken($token)->getJson('/api/categories')
+            ->assertJsonPath('data.0.posts_count', 0);
+
+        // Novo post na categoria deve invalidar o cache (posts_count vai a 1).
+        Post::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Post',
+            'is_active' => true,
+        ]);
+
+        $this->withToken($token)->getJson('/api/categories')
+            ->assertJsonPath('data.0.posts_count', 1);
     }
 }

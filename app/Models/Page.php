@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -100,5 +101,8 @@ class Page extends Model
             // de cada uma, que apaga o arquivo correspondente.
             $page->galleryImages()->get()->each->delete();
         });
+
+        static::saved(fn () => ApiCache::flush(ApiCache::PAGES));
+        static::deleted(fn () => ApiCache::flush(ApiCache::PAGES));
     }
 }
