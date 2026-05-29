@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\TechnologyController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -19,4 +20,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/pages/{slug}', [PageController::class, 'show']);
     Route::get('/menu', [MenuController::class, 'index']);
+    Route::get('/technologies', [TechnologyController::class, 'index']);
 });
