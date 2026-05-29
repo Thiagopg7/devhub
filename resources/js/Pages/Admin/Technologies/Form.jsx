@@ -1,4 +1,5 @@
 import { Head, useForm, router } from "@inertiajs/react";
+import { useConfirmModal } from "@/hooks/useConfirmModal";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
@@ -12,14 +13,13 @@ import ToggleButton from "@/Components/Admin/ToggleButton";
 import ImageSlot from "@/Components/Admin/ImageSlot";
 import TextareaAutosize from "react-textarea-autosize";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { useState } from "react";
 import { useCan } from "@/hooks/useCan";
 
 export default function Form({ technology = null }) {
     const can = useCan();
     const isEditing = !!technology?.id;
     const readonly = isEditing && !can('technologies.edit');
-    const [pending, setPending] = useState(null);
+    const { confirm, modalProps } = useConfirmModal();
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         name:             technology?.name        ?? "",
@@ -49,7 +49,7 @@ export default function Form({ technology = null }) {
     };
 
     const deleteImage = (field) => {
-        setPending({
+        confirm({
             message: "Remover a imagem?",
             onConfirm: () => router.delete(route("admin.image.destroy"), {
                 data: { model: "technology", id: technology.id, field },
@@ -186,13 +186,7 @@ export default function Form({ technology = null }) {
                 </div>
             </AuthenticatedLayout>
 
-            {pending && (
-                <ConfirmModal
-                    message={pending.message}
-                    onConfirm={() => { pending.onConfirm(); setPending(null); }}
-                    onCancel={() => setPending(null)}
-                />
-            )}
+            <ConfirmModal {...modalProps} />
         </>
     );
 }

@@ -1,5 +1,5 @@
 import { Head, useForm, router } from "@inertiajs/react";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
@@ -16,6 +16,7 @@ import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import TextareaAutosize from "react-textarea-autosize";
 import { Trash2, Upload } from "lucide-react";
 import { useCan } from "@/hooks/useCan";
+import { useConfirmModal } from "@/hooks/useConfirmModal";
 
 const TABS = [
     { id: "content", label: "Conteúdo" },
@@ -171,9 +172,7 @@ export default function Form({ page = null }) {
     const isEditing = !!page?.id;
     const readonly = isEditing && !can('pages.edit');
     const [tab, setTab] = useState("content");
-    const [pending, setPending] = useState(null);
-
-    const handleDeleteRequest = useCallback((config) => setPending(config), []);
+    const { confirm, modalProps } = useConfirmModal();
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
         title:            page?.title            ?? "",
@@ -204,7 +203,7 @@ export default function Form({ page = null }) {
     };
 
     const deleteImage = (field, label) => {
-        setPending({
+        confirm({
             message: `Remover ${label}?`,
             onConfirm: () => router.delete(route("admin.image.destroy"), {
                 data: { model: "page", id: page.id, field },
@@ -317,7 +316,7 @@ export default function Form({ page = null }) {
                                             />
 
                                             <div className="border-t border-gray-200 dark:border-gray-700 pt-5">
-                                                <GallerySection page={page} processing={processing} readonly={readonly} onDeleteRequest={handleDeleteRequest} />
+                                                <GallerySection page={page} processing={processing} readonly={readonly} onDeleteRequest={confirm} />
                                             </div>
                                         </>
                                     )}
@@ -390,12 +389,7 @@ export default function Form({ page = null }) {
                 </div>
             </AuthenticatedLayout>
 
-            <ConfirmModal
-                show={!!pending}
-                message={pending?.message}
-                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
-                onCancel={() => setPending(null)}
-            />
+            <ConfirmModal {...modalProps} />
         </>
     );
 }

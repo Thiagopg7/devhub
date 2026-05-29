@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\Technology;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
@@ -53,6 +54,48 @@ class ImageDeleteControllerTest extends TestCase
 
         Storage::disk('public')->assertMissing($path);
         $this->assertNull($page->fresh()->banner_image);
+    }
+
+    public function test_remove_icon_de_technology(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser(['technologies.edit']);
+
+        $path = 'technologies/icon.png';
+        Storage::disk('public')->put($path, 'icone');
+        $tech = Technology::create(['name' => 'PHP', 'url' => 'https://php.net', 'icon_image' => $path, 'is_active' => true]);
+
+        $this->actingAs($user)
+            ->delete(route('admin.image.destroy'), [
+                'model' => 'technology',
+                'id' => $tech->id,
+                'field' => 'icon_image',
+            ])
+            ->assertRedirect();
+
+        Storage::disk('public')->assertMissing($path);
+        $this->assertNull($tech->fresh()->icon_image);
+    }
+
+    public function test_remove_screenshot_de_technology(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser(['technologies.edit']);
+
+        $path = 'technologies/screenshot.jpg';
+        Storage::disk('public')->put($path, 'screenshot');
+        $tech = Technology::create(['name' => 'PHP', 'url' => 'https://php.net', 'screenshot_image' => $path, 'is_active' => true]);
+
+        $this->actingAs($user)
+            ->delete(route('admin.image.destroy'), [
+                'model' => 'technology',
+                'id' => $tech->id,
+                'field' => 'screenshot_image',
+            ])
+            ->assertRedirect();
+
+        Storage::disk('public')->assertMissing($path);
+        $this->assertNull($tech->fresh()->screenshot_image);
     }
 
     public function test_rejeita_model_invalido(): void
