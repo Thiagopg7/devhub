@@ -14,8 +14,8 @@ class Technology extends Model
         'name',
         'description',
         'url',
-        'icon_url',
-        'screenshot_url',
+        'icon_image',
+        'screenshot_image',
         'order',
         'is_active',
     ];
@@ -24,6 +24,18 @@ class Technology extends Model
         'is_active' => 'boolean',
         'order' => 'integer',
     ];
+
+    protected $appends = ['icon_image_url', 'screenshot_image_url'];
+
+    public function getIconImageUrlAttribute(): ?string
+    {
+        return $this->icon_image ? asset('storage/'.$this->icon_image) : null;
+    }
+
+    public function getScreenshotImageUrlAttribute(): ?string
+    {
+        return $this->screenshot_image ? asset('storage/'.$this->screenshot_image) : null;
+    }
 
     public function scopeActive($query)
     {

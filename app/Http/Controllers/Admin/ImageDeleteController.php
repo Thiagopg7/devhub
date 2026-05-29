@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\Technology;
 use App\Services\FileUploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,8 +13,9 @@ use Illuminate\Http\Request;
 class ImageDeleteController extends Controller
 {
     private const ALLOWED = [
-        'post' => ['fields' => ['banner_image'],                'class' => Post::class, 'module' => 'posts'],
-        'page' => ['fields' => ['banner_image', 'main_image'],  'class' => Page::class, 'module' => 'pages'],
+        'post'       => ['fields' => ['banner_image'],                        'class' => Post::class,       'module' => 'posts'],
+        'page'       => ['fields' => ['banner_image', 'main_image'],          'class' => Page::class,       'module' => 'pages'],
+        'technology' => ['fields' => ['icon_image', 'screenshot_image'],      'class' => Technology::class, 'module' => 'technologies'],
     ];
 
     public function destroy(Request $request, FileUploadService $uploadService): RedirectResponse

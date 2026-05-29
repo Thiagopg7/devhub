@@ -130,9 +130,9 @@ export default function Index({ technologies, filter }) {
                                                     {items.map((tech) => (
                                                         <SortableTr key={tech.id} id={tech.id} disabled={isFiltering}>
                                                             <td className="px-6 py-4">
-                                                                {tech.icon_url ? (
+                                                                {tech.icon_image_url ? (
                                                                     <img
-                                                                        src={tech.icon_url}
+                                                                        src={tech.icon_image_url}
                                                                         alt={tech.name}
                                                                         className="w-8 h-8 rounded object-contain bg-gray-100 dark:bg-gray-700 p-0.5"
                                                                     />

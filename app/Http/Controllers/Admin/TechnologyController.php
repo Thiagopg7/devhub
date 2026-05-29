@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TechnologyRequest;
 use App\Models\Technology;
+use App\Services\TechnologyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -12,6 +13,8 @@ use Inertia\Response;
 
 class TechnologyController extends Controller
 {
+    public function __construct(private readonly TechnologyService $service) {}
+
     public function index(Request $request): Response
     {
         $search = $request->input('q');
@@ -34,7 +37,11 @@ class TechnologyController extends Controller
 
     public function store(TechnologyRequest $request): RedirectResponse
     {
-        Technology::create($request->validated());
+        $this->service->create(
+            $request->validated(),
+            $request->file('icon_image'),
+            $request->file('screenshot_image'),
+        );
 
         return redirect()->route('admin.technologies.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Tecnologia criada com sucesso.', 'type' => 'success']);
@@ -49,7 +56,12 @@ class TechnologyController extends Controller
 
     public function update(TechnologyRequest $request, Technology $technology): RedirectResponse
     {
-        $technology->update($request->validated());
+        $this->service->update(
+            $technology,
+            $request->validated(),
+            $request->file('icon_image'),
+            $request->file('screenshot_image'),
+        );
 
         return redirect()->route('admin.technologies.index')
             ->with('toast', ['title' => 'Sucesso!', 'message' => 'Tecnologia atualizada com sucesso.', 'type' => 'success']);
@@ -57,7 +69,7 @@ class TechnologyController extends Controller
 
     public function destroy(Technology $technology): RedirectResponse
     {
-        $technology->delete();
+        $this->service->delete($technology);
 
         return back()->with('toast', ['title' => 'Sucesso!', 'message' => 'Tecnologia excluída com sucesso.', 'type' => 'success']);
     }
