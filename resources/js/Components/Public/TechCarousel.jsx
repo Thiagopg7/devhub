@@ -11,17 +11,17 @@ function TechCard({ tech }) {
         >
             {/* Screenshot / preview */}
             <div className="aspect-video overflow-hidden bg-slate-700 shrink-0">
-                {tech.screenshot_url ? (
+                {tech.screenshot_image_url ? (
                     <img
-                        src={tech.screenshot_url}
+                        src={tech.screenshot_image_url}
                         alt={tech.name}
                         loading="lazy"
                         className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-sky-900/40 to-slate-800 flex items-center justify-center">
-                        {tech.icon_url ? (
-                            <img src={tech.icon_url} alt={tech.name} loading="lazy" className="w-16 h-16 object-contain opacity-30" />
+                        {tech.icon_image_url ? (
+                            <img src={tech.icon_image_url} alt={tech.name} loading="lazy" className="w-16 h-16 object-contain opacity-30" />
                         ) : (
                             <div className="w-12 h-12 rounded-full bg-sky-400/20 flex items-center justify-center">
                                 <div className="w-5 h-5 rounded-full bg-sky-400/40" />
@@ -35,9 +35,9 @@ function TechCard({ tech }) {
             <div className="p-5 flex flex-col flex-1">
                 {/* Icon + name */}
                 <div className="flex items-center gap-3 mb-3">
-                    {tech.icon_url ? (
+                    {tech.icon_image_url ? (
                         <img
-                            src={tech.icon_url}
+                            src={tech.icon_image_url}
                             alt={tech.name}
                             loading="lazy"
                             className="w-9 h-9 rounded-lg object-contain bg-white/10 p-1 shrink-0"

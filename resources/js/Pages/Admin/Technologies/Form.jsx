@@ -1,4 +1,4 @@
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, router } from "@inertiajs/react";
 import { toast } from "react-hot-toast";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import ValidationErrors from "@/Components/Admin/ValidationErrors";
@@ -9,22 +9,26 @@ import Label from "@/Components/Admin/Label";
 import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
+import ImageSlot from "@/Components/Admin/ImageSlot";
 import TextareaAutosize from "react-textarea-autosize";
+import ConfirmModal from "@/Components/Admin/ConfirmModal";
+import { useState } from "react";
 import { useCan } from "@/hooks/useCan";
 
 export default function Form({ technology = null }) {
     const can = useCan();
     const isEditing = !!technology?.id;
     const readonly = isEditing && !can('technologies.edit');
+    const [pending, setPending] = useState(null);
 
     const { data, setData, processing, errors, post: send, transform } = useForm({
-        name:           technology?.name           ?? "",
-        description:    technology?.description    ?? "",
-        url:            technology?.url            ?? "",
-        icon_url:       technology?.icon_url       ?? "",
-        screenshot_url: technology?.screenshot_url ?? "",
-        order:          technology?.order          ?? "",
-        is_active:      technology?.is_active      ?? true,
+        name:             technology?.name        ?? "",
+        description:      technology?.description ?? "",
+        url:              technology?.url         ?? "",
+        icon_image:       null,
+        screenshot_image: null,
+        order:            technology?.order       ?? "",
+        is_active:        technology?.is_active   ?? true,
     });
 
     const submit = (e) => {
@@ -38,9 +42,22 @@ export default function Form({ technology = null }) {
             });
         } else {
             send(route("admin.technologies.store"), {
+                forceFormData: true,
                 onError: () => toast.error("Erro ao criar a tecnologia."),
             });
         }
+    };
+
+    const deleteImage = (field) => {
+        setPending({
+            message: "Remover a imagem?",
+            onConfirm: () => router.delete(route("admin.image.destroy"), {
+                data: { model: "technology", id: technology.id, field },
+                preserveScroll: true,
+                onSuccess: () => toast.success("Imagem removida!"),
+                onError:   () => toast.error("Erro ao remover imagem."),
+            }),
+        });
     };
 
     return (
@@ -101,45 +118,23 @@ export default function Form({ technology = null }) {
                                         />
                                     </div>
 
-                                    <div>
-                                        <Label htmlFor="icon_url" value="URL do ícone / logo" />
-                                        <Input
-                                            id="icon_url"
-                                            type="url"
-                                            value={data.icon_url}
-                                            className="mt-1 block w-full font-mono"
-                                            placeholder="https://exemplo.com/icon.png"
-                                            onChange={(e) => setData("icon_url", e.target.value)}
-                                            disabled={processing || readonly}
-                                        />
-                                        {data.icon_url && (
-                                            <img
-                                                src={data.icon_url}
-                                                alt="preview"
-                                                className="mt-2 w-10 h-10 rounded object-contain bg-gray-100 dark:bg-gray-700 p-0.5"
-                                            />
-                                        )}
-                                    </div>
+                                    <ImageSlot
+                                        label="Ícone / Logo"
+                                        currentUrl={technology?.icon_image_url}
+                                        fieldName="icon_image"
+                                        onChange={(field, file) => setData(field, file)}
+                                        onDelete={() => deleteImage("icon_image")}
+                                        processing={processing || readonly}
+                                    />
 
-                                    <div>
-                                        <Label htmlFor="screenshot_url" value="URL do screenshot (opcional)" />
-                                        <Input
-                                            id="screenshot_url"
-                                            type="url"
-                                            value={data.screenshot_url}
-                                            className="mt-1 block w-full font-mono"
-                                            placeholder="https://exemplo.com/screenshot.png"
-                                            onChange={(e) => setData("screenshot_url", e.target.value)}
-                                            disabled={processing || readonly}
-                                        />
-                                        {data.screenshot_url && (
-                                            <img
-                                                src={data.screenshot_url}
-                                                alt="preview"
-                                                className="mt-2 w-full max-h-32 object-cover rounded"
-                                            />
-                                        )}
-                                    </div>
+                                    <ImageSlot
+                                        label="Screenshot (opcional)"
+                                        currentUrl={technology?.screenshot_image_url}
+                                        fieldName="screenshot_image"
+                                        onChange={(field, file) => setData(field, file)}
+                                        onDelete={() => deleteImage("screenshot_image")}
+                                        processing={processing || readonly}
+                                    />
 
                                     <div>
                                         <Label htmlFor="order" value="Ordem" />
@@ -190,6 +185,14 @@ export default function Form({ technology = null }) {
                     </div>
                 </div>
             </AuthenticatedLayout>
+
+            {pending && (
+                <ConfirmModal
+                    message={pending.message}
+                    onConfirm={() => { pending.onConfirm(); setPending(null); }}
+                    onCancel={() => setPending(null)}
+                />
+            )}
         </>
     );
 }
