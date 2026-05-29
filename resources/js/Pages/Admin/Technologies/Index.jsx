@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
@@ -15,12 +15,13 @@ import { FaPen, FaTrash, FaSearch, FaEye } from "react-icons/fa";
 import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
+import { useConfirmModal } from "@/hooks/useConfirmModal";
 
 export default function Index({ technologies, filter }) {
     const can = useCan();
     const { data, setData, get } = useForm({ q: filter?.q || "" });
     const [items, setItems] = useState(technologies.data);
-    const [pending, setPending] = useState(null);
+    const { confirm, modalProps } = useConfirmModal();
 
     useEffect(() => {
         setItems(technologies.data);
@@ -64,7 +65,7 @@ export default function Index({ technologies, filter }) {
     };
 
     const deleteConfirm = (id) => {
-        setPending({
+        confirm({
             message: "Deseja realmente excluir esta tecnologia?",
             onConfirm: () => router.delete(route("admin.technologies.destroy", id), {
                 preserveScroll: true,
@@ -191,12 +192,7 @@ export default function Index({ technologies, filter }) {
                 </div>
             </AuthenticatedLayout>
 
-            <ConfirmModal
-                show={!!pending}
-                message={pending?.message}
-                onConfirm={() => { pending?.onConfirm(); setPending(null); }}
-                onCancel={() => setPending(null)}
-            />
+            <ConfirmModal {...modalProps} />
         </>
     );
 }
