@@ -1,5 +1,10 @@
 # DevHub
 
+[![CI](https://github.com/Thiagopg7/devhub/actions/workflows/ci.yml/badge.svg)](https://github.com/Thiagopg7/devhub/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/coverage-%E2%89%A570%25-success)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+
 CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada com Sanctum, sistema de newsletter com conformidade LGPD e frontend público com roteamento dinâmico.
 
 > **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `demo@devhub.com` / `Demo@123` — acesso somente leitura)
@@ -56,6 +61,7 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 - Autenticação via Bearer token (Laravel Sanctum)
 - Documentação Swagger UI disponível em `/api/docs`
 - Cache Redis em todos os endpoints com invalidação automática por tags (model events)
+- Rate limiting: `60 req/min` nos endpoints autenticados, `10 req/min` no login, `30 req/min` no health check
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
@@ -68,6 +74,7 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 | `GET` | `/api/pages/{slug}` | Retorna uma página |
 | `GET` | `/api/menu` | Estrutura do menu |
 | `GET` | `/api/technologies` | Lista tecnologias ativas (ordenadas) |
+| `GET` | `/api/health` | Health check (DB + cache) — público, sem autenticação |
 
 ## Arquitetura
 

@@ -36,6 +36,8 @@ tags:
     description: Itens de navegação
   - name: Technologies
     description: Tecnologias do portfólio
+  - name: System
+    description: Saúde e status da API
 
 components:
   securitySchemes:
@@ -219,6 +221,25 @@ components:
         prev_page_url:
           type: string
           nullable: true
+
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+          example: ok
+        checks:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [up, down]
+              example: up
+            cache:
+              type: string
+              enum: [up, down]
+              example: up
 
     Error:
       type: object
@@ -496,3 +517,23 @@ paths:
                       $ref: '#/components/schemas/Technology'
         "401":
           description: Não autenticado
+
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Verifica a conectividade com o banco de dados e o cache. Público (sem autenticação).
+      security: []
+      responses:
+        "200":
+          description: Todos os componentes operacionais
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        "503":
+          description: Algum componente indisponível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'

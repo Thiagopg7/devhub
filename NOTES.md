@@ -40,9 +40,14 @@ Em produção (Railway): confirmar `CACHE_STORE=redis` apontando pro app Redis.
 - [x] **Login da API stateless** — `Api/AuthController::login` trocou `Auth::attempt()` (guard de sessão) por `User::where('email')` + `Hash::check()` + `createToken()`. Teste `login nao abre sessao` (`assertGuest`) garante a statelessness.
 - [x] **Índices de DB em `is_active`** — migration `add_is_active_indexes`: composto `(is_active, created_at)` em `posts` (casa com `getAllActive` = `where is_active order by created_at desc`) e simples em `categories`/`technologies`/`menu_items`. `category_id` em `posts` já tem índice via FK.
 
+- [x] **Polimento de portfólio (parcial)**
+  - Badges no README: CI (dinâmico), cobertura (≥70%, reflete o gate `--min=70` da CI), PHP 8.3, Laravel 13.
+  - Rate limiting: `throttle:60,1` no grupo autenticado da API, `throttle:30,1` no health (login já tinha `10,1`).
+  - Health check `GET /api/health` (público) verificando DB + cache, retorna `200`/`503`; documentado no README e no Swagger.
+
 ## Pendente (ordem de prioridade)
 
-- [ ] **6. Polimento de portfólio** — badges de CI/cobertura no README, GIF/vídeo do admin, rate limiting nos demais endpoints da API (hoje só `/login` tem throttle), health check.
+- [ ] **GIF/vídeo do admin no README** — depende de gravar a tela (não dá pra automatizar). Único item restante do polimento.
 
 ## Convenções
 
