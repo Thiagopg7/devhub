@@ -7,6 +7,7 @@ use App\Models\NewsletterCampaign;
 use App\Models\NewsletterSubscriber;
 use App\Models\Post;
 use App\Models\User;
+use App\Services\ActivityLogService;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,14 +27,21 @@ class DashboardController extends Controller
             'campaigns' => NewsletterCampaign::count(),
         ];
 
-        $postsPerMonth = Post::select(
+        $counts = Post::select(
             DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
             DB::raw('COUNT(*) as total')
         )
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->where('created_at', '>=', now()->startOfMonth()->subMonths(5))
             ->groupBy('month')
-            ->orderBy('month')
-            ->get();
+            ->pluck('total', 'month');
+
+        $postsPerMonth = collect(range(5, 0))
+            ->map(function (int $i) use ($counts) {
+                $month = now()->startOfMonth()->subMonths($i)->format('Y-m');
+
+                return ['month' => $month, 'total' => (int) ($counts[$month] ?? 0)];
+            })
+            ->values();
 
         $recentActivity = Activity::with('causer')
             ->latest()
@@ -41,8 +49,9 @@ class DashboardController extends Controller
             ->get()
             ->map(fn ($a) => [
                 'id' => $a->id,
-                'description' => $a->description,
-                'subject' => class_basename($a->subject_type ?? ''),
+                'event' => $a->event,
+                'description' => ActivityLogService::EVENT_LABELS[$a->event] ?? $a->description,
+                'subject' => ActivityLogService::subjectLabel($a->subject_type),
                 'causer' => $a->causer?->name ?? 'Sistema',
                 'created_at' => $a->created_at->diffForHumans(),
             ]);

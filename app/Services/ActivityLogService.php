@@ -16,6 +16,30 @@ class ActivityLogService
         'restored' => 'Restaurado',
     ];
 
+    public const SUBJECT_LABELS = [
+        'Post' => 'Post',
+        'Category' => 'Categoria',
+        'Page' => 'Página',
+        'Block' => 'Bloco',
+        'Technology' => 'Tecnologia',
+        'MenuItem' => 'Item de menu',
+        'NewsletterArea' => 'Área de newsletter',
+        'NewsletterCampaign' => 'Campanha',
+        'User' => 'Usuário',
+        'Role' => 'Papel',
+    ];
+
+    public static function subjectLabel(?string $subjectType): ?string
+    {
+        if (! $subjectType) {
+            return null;
+        }
+
+        $base = class_basename($subjectType);
+
+        return self::SUBJECT_LABELS[$base] ?? $base;
+    }
+
     public const PER_PAGE_OPTIONS = [10, 25, 50, 100];
 
     public const DEFAULT_PER_PAGE = 25;
