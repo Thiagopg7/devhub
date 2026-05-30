@@ -38,10 +38,10 @@ Em produção (Railway): confirmar `CACHE_STORE=redis` apontando pro app Redis.
 - [x] **Documentar `/api/technologies`** — adicionado na tabela de endpoints do `README.md` e no `public/docs/openapi.yaml` (tag + schema `Technology` + path).
 - [x] **Swagger UI self-hosted** — `/api/docs` carregava o swagger-ui do CDN `unpkg.com`, bloqueado pela CSP estrita do nginx. Assets baixados pra `public/vendor/swagger-ui/` (v5.32.6, versionados) e servidos do próprio domínio; CSP intacta. (As fontes `data:`/`typekit` que aparecem no console vêm de extensão do navegador, não da app — somem em janela anônima.)
 - [x] **Login da API stateless** — `Api/AuthController::login` trocou `Auth::attempt()` (guard de sessão) por `User::where('email')` + `Hash::check()` + `createToken()`. Teste `login nao abre sessao` (`assertGuest`) garante a statelessness.
+- [x] **Índices de DB em `is_active`** — migration `add_is_active_indexes`: composto `(is_active, created_at)` em `posts` (casa com `getAllActive` = `where is_active order by created_at desc`) e simples em `categories`/`technologies`/`menu_items`. `category_id` em `posts` já tem índice via FK.
 
 ## Pendente (ordem de prioridade)
 
-- [ ] **5. Índices de DB** — sem índice em `is_active`, que é filtrado em toda query pública. Migration com índice composto `(is_active, created_at)` em `posts` e simples em `categories`/`technologies`/`menu_items`.
 - [ ] **6. Polimento de portfólio** — badges de CI/cobertura no README, GIF/vídeo do admin, rate limiting nos demais endpoints da API (hoje só `/login` tem throttle), health check.
 
 ## Convenções
