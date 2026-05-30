@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use App\Traits\HasActivityLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -54,5 +55,8 @@ class Technology extends Model
                 $model->order = (static::max('order') ?? 0) + 1;
             }
         });
+
+        static::saved(fn () => ApiCache::flush(ApiCache::TECHNOLOGIES));
+        static::deleted(fn () => ApiCache::flush(ApiCache::TECHNOLOGIES));
     }
 }

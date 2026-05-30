@@ -6,16 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\MenuItem;
 use App\Models\NewsletterArea;
 use App\Models\Technology;
+use App\Support\ApiCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ReorderController extends Controller
 {
     private const ALLOWED_MODELS = [
-        'technology' => ['class' => Technology::class,     'module' => 'technologies'],
-        'menu_item' => ['class' => MenuItem::class,       'module' => 'menu'],
-        'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas'],
+        'technology' => ['class' => Technology::class,     'module' => 'technologies',     'tags' => [ApiCache::TECHNOLOGIES], 'keys' => []],
+        'menu_item' => ['class' => MenuItem::class,       'module' => 'menu',             'tags' => [ApiCache::MENU],         'keys' => ['menu.shared']],
+        'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas', 'tags' => [],                       'keys' => ['newsletter_areas.active']],
     ];
 
     public function update(Request $request): RedirectResponse
@@ -45,6 +47,14 @@ class ReorderController extends Controller
                     ->update(['order' => $item['order']]);
             }
         });
+
+        if ($config['tags']) {
+            ApiCache::flush(...$config['tags']);
+        }
+
+        foreach ($config['keys'] as $key) {
+            Cache::forget($key);
+        }
 
         return back();
     }

@@ -26,6 +26,18 @@ class AuthApiTest extends TestCase
             ->assertJsonFragment(['email' => $user->email]);
     }
 
+    public function test_login_nao_abre_sessao(): void
+    {
+        $user = User::factory()->create(['password' => bcrypt('senha123')]);
+
+        $this->postJson('/api/auth/login', [
+            'email' => $user->email,
+            'password' => 'senha123',
+        ])->assertOk();
+
+        $this->assertGuest();
+    }
+
     public function test_login_rejeita_credenciais_invalidas(): void
     {
         User::factory()->create(['email' => 'user@exemplo.com']);

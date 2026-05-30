@@ -1,5 +1,10 @@
 # DevHub
 
+[![CI](https://github.com/Thiagopg7/devhub/actions/workflows/ci.yml/badge.svg)](https://github.com/Thiagopg7/devhub/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/coverage-%E2%89%A570%25-success)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+
 CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada com Sanctum, sistema de newsletter com conformidade LGPD e frontend público com roteamento dinâmico.
 
 > **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `demo@devhub.com` / `Demo@123` — acesso somente leitura)
@@ -55,7 +60,8 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 ### API RESTful
 - Autenticação via Bearer token (Laravel Sanctum)
 - Documentação Swagger UI disponível em `/api/docs`
-- Cache Redis em todos os endpoints com invalidação automática por observers
+- Cache Redis em todos os endpoints com invalidação automática por tags (model events)
+- Rate limiting: `60 req/min` nos endpoints autenticados, `10 req/min` no login, `30 req/min` no health check
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
@@ -67,6 +73,8 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 | `GET` | `/api/categories` | Lista categorias |
 | `GET` | `/api/pages/{slug}` | Retorna uma página |
 | `GET` | `/api/menu` | Estrutura do menu |
+| `GET` | `/api/technologies` | Lista tecnologias ativas (ordenadas) |
+| `GET` | `/api/health` | Health check (DB + cache) — público, sem autenticação |
 
 ## Arquitetura
 
@@ -82,7 +90,7 @@ app/
 │   │   │                 # NewsletterAreas, NewsletterSubscribers,
 │   │   │                 # NewsletterCampaigns, ActivityLog, Gallery…)
 │   │   ├── Api/          # AuthController, PostController, CategoryController,
-│   │   │                 # PageController, MenuController
+│   │   │                 # PageController, MenuController, TechnologyController
 │   │   └── BlogController, HomeController, NewsletterController
 │   ├── Middleware/
 │   │   ├── EnsureAdmin.php
@@ -123,7 +131,7 @@ O envio de e-mails para múltiplos inscritos é feito via Job enfileirado (Larav
 Controle de acesso baseado em papéis (RBAC) e log de auditoria são problemas resolvidos. Os pacotes Spatie são padrão de mercado em projetos Laravel.
 
 **Redis para cache da API**
-Todos os endpoints da API têm resposta cacheada no Redis com invalidação automática via Observers — a cada create/update/delete, o cache do recurso afetado é limpo, sem necessidade de TTL artificial.
+Todos os endpoints da API têm a resposta cacheada no Redis usando `Cache::tags` — uma tag por recurso (posts, categories, menu, pages, technologies). A invalidação é automática via model events (`saved`/`deleted`): a cada create/update/delete, o cache da tag afetada é limpo. Dependências cruzadas são tratadas (ex.: salvar um post invalida `posts` e `categories`, pois a contagem de posts e a categoria embutida mudam; alterar uma imagem de galeria invalida `pages`). Reordenações feitas via `DB::table` — que não disparam events — invalidam as tags explicitamente no `ReorderController`. Cacheamos apenas o array já serializado pelo Resource, nunca models Eloquent. TTL de 1h como rede de segurança.
 
 **SQLite in-memory para testes**
 Os testes de feature cobrem comportamento de rotas e regras de negócio, não detalhes de SQL. SQLite in-memory elimina a dependência de banco real, torna os testes rápidos e garante isolamento entre suítes.

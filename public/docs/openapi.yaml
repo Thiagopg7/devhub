@@ -34,6 +34,10 @@ tags:
     description: Páginas estáticas
   - name: Menu
     description: Itens de navegação
+  - name: Technologies
+    description: Tecnologias do portfólio
+  - name: System
+    description: Saúde e status da API
 
 components:
   securitySchemes:
@@ -171,6 +175,35 @@ components:
           items:
             $ref: '#/components/schemas/MenuItem'
 
+    Technology:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Laravel
+        description:
+          type: string
+          nullable: true
+          example: Framework PHP para aplicações web.
+        url:
+          type: string
+          nullable: true
+          example: https://laravel.com
+        icon_image:
+          type: string
+          nullable: true
+          example: https://devhub-production-a6a5.up.railway.app/storage/technologies/laravel.svg
+        screenshot_image:
+          type: string
+          nullable: true
+          example: https://devhub-production-a6a5.up.railway.app/storage/technologies/laravel-screenshot.png
+        order:
+          type: integer
+          example: 1
+
     Pagination:
       type: object
       properties:
@@ -188,6 +221,25 @@ components:
         prev_page_url:
           type: string
           nullable: true
+
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+          example: ok
+        checks:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [up, down]
+              example: up
+            cache:
+              type: string
+              enum: [up, down]
+              example: up
 
     Error:
       type: object
@@ -445,3 +497,43 @@ paths:
                       $ref: '#/components/schemas/MenuItem'
         "401":
           description: Não autenticado
+
+  /technologies:
+    get:
+      tags: [Technologies]
+      summary: Listar tecnologias
+      description: Retorna as tecnologias ativas ordenadas pelo campo `order`.
+      responses:
+        "200":
+          description: Lista de tecnologias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Technology'
+        "401":
+          description: Não autenticado
+
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Verifica a conectividade com o banco de dados e o cache. Público (sem autenticação).
+      security: []
+      responses:
+        "200":
+          description: Todos os componentes operacionais
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        "503":
+          description: Algum componente indisponível
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'

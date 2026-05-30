@@ -20,18 +20,25 @@ function StatCard({ icon: Icon, label, value, sub, color, href }) {
     return href ? <Link href={href} className="h-full block">{content}</Link> : content;
 }
 
-function ActivityBadge({ description }) {
+function ActivityBadge({ event, label }) {
     const map = {
         created: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400',
         updated: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400',
         deleted: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400',
     };
-    const cls = map[description] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+    const cls = map[event] ?? 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
     return (
         <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${cls}`}>
-            {description}
+            {label}
         </span>
     );
+}
+
+const MONTH_LABELS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+
+function monthLabel(month) {
+    const [, m] = month.split('-');
+    return MONTH_LABELS[Number(m) - 1] ?? month;
 }
 
 export default function Dashboard({ stats, postsPerMonth, recentActivity }) {
@@ -91,19 +98,36 @@ export default function Dashboard({ stats, postsPerMonth, recentActivity }) {
                             Posts criados — últimos 6 meses
                         </h3>
                         {postsPerMonth?.length > 0 ? (
-                            <div className="flex items-end gap-2 h-32">
-                                {postsPerMonth.map((item) => (
-                                    <div key={item.month} className="flex-1 flex flex-col items-center gap-1">
-                                        <span className="text-xs text-gray-400">{item.total}</span>
+                            <div>
+                                <div className="flex items-end gap-3 h-40 border-b border-gray-200 dark:border-gray-700">
+                                    {postsPerMonth.map((item) => (
                                         <div
-                                            className="w-full bg-sky-500 rounded-t-sm transition-all"
-                                            style={{ height: `${(item.total / maxPosts) * 100}%`, minHeight: '4px' }}
-                                        />
-                                        <span className="text-xs text-gray-400 truncate w-full text-center">
-                                            {item.month.slice(5)}
+                                            key={item.month}
+                                            className="group flex-1 h-full flex flex-col justify-end items-center"
+                                        >
+                                            <span className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                                                {item.total}
+                                            </span>
+                                            <div
+                                                className="w-full max-w-[2.5rem] rounded-t-md bg-gradient-to-t from-sky-600 to-sky-400 transition-all duration-300 group-hover:from-sky-500 group-hover:to-sky-300"
+                                                style={{
+                                                    height: item.total > 0 ? `${(item.total / maxPosts) * 100}%` : '2px',
+                                                    minHeight: item.total > 0 ? '6px' : '2px',
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3 mt-2">
+                                    {postsPerMonth.map((item) => (
+                                        <span
+                                            key={item.month}
+                                            className="flex-1 text-center text-xs text-gray-400 dark:text-gray-500 capitalize"
+                                        >
+                                            {monthLabel(item.month)}
                                         </span>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         ) : (
                             <p className="text-sm text-gray-400 dark:text-gray-500 mt-4">
@@ -136,7 +160,7 @@ export default function Dashboard({ stats, postsPerMonth, recentActivity }) {
                                                 {item.causer}
                                             </span>
                                             <span className="text-gray-400 mx-1">·</span>
-                                            <ActivityBadge description={item.description} />
+                                            <ActivityBadge event={item.event} label={item.description} />
                                             <span className="text-gray-400 mx-1">·</span>
                                             <span className="text-gray-500 dark:text-gray-400">{item.subject}</span>
                                         </div>

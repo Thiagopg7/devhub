@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -57,5 +58,7 @@ class Category extends Model
             $category->saveQuietly();
         });
 
+        static::saved(fn () => ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS));
+        static::deleted(fn () => ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS));
     }
 }

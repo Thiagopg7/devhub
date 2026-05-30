@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Services\PostService;
+use App\Support\ApiCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class PostController extends Controller
 {
@@ -15,29 +15,49 @@ class PostController extends Controller
         private readonly PostService $service
     ) {}
 
-    public function index(Request $request): AnonymousResourceCollection|JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        if ($request->filled('category')) {
-            ['category' => $category, 'posts' => $posts] = $this->service->getByCategory($request->category);
+        $page = $request->integer('page', 1);
 
-            if (! $category) {
+        if ($request->filled('category')) {
+            $slug = $request->string('category')->toString();
+
+            $result = ApiCache::remember(ApiCache::POSTS, "index.cat.{$slug}.page.{$page}", function () use ($slug) {
+                ['category' => $category, 'posts' => $posts] = $this->service->getByCategory($slug);
+
+                return $category
+                    ? ['found' => true, 'payload' => PostResource::collection($posts)->response()->getData(true)]
+                    : ['found' => false];
+            });
+
+            if (! $result['found']) {
                 return response()->json(['message' => 'Categoria não encontrada.'], 404);
             }
 
-            return PostResource::collection($posts);
+            return response()->json($result['payload']);
         }
 
-        return PostResource::collection($this->service->getAllActive());
+        $payload = ApiCache::remember(ApiCache::POSTS, "index.all.page.{$page}", function () {
+            return PostResource::collection($this->service->getAllActive())->response()->getData(true);
+        });
+
+        return response()->json($payload);
     }
 
-    public function show(string $slug): PostResource|JsonResponse
+    public function show(string $slug): JsonResponse
     {
-        $post = $this->service->findBySlug($slug);
+        $result = ApiCache::remember(ApiCache::POSTS, "show.{$slug}", function () use ($slug) {
+            $post = $this->service->findBySlug($slug);
 
-        if (! $post) {
+            return $post
+                ? ['found' => true, 'payload' => (new PostResource($post))->response()->getData(true)]
+                : ['found' => false];
+        });
+
+        if (! $result['found']) {
             return response()->json(['message' => 'Post não encontrado.'], 404);
         }
 
-        return new PostResource($post);
+        return response()->json($result['payload']);
     }
 }
