@@ -34,11 +34,12 @@ Em produção (Railway): confirmar `CACHE_STORE=redis` apontando pro app Redis.
   - Cacheia só **arrays serializados** do Resource (`->response()->getData(true)`), nunca models Eloquent — era a desserialização do trait Sluggable que quebrava o cache anterior.
   - Invalidação por model events + dependências cruzadas (post↔categoria, galeria→página) e no `ReorderController` (usa `DB::table`, não dispara eventos — corrige também `menu.shared` obsoleto).
 - [x] **`api:generate-token`** reescrito pro Sanctum (referenciava o model `ApiToken`, removido na migração).
+- [x] **Corrigir docs** — `README.md` e `CLAUDE.md` falavam em "invalidação via observers"; agora descrevem **model events + `Cache::tags`** (dependências cruzadas, `ReorderController`, cache só de array serializado, TTL 1h).
+- [x] **Documentar `/api/technologies`** — adicionado na tabela de endpoints do `README.md` e no `public/docs/openapi.yaml` (tag + schema `Technology` + path).
+- [x] **Swagger UI self-hosted** — `/api/docs` carregava o swagger-ui do CDN `unpkg.com`, bloqueado pela CSP estrita do nginx. Assets baixados pra `public/vendor/swagger-ui/` (v5.32.6, versionados) e servidos do próprio domínio; CSP intacta. (As fontes `data:`/`typekit` que aparecem no console vêm de extensão do navegador, não da app — somem em janela anônima.)
 
 ## Pendente (ordem de prioridade)
 
-- [ ] **2. Corrigir docs** — `README.md` e `CLAUDE.md` falavam em "invalidação via observers"; agora é **model events + `Cache::tags`**. Atualizar a descrição do cache (que finalmente reflete o código).
-- [ ] **3. Documentar `/api/technologies`** — falta na tabela de endpoints do `README.md` e no `public/docs/openapi.yaml` (Swagger).
 - [ ] **4. Login da API** — `Api/AuthController::login` usa `Auth::attempt()` (guard de sessão) num endpoint stateless. Trocar por `User::where('email')` + `Hash::check()` + `createToken()`.
 - [ ] **5. Índices de DB** — sem índice em `is_active`, que é filtrado em toda query pública. Migration com índice composto `(is_active, created_at)` em `posts` e simples em `categories`/`technologies`/`menu_items`.
 - [ ] **6. Polimento de portfólio** — badges de CI/cobertura no README, GIF/vídeo do admin, rate limiting nos demais endpoints da API (hoje só `/login` tem throttle), health check.

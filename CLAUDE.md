@@ -50,7 +50,7 @@ mysql -h 127.0.0.1 -P 3307 -u user -psecret app_db
 ## Contexto atual
 - CRUD de posts implementado
 - API REST com autenticação via Laravel Sanctum (Bearer token)
-- Cache Redis em todos os endpoints da API (invalidação automática via observers)
+- Cache Redis em todos os endpoints da API (invalidação automática por tags via model events)
 - Documentação Swagger UI em `/api/docs` (spec OpenAPI em `public/docs/openapi.yaml`)
 - Branch `tests` tem testes automatizados da API
 

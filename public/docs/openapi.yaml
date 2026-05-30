@@ -34,6 +34,8 @@ tags:
     description: Páginas estáticas
   - name: Menu
     description: Itens de navegação
+  - name: Technologies
+    description: Tecnologias do portfólio
 
 components:
   securitySchemes:
@@ -170,6 +172,35 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MenuItem'
+
+    Technology:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Laravel
+        description:
+          type: string
+          nullable: true
+          example: Framework PHP para aplicações web.
+        url:
+          type: string
+          nullable: true
+          example: https://laravel.com
+        icon_image:
+          type: string
+          nullable: true
+          example: https://devhub-production-a6a5.up.railway.app/storage/technologies/laravel.svg
+        screenshot_image:
+          type: string
+          nullable: true
+          example: https://devhub-production-a6a5.up.railway.app/storage/technologies/laravel-screenshot.png
+        order:
+          type: integer
+          example: 1
 
     Pagination:
       type: object
@@ -443,5 +474,25 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/MenuItem'
+        "401":
+          description: Não autenticado
+
+  /technologies:
+    get:
+      tags: [Technologies]
+      summary: Listar tecnologias
+      description: Retorna as tecnologias ativas ordenadas pelo campo `order`.
+      responses:
+        "200":
+          description: Lista de tecnologias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Technology'
         "401":
           description: Não autenticado
