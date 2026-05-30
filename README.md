@@ -9,6 +9,8 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 
 > **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `demo@devhub.com` / `Demo@123` — acesso somente leitura)
 
+![Frontend público do DevHub](docs/gifs/frontend.gif)
+
 ## Stack
 
 | Camada | Tecnologia |
@@ -140,14 +142,30 @@ Os testes de feature cobrem comportamento de rotas e regras de negócio, não de
 
 ### Frontend público
 ![Homepage](docs/screenshots/homepage.png)
-*Homepage com listagem de posts por categoria*
+*Homepage com hero, listagem de posts e captação de newsletter*
 
 ![Post individual](docs/screenshots/post.png)
 *Página de post com rich-text e metadados*
 
 ### Painel administrativo
-![Admin — Posts](docs/screenshots/admin-posts.png)
-*Gerenciamento de posts com toggle ativo/inativo e busca*
+
+![Dashboard](docs/screenshots/dashboard.png)
+*Dashboard com métricas, gráfico de posts dos últimos 6 meses e feed de atividade recente*
+
+![Tema claro/escuro](docs/gifs/theme-toggle.gif)
+*Alternância de tema claro/escuro persistida no cliente*
+
+![Posts](docs/screenshots/posts-list.png)
+*Listagem de posts com imagem de capa, toggle ativo/inativo e busca*
+
+![Editor de post](docs/screenshots/post-editor.png)
+*Edição de post com editor rich-text (TipTap), categoria, descrição e SEO*
+
+![Papéis e permissões](docs/screenshots/roles-permissions.png)
+*Controle de acesso por papéis (RBAC) — permissões por módulo e ação*
+
+![Log de atividades](docs/screenshots/activity-log.png)
+*Log de auditoria com filtros e diff (antes/depois) de cada alteração*
 
 ![Login](docs/screenshots/login.png)
 *Tela de login com acesso de demonstração*
