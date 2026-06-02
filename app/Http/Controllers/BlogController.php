@@ -32,15 +32,13 @@ class BlogController extends Controller
 
     public function show(string $slug)
     {
-        $post = $this->postService->findBySlug($slug);
+        $result = $this->postService->findBySlugWithRelated($slug);
 
-        if (! $post) {
+        if (! $result) {
             abort(404);
         }
 
-        return Inertia::render('Blog/Show', [
-            'post' => $post,
-        ]);
+        return Inertia::render('Blog/Show', $result);
     }
 
     public function byCategory(string $slug)

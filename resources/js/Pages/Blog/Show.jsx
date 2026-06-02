@@ -2,7 +2,9 @@ import { useEffect, useState, useRef } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import DOMPurify from 'dompurify';
 import PublicLayout from '@/Layouts/PublicLayout';
-import { Calendar, Clock, Tag, Copy, Check } from 'lucide-react';
+import PostCard from '@/Components/Public/PostCard';
+import Reveal from '@/Components/Public/Reveal';
+import { Calendar, Clock, Tag, Check, ArrowLeft, ArrowRight } from 'lucide-react';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -57,17 +59,16 @@ function LinkedInIcon() {
     );
 }
 
-function CopyLinkBtn({ size = 'md' }) {
+function CopyLinkBtn() {
     const [copied, setCopied] = useState(false);
     const copy = () => {
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
-    const dim = size === 'sm' ? 'w-9 h-9' : 'w-9 h-9';
     return (
         <button onClick={copy} aria-label="Copiar link"
-            className={`${dim} grid place-items-center rounded-lg transition-all hover:-translate-y-0.5`}
+            className="w-9 h-9 grid place-items-center rounded-lg transition-all hover:-translate-y-0.5"
             style={{
                 background: '#15243a',
                 border: '1px solid rgba(150,178,208,0.18)',
@@ -84,20 +85,18 @@ function CopyLinkBtn({ size = 'md' }) {
 function ShareButtons({ url, title, className = '' }) {
     const btnCls = "w-9 h-9 grid place-items-center rounded-lg transition-all hover:-translate-y-0.5";
     const btnStyle = { background: '#15243a', border: '1px solid rgba(150,178,208,0.18)', color: '#7b8da3' };
-    const hoverIn = e => { e.currentTarget.style.background = '#3cbdf8'; e.currentTarget.style.color = '#03121d'; e.currentTarget.style.borderColor = 'transparent'; };
+    const hoverIn  = e => { e.currentTarget.style.background = '#3cbdf8'; e.currentTarget.style.color = '#03121d'; e.currentTarget.style.borderColor = 'transparent'; };
     const hoverOut = e => { e.currentTarget.style.background = '#15243a'; e.currentTarget.style.color = '#7b8da3'; e.currentTarget.style.borderColor = 'rgba(150,178,208,0.18)'; };
 
     return (
         <div className={`flex gap-2 ${className}`}>
             <a href={shareUrl('x', url, title)} target="_blank" rel="noopener noreferrer"
-                aria-label="Compartilhar no X"
-                className={btnCls} style={btnStyle}
+                aria-label="Compartilhar no X" className={btnCls} style={btnStyle}
                 onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
                 <XIcon />
             </a>
             <a href={shareUrl('linkedin', url, title)} target="_blank" rel="noopener noreferrer"
-                aria-label="Compartilhar no LinkedIn"
-                className={btnCls} style={btnStyle}
+                aria-label="Compartilhar no LinkedIn" className={btnCls} style={btnStyle}
                 onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
                 <LinkedInIcon />
             </a>
@@ -107,7 +106,7 @@ function ShareButtons({ url, title, className = '' }) {
 }
 
 /* ── Main component ──────────────────────────────────────────── */
-export default function BlogShow({ post }) {
+export default function BlogShow({ post, prevPost = null, nextPost = null, relatedPosts = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
     const proseRef = useRef(null);
@@ -119,6 +118,8 @@ export default function BlogShow({ post }) {
     const readTime      = estimateReadTime(post.content);
     const pageUrl       = typeof window !== 'undefined' ? window.location.href : route('blog.show', post.slug);
 
+    const sanitizedContent = post.content ? DOMPurify.sanitize(post.content) : '';
+
     /* Inject IDs into headings after render */
     useEffect(() => {
         if (!proseRef.current) return;
@@ -128,7 +129,7 @@ export default function BlogShow({ post }) {
             return { id: el.id, text: el.textContent, level: el.tagName.toLowerCase() };
         });
         setHeadings(items);
-    }, [post.content]);
+    }, [sanitizedContent]);
 
     /* Highlight active TOC item on scroll */
     useEffect(() => {
@@ -147,7 +148,30 @@ export default function BlogShow({ post }) {
         return () => observer.disconnect();
     }, [headings]);
 
-    const sanitizedContent = post.content ? DOMPurify.sanitize(post.content) : '';
+    /* Inject copy buttons into <pre> blocks */
+    useEffect(() => {
+        if (!proseRef.current) return;
+        proseRef.current.querySelectorAll('pre').forEach(pre => {
+            if (pre.closest('.codeblock-wrapper')) return;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'codeblock-wrapper';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+
+            const btn = document.createElement('button');
+            btn.textContent = 'Copiar';
+            btn.className = 'codeblock-copy';
+            btn.setAttribute('aria-label', 'Copiar código');
+            btn.addEventListener('click', () => {
+                const code = pre.querySelector('code') || pre;
+                navigator.clipboard.writeText(code.textContent ?? '');
+                btn.textContent = '✓ Copiado!';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+            });
+            wrapper.appendChild(btn);
+        });
+    }, [sanitizedContent]);
 
     return (
         <PublicLayout>
@@ -226,7 +250,6 @@ export default function BlogShow({ post }) {
                             {readTime} min de leitura
                         </span>
 
-                        {/* Share in byline */}
                         <div className="flex items-center gap-3 ml-auto">
                             <span className="text-xs font-mono hidden sm:block" style={{ color: '#7b8da3' }}>Compartilhar</span>
                             <ShareButtons url={pageUrl} title={post.title} />
@@ -246,7 +269,7 @@ export default function BlogShow({ post }) {
             {/* ── Article body + TOC ─────────────────────────────── */}
             <div style={{ background: '#0a131e' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex gap-14 items-start py-16">
+                    <div className="flex gap-14 items-start pt-16 pb-10">
 
                         {/* Prose */}
                         <article className="min-w-0 flex-1">
@@ -268,6 +291,58 @@ export default function BlogShow({ post }) {
                                         prose-ul:gap-2 prose-ol:gap-2"
                                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                                 />
+                            )}
+
+                            {/* ── Author box ─────────────────────────────────── */}
+                            <Reveal className="flex items-start gap-5 rounded-2xl p-6 mt-14"
+                                style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}>
+                                <div className="w-16 h-16 rounded-2xl grid place-items-center font-display font-bold text-xl text-white shrink-0"
+                                    style={{ background: 'linear-gradient(135deg,#3cbdf8,#2a9be0)' }}>
+                                    DH
+                                </div>
+                                <div>
+                                    <div className="font-display font-semibold text-white text-base">Equipe DevHub</div>
+                                    <div className="text-xs font-mono mb-3" style={{ color: '#3cbdf8' }}>Engenharia &amp; Conteúdo</div>
+                                    <p className="text-sm leading-relaxed" style={{ color: '#b6c5d8' }}>
+                                        Conteúdo produzido pela equipe do DevHub — desenvolvedores que escrevem sobre o que usam no dia a dia.
+                                        Tutoriais testados, arquiteturas reais e nenhum "hello world" sem propósito.
+                                    </p>
+                                </div>
+                            </Reveal>
+
+                            {/* ── Article nav prev / next ─────────────────────── */}
+                            {(prevPost || nextPost) && (
+                                <Reveal className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                                    {prevPost ? (
+                                        <Link href={route('blog.show', prevPost.slug)}
+                                            className="group flex flex-col gap-2 rounded-2xl p-5 transition-all"
+                                            style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}
+                                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.3)'}
+                                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.12)'}>
+                                            <span className="inline-flex items-center gap-1.5 font-mono text-xs" style={{ color: '#7b8da3' }}>
+                                                <ArrowLeft size={12} /> Anterior
+                                            </span>
+                                            <span className="text-sm font-semibold text-white leading-snug group-hover:text-[#3cbdf8] transition-colors line-clamp-2">
+                                                {prevPost.title}
+                                            </span>
+                                        </Link>
+                                    ) : <div />}
+
+                                    {nextPost ? (
+                                        <Link href={route('blog.show', nextPost.slug)}
+                                            className="group flex flex-col gap-2 rounded-2xl p-5 transition-all text-right"
+                                            style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}
+                                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.3)'}
+                                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.12)'}>
+                                            <span className="inline-flex items-center justify-end gap-1.5 font-mono text-xs" style={{ color: '#7b8da3' }}>
+                                                Próximo <ArrowRight size={12} />
+                                            </span>
+                                            <span className="text-sm font-semibold text-white leading-snug group-hover:text-[#3cbdf8] transition-colors line-clamp-2">
+                                                {nextPost.title}
+                                            </span>
+                                        </Link>
+                                    ) : <div />}
+                                </Reveal>
                             )}
                         </article>
 
@@ -302,7 +377,6 @@ export default function BlogShow({ post }) {
                                     })}
                                 </ul>
 
-                                {/* Share in TOC */}
                                 <div className="mt-7 pt-5" style={{ borderTop: '1px solid rgba(150,178,208,0.12)' }}>
                                     <div className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-3" style={{ color: '#7b8da3' }}>
                                         Compartilhar
@@ -314,6 +388,28 @@ export default function BlogShow({ post }) {
                     </div>
                 </div>
             </div>
+
+            {/* ── Related posts ──────────────────────────────────── */}
+            {relatedPosts.length > 0 && (
+                <section style={{ background: '#0c1828', borderTop: '1px solid rgba(150,178,208,0.12)' }}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                        <Reveal className="mb-10">
+                            <span className="eyebrow">Continue lendo</span>
+                            <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3"
+                                style={{ fontSize: 'clamp(24px,3vw,34px)' }}>
+                                Artigos relacionados
+                            </h2>
+                        </Reveal>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {relatedPosts.map((p, i) => (
+                                <Reveal key={p.id} delay={i * 100}>
+                                    <PostCard post={p} />
+                                </Reveal>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
         </PublicLayout>
     );
 }
