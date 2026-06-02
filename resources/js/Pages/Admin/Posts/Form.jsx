@@ -23,7 +23,7 @@ export default function Form({ post = {}, categories = [] }) {
     const readonly = isEditing && !can('posts.edit');
     const { confirm, modalProps } = useConfirmModal();
 
-    const { data, setData, processing, errors, post: sendPost, put: sendPut } = useForm({
+    const { data, setData, processing, errors, post: send, transform } = useForm({
         category_id:      post?.category_id      ?? "",
         title:            post?.title            ?? "",
         description:      post?.description      ?? "",
@@ -37,12 +37,13 @@ export default function Form({ post = {}, categories = [] }) {
     const submit = (e) => {
         e.preventDefault();
         if (isEditing) {
-            sendPut(route("admin.posts.update", post.id), {
+            transform((d) => ({ ...d, _method: "PUT" }));
+            send(route("admin.posts.update", post.id), {
                 forceFormData: true,
                 onError: () => toast.error("Verifique os campos e tente novamente."),
             });
         } else {
-            sendPost(route("admin.posts.store"), {
+            send(route("admin.posts.store"), {
                 forceFormData: true,
                 onError: () => toast.error("Verifique os campos e tente novamente."),
             });
