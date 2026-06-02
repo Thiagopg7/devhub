@@ -105,6 +105,25 @@ function ShareButtons({ url, title, className = '' }) {
     );
 }
 
+const COVER_PALETTE = {
+    backend:  { bg: 'radial-gradient(120% 120% at 30% 20%,#163a52,#0c1c2e)', accent: '#3cbdf8' },
+    frontend: { bg: 'radial-gradient(120% 120% at 30% 20%,#163a52,#0c1c2e)', accent: '#61dafb' },
+    ia:       { bg: 'radial-gradient(120% 120% at 30% 20%,#2a2c5a,#131430)', accent: '#7b86ff' },
+    banco:    { bg: 'radial-gradient(120% 120% at 30% 20%,#12423c,#0a1f24)', accent: '#2fd9c2' },
+    carreira: { bg: 'radial-gradient(120% 120% at 30% 20%,#3d2f17,#1c1407)', accent: '#f0b65a' },
+    default:  { bg: 'radial-gradient(120% 120% at 30% 20%,#243347,#111c2a)', accent: '#3cbdf8' },
+};
+
+function coverPalette(category) {
+    const slug = category?.slug?.toLowerCase() ?? '';
+    if (slug.includes('backend'))  return COVER_PALETTE.backend;
+    if (slug.includes('frontend')) return COVER_PALETTE.frontend;
+    if (slug.includes('ia') || slug.includes('dados')) return COVER_PALETTE.ia;
+    if (slug.includes('banco'))    return COVER_PALETTE.banco;
+    if (slug.includes('carreira')) return COVER_PALETTE.carreira;
+    return COVER_PALETTE.default;
+}
+
 /* ── Main component ──────────────────────────────────────────── */
 export default function BlogShow({ post, prevPost = null, nextPost = null, relatedPosts = [] }) {
     const { siteConfig = {} } = usePage().props;
@@ -117,6 +136,7 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
     const ogDescription = post.meta_description || post.description;
     const readTime      = estimateReadTime(post.content);
     const pageUrl       = typeof window !== 'undefined' ? window.location.href : route('blog.show', post.slug);
+    const palette       = coverPalette(post.category);
 
     const sanitizedContent = post.content ? DOMPurify.sanitize(post.content) : '';
 
@@ -256,13 +276,22 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
                         </div>
                     </div>
 
-                    {/* Cover image */}
-                    {post.banner_image_url && (
-                        <div className="mt-10 rounded-2xl overflow-hidden"
-                            style={{ maxHeight: 420, border: '1px solid rgba(150,178,208,0.18)' }}>
-                            <img src={post.banner_image_url} alt={post.title} className="w-full h-full object-cover" />
-                        </div>
-                    )}
+                    {/* Cover image / glyph */}
+                    <div className="mt-10 rounded-2xl overflow-hidden"
+                        style={{ height: 'clamp(220px,28vw,360px)', border: '1px solid rgba(150,178,208,0.18)' }}>
+                        {post.banner_image_url ? (
+                            <img src={post.banner_image_url} alt={post.title}
+                                className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full grid place-items-center"
+                                style={{ background: palette.bg }}>
+                                <span className="font-display font-bold text-center leading-tight px-8"
+                                    style={{ color: palette.accent, opacity: 0.85, fontSize: 'clamp(22px,3vw,38px)' }}>
+                                    {post.category?.name ?? 'DevHub'}
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </section>
 
@@ -393,12 +422,20 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
             {relatedPosts.length > 0 && (
                 <section style={{ background: '#0c1828', borderTop: '1px solid rgba(150,178,208,0.12)' }}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                        <Reveal className="mb-10">
-                            <span className="eyebrow">Continue lendo</span>
-                            <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3"
-                                style={{ fontSize: 'clamp(24px,3vw,34px)' }}>
-                                Artigos relacionados
-                            </h2>
+                        <Reveal className="flex items-end justify-between gap-4 flex-wrap mb-10">
+                            <div>
+                                <span className="eyebrow">Continue lendo</span>
+                                <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3"
+                                    style={{ fontSize: 'clamp(24px,3vw,34px)' }}>
+                                    Artigos relacionados
+                                </h2>
+                            </div>
+                            <Link href={route('blog.index')}
+                                className="inline-flex items-center gap-2 text-sm font-mono transition-all hover:gap-3"
+                                style={{ color: '#3cbdf8' }}>
+                                Ver todos
+                                <ArrowRight size={14} />
+                            </Link>
                         </Reveal>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {relatedPosts.map((p, i) => (
