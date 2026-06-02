@@ -376,44 +376,47 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
                         </article>
 
                         {/* TOC sidebar */}
-                        {headings.length > 0 && (
-                            <aside className="hidden xl:block sticky top-24 shrink-0" style={{ width: 248 }}>
-                                <h5 className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-4" style={{ color: '#7b8da3' }}>
-                                    Neste artigo
-                                </h5>
-                                <ul className="flex flex-col gap-0.5 m-0 p-0 list-none"
-                                    style={{ borderLeft: '1px solid rgba(150,178,208,0.15)' }}>
-                                    {headings.map(({ id, text, level }) => {
-                                        const isActive = activeId === id;
-                                        return (
-                                            <li key={id} className="m-0 p-0">
-                                                <a href={`#${id}`}
-                                                    className="block text-[13.5px] leading-snug transition-colors"
-                                                    style={{
-                                                        padding: '8px 0 8px 16px',
-                                                        marginLeft: -1,
-                                                        paddingLeft: level === 'h3' ? 28 : 16,
-                                                        borderLeft: `2px solid ${isActive ? '#3cbdf8' : 'transparent'}`,
-                                                        color: isActive ? '#3cbdf8' : '#7b8da3',
-                                                        fontWeight: isActive ? 600 : 400,
-                                                    }}
-                                                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#eaf1fa'; }}
-                                                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#7b8da3'; }}>
-                                                    {text}
-                                                </a>
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
+                        <aside className="hidden lg:block sticky top-24 shrink-0" style={{ width: 248 }}>
+                            {headings.length > 0 && (
+                                <>
+                                    <h5 className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-4" style={{ color: '#7b8da3' }}>
+                                        Neste artigo
+                                    </h5>
+                                    <ul className="flex flex-col gap-0.5 m-0 p-0 list-none"
+                                        style={{ borderLeft: '1px solid rgba(150,178,208,0.15)' }}>
+                                        {headings.map(({ id, text, level }) => {
+                                            const isActive = activeId === id;
+                                            return (
+                                                <li key={id} className="m-0 p-0">
+                                                    <a href={`#${id}`}
+                                                        className="block text-[13.5px] leading-snug transition-colors"
+                                                        style={{
+                                                            padding: '8px 0 8px 16px',
+                                                            marginLeft: -1,
+                                                            paddingLeft: level === 'h3' ? 28 : 16,
+                                                            borderLeft: `2px solid ${isActive ? '#3cbdf8' : 'transparent'}`,
+                                                            color: isActive ? '#3cbdf8' : '#7b8da3',
+                                                            fontWeight: isActive ? 600 : 400,
+                                                        }}
+                                                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#eaf1fa'; }}
+                                                        onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#7b8da3'; }}>
+                                                        {text}
+                                                    </a>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </>
+                            )}
 
-                                <div className="mt-7 pt-5" style={{ borderTop: '1px solid rgba(150,178,208,0.12)' }}>
-                                    <div className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-3" style={{ color: '#7b8da3' }}>
-                                        Compartilhar
-                                    </div>
-                                    <ShareButtons url={pageUrl} title={post.title} />
+                            <div className={`pt-5 ${headings.length > 0 ? 'mt-7' : ''}`}
+                                style={headings.length > 0 ? { borderTop: '1px solid rgba(150,178,208,0.12)' } : {}}>
+                                <div className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-3" style={{ color: '#7b8da3' }}>
+                                    Compartilhar
                                 </div>
-                            </aside>
-                        )}
+                                <ShareButtons url={pageUrl} title={post.title} />
+                            </div>
+                        </aside>
                     </div>
                 </div>
             </div>
