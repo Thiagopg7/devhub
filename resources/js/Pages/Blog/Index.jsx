@@ -3,28 +3,72 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PostCard from '@/Components/Public/PostCard';
 import Newsletter from '@/Components/Public/Newsletter';
-import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import {
+    ChevronLeft, ChevronRight, Search, X,
+    LayoutGrid, Server, Monitor, Cpu, Database, TrendingUp, Tag,
+} from 'lucide-react';
 
-export default function BlogIndex({ posts, filters = {} }) {
+function categoryIcon(slug) {
+    if (!slug) return LayoutGrid;
+    const s = slug.toLowerCase();
+    if (s.includes('backend') || s.includes('back-end')) return Server;
+    if (s.includes('frontend') || s.includes('front-end')) return Monitor;
+    if (s.includes('ia') || s.includes('dados') || s.includes('data') || s.includes('ml')) return Cpu;
+    if (s.includes('banco') || s.includes('database') || s.includes('db')) return Database;
+    if (s.includes('carreira') || s.includes('career')) return TrendingUp;
+    return Tag;
+}
+
+export default function BlogIndex({ posts, filters = {}, categories = [], totalPosts = 0 }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
     const { data, current_page, last_page, prev_page_url, next_page_url } = posts;
 
     const [busca, setBusca] = useState(filters.busca || '');
+    const categoriaAtiva = filters.categoria || null;
+
+    const navigate = (params) => {
+        const clean = Object.fromEntries(Object.entries(params).filter(([, v]) => v));
+        router.get(route('blog.index'), clean, { preserveState: true, replace: true });
+    };
 
     const handleSearch = (e) => {
         e.preventDefault();
-        router.get(route('blog.index'), busca.trim() ? { busca: busca.trim() } : {}, {
-            preserveState: true, replace: true,
-        });
+        navigate({ busca: busca.trim(), categoria: categoriaAtiva });
     };
 
     const limparBusca = () => {
         setBusca('');
-        router.get(route('blog.index'), {}, { preserveState: true, replace: true });
+        navigate({ categoria: categoriaAtiva });
+    };
+
+    const selecionarCategoria = (slug) => {
+        navigate({ busca: busca.trim(), categoria: slug });
     };
 
     const paginatorBtn = "inline-flex items-center gap-1.5 px-4 py-2 text-sm rounded-xl transition-colors";
+    const pageBtn = "inline-flex items-center justify-center min-w-[40px] px-3 py-2 text-sm rounded-xl transition-colors";
+
+    const getPageNumbers = (current, last) => {
+        if (last <= 7) return Array.from({ length: last }, (_, i) => i + 1);
+        const pages = [1];
+        if (current > 3) pages.push('...');
+        for (let i = Math.max(2, current - 1); i <= Math.min(last - 1, current + 1); i++) pages.push(i);
+        if (current < last - 2) pages.push('...');
+        pages.push(last);
+        return pages;
+    };
+
+    const pageUrl = (page) => route('blog.index', {
+        page,
+        ...(filters.busca ? { busca: filters.busca } : {}),
+        ...(filters.categoria ? { categoria: filters.categoria } : {}),
+    });
+
+    const AllIcon = LayoutGrid;
+    const activeCount = categoriaAtiva
+        ? (categories.find(c => c.slug === categoriaAtiva)?.posts_count ?? 0)
+        : totalPosts;
 
     return (
         <PublicLayout>
@@ -36,7 +80,7 @@ export default function BlogIndex({ posts, filters = {} }) {
                 <meta property="og:url" content={route('blog.index')} />
             </Head>
 
-            {/* Page header — pagehead strip */}
+            {/* Page header */}
             <section className="relative overflow-hidden" style={{ background: '#0a131e', borderBottom: '1px solid rgba(150,178,208,0.12)' }}>
                 <div className="dotgrid" />
                 <div className="absolute pointer-events-none" style={{ width: 600, height: 600, right: -100, top: -200, background: 'radial-gradient(circle,rgba(60,189,248,0.1) 0%,transparent 60%)' }} />
@@ -55,41 +99,81 @@ export default function BlogIndex({ posts, filters = {} }) {
                         Todos os artigos
                     </h1>
                     <p className="mb-8 max-w-[60ch]" style={{ color: '#b6c5d8', fontSize: 16 }}>
-                        Tutoriais, guias e reflexões sobre desenvolvimento web, arquitetura, banco de dados e carreira.
+                        Tutoriais, guias e reflexões sobre desenvolvimento web, arquitetura, banco de dados e carreira.{' '}
+                        Busque por palavra-chave ou filtre por trilha.
                     </p>
 
-                    {/* Search bar */}
-                    <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
-                        <div className="relative flex-1">
+                    {/* Search bar + count */}
+                    <div className="flex items-center gap-3 mb-4">
+                        <form onSubmit={handleSearch} className="relative flex-1">
                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: '#7b8da3' }} />
                             <input
                                 type="search"
                                 value={busca}
                                 onChange={(e) => setBusca(e.target.value)}
                                 placeholder="Buscar artigos…"
-                                className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm placeholder-[#7b8da3] focus:outline-none transition-colors"
+                                className="w-full pl-9 pr-4 py-3 rounded-xl text-sm placeholder-[#7b8da3] focus:outline-none transition-colors"
                                 style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.18)', color: '#eaf1fa' }}
-                                onFocus={e => e.target.style.borderColor='#3cbdf8'}
-                                onBlur={e => e.target.style.borderColor='rgba(150,178,208,0.18)'}
+                                onFocus={e => e.target.style.borderColor = '#3cbdf8'}
+                                onBlur={e => e.target.style.borderColor = 'rgba(150,178,208,0.18)'}
                             />
-                        </div>
-                        <button type="submit" className="px-5 py-2.5 rounded-xl font-semibold text-sm transition-all hover:-translate-y-0.5"
-                            style={{ background: 'linear-gradient(180deg,#3cbdf8,#2a9be0)', color: '#03121d' }}>
-                            Buscar
-                        </button>
+                        </form>
                         {filters.busca && (
                             <button type="button" onClick={limparBusca}
-                                className="px-3 py-2.5 rounded-xl transition-colors hover:text-white"
+                                className="px-3 py-3 rounded-xl transition-colors hover:text-white shrink-0"
                                 style={{ border: '1px solid rgba(150,178,208,0.18)', color: '#7b8da3' }}
                                 title="Limpar busca">
                                 <X size={16} />
                             </button>
                         )}
-                    </form>
+                        <span className="font-mono text-sm shrink-0" style={{ color: '#7b8da3' }}>
+                            {activeCount} artigos
+                        </span>
+                    </div>
 
-                    {/* Count */}
-                    {!filters.busca && (
-                        <p className="mt-4 font-mono text-xs" style={{ color: '#7b8da3' }}>{data.length} artigos encontrados</p>
+                    {/* Category pills */}
+                    {categories.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {/* Todos */}
+                            <button
+                                onClick={() => selecionarCategoria(null)}
+                                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                                style={!categoriaAtiva ? {
+                                    background: 'linear-gradient(180deg,#3cbdf8,#2a9be0)',
+                                    color: '#03121d',
+                                } : {
+                                    background: '#101f30',
+                                    border: '1px solid rgba(150,178,208,0.18)',
+                                    color: '#b6c5d8',
+                                }}>
+                                <AllIcon size={14} />
+                                Todos
+                                <span className="font-mono text-xs opacity-75">{totalPosts}</span>
+                            </button>
+
+                            {categories.map((cat) => {
+                                const Icon = categoryIcon(cat.slug);
+                                const isActive = categoriaAtiva === cat.slug;
+                                return (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => selecionarCategoria(cat.slug)}
+                                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+                                        style={isActive ? {
+                                            background: 'linear-gradient(180deg,#3cbdf8,#2a9be0)',
+                                            color: '#03121d',
+                                        } : {
+                                            background: '#101f30',
+                                            border: '1px solid rgba(150,178,208,0.18)',
+                                            color: '#b6c5d8',
+                                        }}>
+                                        <Icon size={14} />
+                                        {cat.name}
+                                        <span className="font-mono text-xs opacity-75">{cat.posts_count}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
             </section>
@@ -105,13 +189,13 @@ export default function BlogIndex({ posts, filters = {} }) {
 
                             {/* Pagination */}
                             {last_page > 1 && (
-                                <div className="flex items-center justify-center gap-4 mt-12">
+                                <div className="flex items-center justify-center gap-2 mt-12">
                                     {prev_page_url ? (
                                         <Link href={prev_page_url}
                                             className={`${paginatorBtn} hover:text-[#3cbdf8]`}
                                             style={{ border: '1px solid rgba(150,178,208,0.18)', color: '#b6c5d8' }}
-                                            onMouseEnter={e => e.currentTarget.style.borderColor='#3cbdf8'}
-                                            onMouseLeave={e => e.currentTarget.style.borderColor='rgba(150,178,208,0.18)'}>
+                                            onMouseEnter={e => e.currentTarget.style.borderColor = '#3cbdf8'}
+                                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.18)'}>
                                             <ChevronLeft size={16} /> Anterior
                                         </Link>
                                     ) : (
@@ -120,21 +204,36 @@ export default function BlogIndex({ posts, filters = {} }) {
                                         </span>
                                     )}
 
-                                    <span className="text-sm font-mono" style={{ color: '#7b8da3' }}>
-                                        Página {current_page} de {last_page}
-                                    </span>
+                                    {getPageNumbers(current_page, last_page).map((page, i) =>
+                                        page === '...' ? (
+                                            <span key={`e${i}`} className="px-1 text-sm" style={{ color: '#7b8da3' }}>…</span>
+                                        ) : page === current_page ? (
+                                            <span key={page} className={`${pageBtn} font-semibold`}
+                                                style={{ background: '#3cbdf8', color: '#03121d', border: '1px solid #3cbdf8' }}>
+                                                {page}
+                                            </span>
+                                        ) : (
+                                            <Link key={page} href={pageUrl(page)}
+                                                className={`${pageBtn} hover:text-[#3cbdf8]`}
+                                                style={{ border: '1px solid rgba(150,178,208,0.18)', color: '#b6c5d8' }}
+                                                onMouseEnter={e => e.currentTarget.style.borderColor = '#3cbdf8'}
+                                                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.18)'}>
+                                                {page}
+                                            </Link>
+                                        )
+                                    )}
 
                                     {next_page_url ? (
                                         <Link href={next_page_url}
                                             className={`${paginatorBtn} hover:text-[#3cbdf8]`}
                                             style={{ border: '1px solid rgba(150,178,208,0.18)', color: '#b6c5d8' }}
-                                            onMouseEnter={e => e.currentTarget.style.borderColor='#3cbdf8'}
-                                            onMouseLeave={e => e.currentTarget.style.borderColor='rgba(150,178,208,0.18)'}>
-                                            Próxima <ChevronRight size={16} />
+                                            onMouseEnter={e => e.currentTarget.style.borderColor = '#3cbdf8'}
+                                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.18)'}>
+                                            Próximo <ChevronRight size={16} />
                                         </Link>
                                     ) : (
                                         <span className={paginatorBtn} style={{ border: '1px solid rgba(150,178,208,0.08)', color: '#7b8da3', cursor: 'not-allowed' }}>
-                                            Próxima <ChevronRight size={16} />
+                                            Próximo <ChevronRight size={16} />
                                         </span>
                                     )}
                                 </div>
@@ -142,11 +241,15 @@ export default function BlogIndex({ posts, filters = {} }) {
                         </>
                     ) : (
                         <div className="text-center py-24" style={{ color: '#7b8da3' }}>
-                            {filters.busca ? (
+                            {filters.busca || filters.categoria ? (
                                 <>
-                                    <p className="text-lg">Nenhum resultado para <span style={{ color: '#eaf1fa' }}>"{filters.busca}"</span>.</p>
-                                    <button onClick={limparBusca} className="text-sm mt-2 transition-colors hover:text-[#76d3ff]" style={{ color: '#3cbdf8' }}>
-                                        Limpar busca
+                                    <p className="text-lg">
+                                        Nenhum resultado encontrado
+                                        {filters.busca && <> para <span style={{ color: '#eaf1fa' }}>"{filters.busca}"</span></>}
+                                        {filters.categoria && <> nesta categoria</>}.
+                                    </p>
+                                    <button onClick={() => navigate({})} className="text-sm mt-2 transition-colors hover:text-[#76d3ff]" style={{ color: '#3cbdf8' }}>
+                                        Limpar filtros
                                     </button>
                                 </>
                             ) : (

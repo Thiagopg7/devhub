@@ -1,6 +1,6 @@
 import { Link, usePage } from "@inertiajs/react";
 import { Mail, MapPin } from "lucide-react";
-import { FaYoutube } from "react-icons/fa";
+import { FaYoutube, FaInstagram } from "react-icons/fa";
 import Logo from "./Logo";
 
 function FooterLink({ href, openInNewTab, className, children }) {
@@ -33,11 +33,11 @@ export default function Footer() {
     const github      = siteConfig.footer_github    || null;
     const linkedin    = siteConfig.footer_linkedin   || null;
     const youtube     = siteConfig.footer_youtube    || null;
+    const instagram   = siteConfig.footer_instagram  || null;
     const email       = siteConfig.contact_email    || null;
     const address     = siteConfig.contact_address  || null;
     const addressLink = siteConfig.contact_address_link || null;
 
-    const hasSocial  = github || linkedin || youtube;
     const hasContact = email || address;
 
     const linkCls = "text-sm transition-colors hover:text-[#3cbdf8]";
@@ -51,28 +51,22 @@ export default function Footer() {
                     <div className="space-y-4 lg:col-span-1">
                         <Logo name={siteName} />
                         <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#7b8da3' }}>{tagline}</p>
-                        {hasSocial && (
-                            <div className="flex items-center gap-4 pt-1">
-                                {github && (
-                                    <a href={github} target="_blank" rel="noopener noreferrer" aria-label="GitHub"
-                                        style={{ color: '#7b8da3' }} className="hover:text-[#3cbdf8] transition-colors">
-                                        {GH_ICON}
-                                    </a>
-                                )}
-                                {linkedin && (
-                                    <a href={linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                                        style={{ color: '#7b8da3' }} className="hover:text-[#3cbdf8] transition-colors">
-                                        {LI_ICON}
-                                    </a>
-                                )}
-                                {youtube && (
-                                    <a href={youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"
-                                        style={{ color: '#7b8da3' }} className="hover:text-[#3cbdf8] transition-colors">
-                                        <FaYoutube size={20} />
-                                    </a>
-                                )}
-                            </div>
-                        )}
+                        <div className="flex items-center gap-4 pt-1">
+                            {[
+                                { href: github,    label: 'GitHub',    icon: GH_ICON              },
+                                { href: linkedin,  label: 'LinkedIn',  icon: LI_ICON              },
+                                { href: youtube,   label: 'YouTube',   icon: <FaYoutube size={20} /> },
+                                { href: instagram, label: 'Instagram', icon: <FaInstagram size={19} /> },
+                            ].map(({ href, label, icon }) => (
+                                <a key={label} href={href || '#'}
+                                    {...(href ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                    aria-label={label}
+                                    className="hover:text-[#3cbdf8] transition-colors"
+                                    style={{ color: '#7b8da3' }}>
+                                    {icon}
+                                </a>
+                            ))}
+                        </div>
                     </div>
 
                     {/* Navegação */}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,10 +14,19 @@ class BlogController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('busca');
+        $category = $request->input('categoria');
+
+        $categories = Category::active()
+            ->withCount(['posts' => fn ($q) => $q->active()])
+            ->having('posts_count', '>', 0)
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug', 'color']);
 
         return Inertia::render('Blog/Index', [
-            'posts' => $this->postService->getAllActive(12, $search),
-            'filters' => ['busca' => $search],
+            'posts' => $this->postService->getAllActive(12, $search, $category),
+            'filters' => ['busca' => $search, 'categoria' => $category],
+            'categories' => $categories,
+            'totalPosts' => $categories->sum('posts_count'),
         ]);
     }
 

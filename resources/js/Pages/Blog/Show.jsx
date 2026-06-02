@@ -2,11 +2,11 @@ import { useEffect, useState, useRef } from 'react';
 import { Head, Link, usePage } from '@inertiajs/react';
 import DOMPurify from 'dompurify';
 import PublicLayout from '@/Layouts/PublicLayout';
-import { ArrowLeft, Calendar, Clock, Tag, Copy, Check, Share2 } from 'lucide-react';
+import { Calendar, Clock, Tag, Copy, Check } from 'lucide-react';
 
 function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-BR', {
-        day: '2-digit', month: 'long', year: 'numeric',
+        day: '2-digit', month: 'short', year: 'numeric',
     });
 }
 
@@ -16,22 +16,8 @@ function estimateReadTime(content) {
     return Math.max(1, Math.ceil(words / 200));
 }
 
-/* Extract h2/h3 headings from HTML string */
-function extractHeadings(html) {
-    if (!html || typeof document === 'undefined') return [];
-    const div = document.createElement('div');
-    div.innerHTML = DOMPurify.sanitize(html);
-    return [...div.querySelectorAll('h2, h3')].map((el, i) => {
-        const id = el.id || `heading-${i}`;
-        el.id = id;
-        return { id, text: el.textContent, level: el.tagName.toLowerCase() };
-    });
-}
-
-/* Reading progress bar */
 function ReadingProgressBar() {
     const [progress, setProgress] = useState(0);
-
     useEffect(() => {
         const onScroll = () => {
             const el = document.documentElement;
@@ -42,27 +28,85 @@ function ReadingProgressBar() {
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
-
     return <div className="readbar" style={{ width: `${progress}%` }} />;
 }
 
-/* Copy to clipboard button */
-function CopyLinkBtn() {
+/* ── Share helpers ───────────────────────────────────────────── */
+function shareUrl(platform, url, title) {
+    const enc = encodeURIComponent;
+    if (platform === 'x')
+        return `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(title)}`;
+    if (platform === 'linkedin')
+        return `https://www.linkedin.com/shareArticle?mini=true&url=${enc(url)}&title=${enc(title)}`;
+    return '#';
+}
+
+function XIcon() {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+            <path d="M17.5 3h3l-7 8 8.2 10h-6.4l-5-6.3L4 21H1l7.5-8.6L.5 3H7l4.5 5.8L17.5 3zm-1.1 16h1.7L7.7 4.8H5.9L16.4 19z" />
+        </svg>
+    );
+}
+
+function LinkedInIcon() {
+    return (
+        <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15">
+            <path d="M4.98 3.5A2.5 2.5 0 002.5 6a2.5 2.5 0 005 0 2.5 2.5 0 00-2.52-2.5zM3 8.98h4v12.02H3V8.98zM10 8.98h3.8v1.64h.06c.53-1 1.83-2.06 3.76-2.06 4 0 4.74 2.64 4.74 6.07v6.37h-4v-5.65c0-1.35-.02-3.08-1.88-3.08-1.88 0-2.17 1.47-2.17 2.99v5.74H10V8.98z" />
+        </svg>
+    );
+}
+
+function CopyLinkBtn({ size = 'md' }) {
     const [copied, setCopied] = useState(false);
     const copy = () => {
         navigator.clipboard.writeText(window.location.href);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+    const dim = size === 'sm' ? 'w-9 h-9' : 'w-9 h-9';
     return (
         <button onClick={copy} aria-label="Copiar link"
-            className="w-9 h-9 grid place-items-center rounded-lg transition-colors"
-            style={{ background: '#15243a', border: '1px solid rgba(150,178,208,0.18)', color: copied ? '#3cbdf8' : '#7b8da3' }}>
-            {copied ? <Check size={15} /> : <Copy size={15} />}
+            className={`${dim} grid place-items-center rounded-lg transition-all hover:-translate-y-0.5`}
+            style={{
+                background: '#15243a',
+                border: '1px solid rgba(150,178,208,0.18)',
+                color: copied ? '#3cbdf8' : '#7b8da3',
+            }}>
+            {copied
+                ? <Check size={14} />
+                : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="15" height="15"><path d="M10 13a5 5 0 007 0l2-2a5 5 0 00-7-7l-1 1" /><path d="M14 11a5 5 0 00-7 0l-2 2a5 5 0 007 7l1-1" /></svg>
+            }
         </button>
     );
 }
 
+function ShareButtons({ url, title, className = '' }) {
+    const btnCls = "w-9 h-9 grid place-items-center rounded-lg transition-all hover:-translate-y-0.5";
+    const btnStyle = { background: '#15243a', border: '1px solid rgba(150,178,208,0.18)', color: '#7b8da3' };
+    const hoverIn = e => { e.currentTarget.style.background = '#3cbdf8'; e.currentTarget.style.color = '#03121d'; e.currentTarget.style.borderColor = 'transparent'; };
+    const hoverOut = e => { e.currentTarget.style.background = '#15243a'; e.currentTarget.style.color = '#7b8da3'; e.currentTarget.style.borderColor = 'rgba(150,178,208,0.18)'; };
+
+    return (
+        <div className={`flex gap-2 ${className}`}>
+            <a href={shareUrl('x', url, title)} target="_blank" rel="noopener noreferrer"
+                aria-label="Compartilhar no X"
+                className={btnCls} style={btnStyle}
+                onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+                <XIcon />
+            </a>
+            <a href={shareUrl('linkedin', url, title)} target="_blank" rel="noopener noreferrer"
+                aria-label="Compartilhar no LinkedIn"
+                className={btnCls} style={btnStyle}
+                onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+                <LinkedInIcon />
+            </a>
+            <CopyLinkBtn />
+        </div>
+    );
+}
+
+/* ── Main component ──────────────────────────────────────────── */
 export default function BlogShow({ post }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
@@ -73,6 +117,7 @@ export default function BlogShow({ post }) {
     const ogTitle       = post.meta_title || post.title;
     const ogDescription = post.meta_description || post.description;
     const readTime      = estimateReadTime(post.content);
+    const pageUrl       = typeof window !== 'undefined' ? window.location.href : route('blog.show', post.slug);
 
     /* Inject IDs into headings after render */
     useEffect(() => {
@@ -118,7 +163,7 @@ export default function BlogShow({ post }) {
                 {post.banner_image_url && <meta property="og:image" content={post.banner_image_url} />}
             </Head>
 
-            {/* ── Article pagehead ─────────────────────────────── */}
+            {/* ── Article pagehead ───────────────────────────────── */}
             <section className="relative overflow-hidden" style={{ background: '#0a131e', borderBottom: '1px solid rgba(150,178,208,0.12)' }}>
                 <div className="dotgrid" />
                 <div className="absolute pointer-events-none" style={{ width: 600, height: 600, right: -100, top: -200, background: 'radial-gradient(circle,rgba(60,189,248,0.1) 0%,transparent 60%)' }} />
@@ -141,6 +186,7 @@ export default function BlogShow({ post }) {
                         <span className="truncate max-w-[200px]" style={{ color: '#eaf1fa' }}>{post.title}</span>
                     </nav>
 
+                    {/* Category pill */}
                     {post.category && (
                         <Link href={route('blog.category', post.category.slug)}
                             className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.1em] uppercase px-3 py-1.5 rounded-full font-semibold mb-5 transition-colors"
@@ -150,16 +196,18 @@ export default function BlogShow({ post }) {
                     )}
 
                     <h1 className="font-display font-semibold text-white leading-tight tracking-tight mb-4"
-                        style={{ fontSize: 'clamp(30px,4.5vw,52px)' }}>
+                        style={{ fontSize: 'clamp(30px,4.5vw,52px)', maxWidth: '820px' }}>
                         {post.title}
                     </h1>
 
                     {post.description && (
-                        <p className="mb-6 max-w-[64ch] text-lg" style={{ color: '#b6c5d8' }}>{post.description}</p>
+                        <p className="mb-6 max-w-[64ch]" style={{ color: '#b6c5d8', fontSize: 'clamp(17px,1.6vw,20px)' }}>
+                            {post.description}
+                        </p>
                     )}
 
                     {/* Byline */}
-                    <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-4 mt-7">
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full grid place-items-center font-display font-semibold text-xs text-white shrink-0"
                                 style={{ background: 'linear-gradient(135deg,#3cbdf8,#2a9be0)' }}>DH</div>
@@ -168,56 +216,56 @@ export default function BlogShow({ post }) {
                                 <div className="text-xs" style={{ color: '#7b8da3' }}>Engenharia &amp; Conteúdo</div>
                             </div>
                         </div>
-                        <span className="w-px h-8" style={{ background: 'rgba(150,178,208,0.18)' }} />
-                        <span className="flex items-center gap-1.5 text-sm font-mono" style={{ color: '#7b8da3' }}>
-                            <Calendar size={13} /> {formatDate(post.created_at)}
+                        <span className="w-px h-8 shrink-0" style={{ background: 'rgba(150,178,208,0.18)' }} />
+                        <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: '#7b8da3' }}>
+                            <Calendar size={13} style={{ color: '#3cbdf8', flexShrink: 0 }} />
+                            {formatDate(post.created_at)}
                         </span>
-                        <span className="flex items-center gap-1.5 text-sm font-mono" style={{ color: '#7b8da3' }}>
-                            <Clock size={13} /> {readTime} min de leitura
+                        <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: '#7b8da3' }}>
+                            <Clock size={13} style={{ color: '#3cbdf8', flexShrink: 0 }} />
+                            {readTime} min de leitura
                         </span>
 
-                        {/* Share */}
-                        <div className="flex items-center gap-2 ml-auto">
-                            <span className="text-xs font-mono" style={{ color: '#7b8da3' }}>Compartilhar</span>
-                            <CopyLinkBtn />
+                        {/* Share in byline */}
+                        <div className="flex items-center gap-3 ml-auto">
+                            <span className="text-xs font-mono hidden sm:block" style={{ color: '#7b8da3' }}>Compartilhar</span>
+                            <ShareButtons url={pageUrl} title={post.title} />
                         </div>
                     </div>
 
                     {/* Cover image */}
                     {post.banner_image_url && (
-                        <div className="mt-8 rounded-2xl overflow-hidden" style={{ maxHeight: 400 }}>
+                        <div className="mt-10 rounded-2xl overflow-hidden"
+                            style={{ maxHeight: 420, border: '1px solid rgba(150,178,208,0.18)' }}>
                             <img src={post.banner_image_url} alt={post.title} className="w-full h-full object-cover" />
                         </div>
                     )}
                 </div>
             </section>
 
-            {/* ── Article body + TOC ──────────────────────────────── */}
+            {/* ── Article body + TOC ─────────────────────────────── */}
             <div style={{ background: '#0a131e' }}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                    <div className="flex gap-14 items-start">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex gap-14 items-start py-16">
 
                         {/* Prose */}
                         <article className="min-w-0 flex-1">
-                            <Link href="/blog"
-                                className="inline-flex items-center gap-1.5 text-sm mb-8 transition-colors hover:text-[#3cbdf8]"
-                                style={{ color: '#7b8da3' }}>
-                                <ArrowLeft size={15} /> Voltar ao blog
-                            </Link>
-
                             {sanitizedContent && (
                                 <div
                                     ref={proseRef}
                                     className="prose prose-invert prose-sky max-w-none
-                                        prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-slate-100
-                                        prose-p:text-slate-300 prose-p:leading-relaxed
+                                        prose-headings:font-display prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-white prose-headings:scroll-mt-24
+                                        prose-h2:text-[28px] prose-h2:mt-[2em] prose-h2:leading-tight
+                                        prose-h3:text-[21px] prose-h3:mt-[1.7em]
+                                        prose-p:text-slate-300 prose-p:leading-relaxed prose-p:text-[17px]
                                         prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline
-                                        prose-strong:text-slate-100
-                                        prose-code:text-sky-300 prose-code:bg-[#101f30] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.875em] prose-code:font-mono
-                                        prose-pre:bg-[#101f30] prose-pre:border prose-pre:border-[rgba(150,178,208,0.12)] prose-pre:rounded-2xl
-                                        prose-blockquote:border-l-[#3cbdf8] prose-blockquote:text-slate-400 prose-blockquote:not-italic
-                                        prose-img:rounded-2xl
-                                        prose-li:text-slate-300"
+                                        prose-strong:text-white prose-strong:font-bold
+                                        prose-code:text-sky-300 prose-code:bg-[#101f30] prose-code:border prose-code:border-[rgba(150,178,208,0.15)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.86em] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
+                                        prose-pre:bg-[#0b1623] prose-pre:border prose-pre:border-[rgba(150,178,208,0.18)] prose-pre:rounded-xl prose-pre:p-5
+                                        prose-blockquote:border-l-[#3cbdf8] prose-blockquote:border-l-2 prose-blockquote:text-slate-400 prose-blockquote:not-italic prose-blockquote:pl-5
+                                        prose-img:rounded-2xl prose-img:border prose-img:border-[rgba(150,178,208,0.15)]
+                                        prose-li:text-slate-300 prose-li:text-[17px]
+                                        prose-ul:gap-2 prose-ol:gap-2"
                                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                                 />
                             )}
@@ -225,27 +273,41 @@ export default function BlogShow({ post }) {
 
                         {/* TOC sidebar */}
                         {headings.length > 0 && (
-                            <aside className="hidden xl:block sticky top-24 w-56 shrink-0">
-                                <h5 className="font-mono text-xs uppercase tracking-widest mb-4" style={{ color: '#7b8da3' }}>
+                            <aside className="hidden xl:block sticky top-24 shrink-0" style={{ width: 248 }}>
+                                <h5 className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-4" style={{ color: '#7b8da3' }}>
                                     Neste artigo
                                 </h5>
-                                <ul className="space-y-1.5">
-                                    {headings.map(({ id, text, level }) => (
-                                        <li key={id}>
-                                            <a href={`#${id}`}
-                                                className={`block text-sm leading-snug transition-colors ${level === 'h3' ? 'pl-3' : ''}`}
-                                                style={{ color: activeId === id ? '#3cbdf8' : '#7b8da3' }}
-                                                onMouseEnter={e => e.currentTarget.style.color='#b6c5d8'}
-                                                onMouseLeave={e => e.currentTarget.style.color = activeId === id ? '#3cbdf8' : '#7b8da3'}>
-                                                {text}
-                                            </a>
-                                        </li>
-                                    ))}
+                                <ul className="flex flex-col gap-0.5 m-0 p-0 list-none"
+                                    style={{ borderLeft: '1px solid rgba(150,178,208,0.15)' }}>
+                                    {headings.map(({ id, text, level }) => {
+                                        const isActive = activeId === id;
+                                        return (
+                                            <li key={id} className="m-0 p-0">
+                                                <a href={`#${id}`}
+                                                    className="block text-[13.5px] leading-snug transition-colors"
+                                                    style={{
+                                                        padding: '8px 0 8px 16px',
+                                                        marginLeft: -1,
+                                                        paddingLeft: level === 'h3' ? 28 : 16,
+                                                        borderLeft: `2px solid ${isActive ? '#3cbdf8' : 'transparent'}`,
+                                                        color: isActive ? '#3cbdf8' : '#7b8da3',
+                                                        fontWeight: isActive ? 600 : 400,
+                                                    }}
+                                                    onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#eaf1fa'; }}
+                                                    onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#7b8da3'; }}>
+                                                    {text}
+                                                </a>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
 
-                                <div className="mt-8 pt-6" style={{ borderTop: '1px solid rgba(150,178,208,0.12)' }}>
-                                    <div className="font-mono text-xs uppercase tracking-widest mb-3" style={{ color: '#7b8da3' }}>Compartilhar</div>
-                                    <CopyLinkBtn />
+                                {/* Share in TOC */}
+                                <div className="mt-7 pt-5" style={{ borderTop: '1px solid rgba(150,178,208,0.12)' }}>
+                                    <div className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-3" style={{ color: '#7b8da3' }}>
+                                        Compartilhar
+                                    </div>
+                                    <ShareButtons url={pageUrl} title={post.title} />
                                 </div>
                             </aside>
                         )}

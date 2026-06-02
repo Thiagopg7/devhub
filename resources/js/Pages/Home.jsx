@@ -4,8 +4,40 @@ import PublicLayout from '@/Layouts/PublicLayout';
 import HeroBanner from '@/Components/Public/HeroBanner';
 import PostCard from '@/Components/Public/PostCard';
 import TechCarousel from '@/Components/Public/TechCarousel';
+import StackMarquee from '@/Components/Public/StackMarquee';
 import Newsletter from '@/Components/Public/Newsletter';
-import { ArrowRight, Calendar, Clock, MapPin } from 'lucide-react';
+import Reveal from '@/Components/Public/Reveal';
+import { ArrowRight, Calendar, Clock, MapPin, LayoutGrid, Globe, Server, Database, Brain, Briefcase, Shield, Cloud, Code2, Layers, Cpu } from 'lucide-react';
+
+const CATEGORY_ICONS = {
+    all:       LayoutGrid,
+    frontend:  Globe,
+    web:       Globe,
+    backend:   Server,
+    servidor:  Server,
+    banco:     Database,
+    dados:     Database,
+    database:  Database,
+    ia:        Brain,
+    intelig:   Brain,
+    machine:   Cpu,
+    devops:    Cloud,
+    infra:     Cloud,
+    cloud:     Cloud,
+    carreira:  Briefcase,
+    emprego:   Briefcase,
+    segurança: Shield,
+    mobile:    Code2,
+    default:   Code2,
+};
+
+function categoryIcon(name) {
+    const key = name.toLowerCase();
+    for (const [token, Icon] of Object.entries(CATEGORY_ICONS)) {
+        if (key.includes(token)) return Icon;
+    }
+    return CATEGORY_ICONS.default;
+}
 
 /* ── Static testimonials ───────────────────────────────────── */
 const TESTIMONIALS = [
@@ -83,9 +115,9 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
             {featured && (
                 <section style={{ background: '#0c1828', borderBottom: '1px solid rgba(150,178,208,0.12)' }}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                        <SectionHead eyebrow="Destaque da semana" title="Leitura obrigatória" linkHref="/blog" linkLabel="Ver todos os destaques" />
+                        <Reveal><SectionHead eyebrow="Destaque da semana" title="Leitura obrigatória" linkHref="/blog" linkLabel="Ver todos os destaques" /></Reveal>
 
-                        <article className="grid md:grid-cols-[1.15fr_1fr] rounded-[22px] overflow-hidden"
+                        <Reveal delay={150} as="article" className="grid md:grid-cols-[1.15fr_1fr] rounded-[22px] overflow-hidden"
                             style={{ background: 'linear-gradient(135deg,#101f30,#15243a)', border: '1px solid rgba(150,178,208,0.12)', boxShadow: '0 18px 40px -22px rgba(0,0,0,0.7)' }}>
 
                             {/* Media */}
@@ -109,12 +141,18 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
 
                             {/* Body */}
                             <div className="p-10 flex flex-col justify-center">
-                                <div className="flex items-center gap-3 font-mono text-[13px] mb-4" style={{ color: '#7b8da3' }}>
+                                <div className="inline-flex items-center flex-wrap gap-3 font-mono text-[13px] mb-4 leading-none" style={{ color: '#7b8da3' }}>
                                     {featured.category && <span style={{ color: '#3cbdf8' }}>{featured.category.name}</span>}
-                                    <span>•</span>
-                                    <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(featured.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
-                                    <span>•</span>
-                                    <span className="flex items-center gap-1"><Clock size={12} /> {Math.max(1, Math.ceil((featured.content ?? '').replace(/<[^>]+>/g, '').split(/\s+/).length / 200))} min</span>
+                                    <span aria-hidden="true">•</span>
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <Calendar size={12} style={{ display: 'block', flexShrink: 0 }} />
+                                        {new Date(featured.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                    </span>
+                                    <span aria-hidden="true">•</span>
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <Clock size={12} style={{ display: 'block', flexShrink: 0 }} />
+                                        {Math.max(1, Math.ceil((featured.content ?? '').replace(/<[^>]+>/g, '').split(/\s+/).length / 200))} min
+                                    </span>
                                 </div>
                                 <h3 className="font-display font-semibold text-white leading-tight tracking-tight mb-3" style={{ fontSize: 'clamp(26px,2.8vw,34px)' }}>
                                     {featured.title}
@@ -138,7 +176,7 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
                                     </Link>
                                 </div>
                             </div>
-                        </article>
+                        </Reveal>
                     </div>
                 </section>
             )}
@@ -146,64 +184,77 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
             {/* ── Posts grid ──────────────────────────────────────── */}
             <section style={{ background: '#0a131e' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                    <SectionHead
-                        eyebrow="Últimas publicações"
-                        title="Explore por trilha"
-                        subtitle="Escolha um tema e mergulhe. Filtre os artigos pela área que você quer dominar."
-                        linkHref="/blog"
-                        linkLabel="Ver todos"
-                    />
+                    <Reveal>
+                        <SectionHead
+                            eyebrow="Últimas publicações"
+                            title="Explore por trilha"
+                            subtitle="Escolha um tema e mergulhe. Filtre os artigos pela área que você quer dominar."
+                            linkHref="/blog"
+                            linkLabel="Ver todos"
+                        />
+                    </Reveal>
 
-                    {/* Category filter pills */}
-                    {allCategories.length > 0 && (
-                        <div className="flex flex-wrap gap-3 mb-9">
-                            {[{ label: 'Todos', value: 'all' }, ...allCategories.map(c => ({ label: c, value: c }))].map(({ label, value }) => (
-                                <button key={value} onClick={() => setActiveFilter(value)}
-                                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all"
-                                    style={activeFilter === value
-                                        ? { background: 'linear-gradient(180deg,#3cbdf8,#2a9be0)', color: '#03121d', border: '1px solid transparent' }
-                                        : { background: '#101f30', border: '1px solid rgba(150,178,208,0.12)', color: '#b6c5d8' }}>
-                                    {label}
-                                </button>
-                            ))}
+                    <Reveal delay={100}>
+                        {/* Category filter pills */}
+                        {allCategories.length > 0 && (
+                            <div className="flex flex-wrap gap-3 mb-9">
+                                {[{ label: 'Todos', value: 'all' }, ...allCategories.map(c => ({ label: c, value: c }))].map(({ label, value }) => {
+                                    const active = activeFilter === value;
+                                    const Icon = categoryIcon(value);
+                                    return (
+                                        <button key={value} onClick={() => setActiveFilter(value)}
+                                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-all"
+                                            style={active
+                                                ? { background: 'linear-gradient(180deg,#3cbdf8,#2a9be0)', color: '#03121d', border: '1px solid transparent' }
+                                                : { background: '#101f30', border: '1px solid rgba(150,178,208,0.12)', color: '#b6c5d8' }}>
+                                            <Icon size={14} />
+                                            {label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {visiblePosts.length > 0 ? (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {visiblePosts.map((post) => <PostCard key={post.id} post={post} />)}
+                            </div>
+                        ) : (
+                            <p className="text-center py-16 font-mono text-sm" style={{ color: '#7b8da3' }}>
+                                Nenhum artigo nesta trilha ainda. Volte em breve. :)
+                            </p>
+                        )}
+
+                        <div className="sm:hidden mt-8 text-center">
+                            <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: '#3cbdf8' }}>
+                                Ver todos os posts <ArrowRight size={16} />
+                            </Link>
                         </div>
-                    )}
-
-                    {visiblePosts.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {visiblePosts.map((post) => <PostCard key={post.id} post={post} />)}
-                        </div>
-                    ) : (
-                        <p className="text-center py-16 font-mono text-sm" style={{ color: '#7b8da3' }}>
-                            Nenhum artigo nesta trilha ainda. Volte em breve. :)
-                        </p>
-                    )}
-
-                    <div className="sm:hidden mt-8 text-center">
-                        <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: '#3cbdf8' }}>
-                            Ver todos os posts <ArrowRight size={16} />
-                        </Link>
-                    </div>
+                    </Reveal>
                 </div>
             </section>
 
-            {/* ── Divider + Tech Carousel ──────────────────────────── */}
-            <div style={{ borderTop: '1px solid rgba(150,178,208,0.12)', background: '#0c1828' }}>
+            {/* ── Stack marquee ────────────────────────────────────── */}
+            <StackMarquee />
+
+            {/* ── Tech Carousel ────────────────────────────────────── */}
+            <div style={{ background: '#0c1828' }}>
                 <TechCarousel technologies={technologies} />
             </div>
 
             {/* ── Events (static preview) ─────────────────────────── */}
             <section style={{ background: '#0a131e', borderTop: '1px solid rgba(150,178,208,0.12)' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                    <SectionHead eyebrow="Agenda" title="Próximos eventos de tecnologia" subtitle="Conferências, meetups e workshops que valem o seu tempo. Marque na agenda." />
+                    <Reveal><SectionHead eyebrow="Agenda" title="Próximos eventos de tecnologia" subtitle="Conferências, meetups e workshops que valem o seu tempo. Marque na agenda." /></Reveal>
 
                     <div className="space-y-4">
-                        {EVENTS.map((ev) => (
-                            <div key={ev.title} className="flex flex-col md:flex-row md:items-center gap-5 rounded-2xl p-5"
+                        {EVENTS.map((ev, i) => (
+                            <Reveal key={ev.title} delay={i * 100}>
+                            <div className="flex flex-col md:flex-row md:items-center gap-5 rounded-2xl p-5"
                                 style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}>
 
                                 {/* Date badge */}
-                                <div className="flex flex-col items-center justify-center rounded-xl px-5 py-3 shrink-0 text-center w-16"
+                                <div className="flex flex-col items-center justify-center rounded-xl px-5 py-3 shrink-0 text-center w-20"
                                     style={{ background: '#15243a', border: '1px solid rgba(150,178,208,0.18)' }}>
                                     <span className="font-display font-bold text-2xl text-white leading-none">{ev.day}</span>
                                     <span className="text-xs font-mono uppercase mt-0.5" style={{ color: '#3cbdf8' }}>{ev.mon}</span>
@@ -243,6 +294,7 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
                                     </span>
                                 </div>
                             </div>
+                            </Reveal>
                         ))}
                     </div>
                 </div>
@@ -251,11 +303,11 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
             {/* ── Testimonials (static) ───────────────────────────── */}
             <section style={{ background: '#0c1828', borderTop: '1px solid rgba(150,178,208,0.12)' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                    <SectionHead eyebrow="O que dizem" title="Quem lê, recomenda" subtitle="A comunidade de devs que acompanha o DevHub no dia a dia." />
+                    <Reveal><SectionHead eyebrow="O que dizem" title="Quem lê, recomenda" subtitle="A comunidade de devs que acompanha o DevHub no dia a dia." /></Reveal>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {TESTIMONIALS.map((t) => (
-                            <figure key={t.name} className="flex flex-col rounded-2xl p-7"
+                        {TESTIMONIALS.map((t, i) => (
+                            <Reveal key={t.name} delay={i * 120} as="figure" className="flex flex-col rounded-2xl p-7"
                                 style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}>
                                 <div className="text-5xl leading-none mb-4 font-display" style={{ color: '#3cbdf8', opacity: 0.5 }}>&ldquo;</div>
                                 <p className="flex-1 text-sm leading-relaxed mb-5" style={{ color: '#b6c5d8' }}>{t.text}</p>
@@ -270,7 +322,7 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
                                         <div className="text-xs" style={{ color: '#7b8da3' }}>{t.role}</div>
                                     </div>
                                 </figcaption>
-                            </figure>
+                            </Reveal>
                         ))}
                     </div>
                 </div>

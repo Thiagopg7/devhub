@@ -38,7 +38,7 @@ export default function PostCard({ post }) {
             onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(150,178,208,0.12)'; e.currentTarget.style.boxShadow='none'; }}>
 
             {/* Media / glyph */}
-            <div className="relative aspect-video overflow-hidden">
+            <Link href={route('blog.show', post.slug)} className="relative block aspect-video overflow-hidden">
                 {post.banner_image_url ? (
                     <img
                         src={post.banner_image_url}
@@ -56,7 +56,7 @@ export default function PostCard({ post }) {
                 )}
                 {/* Hover bar */}
                 <div className="post-bar" />
-            </div>
+            </Link>
 
             {/* Content */}
             <div className="p-5 flex flex-col flex-1">
@@ -64,22 +64,25 @@ export default function PostCard({ post }) {
                     {post.category && (
                         <Link
                             href={route('blog.category', post.category.slug)}
-                            className="inline-flex items-center gap-1.5 transition-colors"
+                            className="inline-flex items-center gap-1.5 leading-none transition-colors"
                             style={{ color: '#3cbdf8' }}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><circle cx="12" cy="12" r="5"/></svg>
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" style={{ display: 'block', flexShrink: 0 }}><circle cx="12" cy="12" r="5"/></svg>
                             {post.category.name}
                         </Link>
                     )}
-                    <span className="flex items-center gap-1">
-                        <Calendar size={11} />
+                    <span className="inline-flex items-center gap-1 leading-none">
+                        <Calendar size={11} style={{ display: 'block', flexShrink: 0 }} />
                         <time dateTime={post.created_at}>{formatDate(post.created_at)}</time>
                     </span>
                 </div>
 
-                <h3 className="font-display font-semibold text-[18.5px] leading-[1.25] tracking-[-0.01em] mb-2 line-clamp-2 transition-colors text-white group-hover:text-[#3cbdf8]">
-                    {post.title}
+                <h3 className="font-display font-semibold text-[18.5px] leading-[1.25] tracking-[-0.01em] mb-2 line-clamp-2">
+                    <Link href={route('blog.show', post.slug)}
+                        className="transition-colors text-white hover:text-[#3cbdf8]">
+                        {post.title}
+                    </Link>
                 </h3>
 
                 {post.description && (

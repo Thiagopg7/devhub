@@ -69,6 +69,15 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
 @keyframes ring-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes ring-spin-rev { to { transform: translate(-50%, -50%) rotate(-360deg); } }
 
+/* ── Reveal on scroll ───────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ── Stack marquee ──────────────────────────────────────────── */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 34s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+
 /* ── Post bar hover ─────────────────────────────────────────── */
 .post-bar {
   position: absolute;
@@ -80,6 +89,27 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
   transition: transform 0.4s ease;
 }
 .post-card:hover .post-bar { transform: scaleX(1); }
+
+/* ── Event card — mobile layout ────────────────────────────── */
+@media (max-width: 760px) {
+  .event-card {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 20px !important;
+  }
+  .event-card > div:first-of-type {
+    flex-direction: row !important;
+    gap: 8px !important;
+    align-self: flex-start !important;
+    padding: 8px 14px !important;
+  }
+  .event-card > div:last-of-type {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+}
 
 /* ── Quill / rich-text editor ───────────────────────────────── */
 .ql-editor {

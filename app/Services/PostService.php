@@ -12,11 +12,12 @@ class PostService
 {
     public function __construct(private readonly FileUploadService $uploadService) {}
 
-    public function getAllActive(int $perPage = 15, ?string $search = null): LengthAwarePaginator
+    public function getAllActive(int $perPage = 15, ?string $search = null, ?string $category = null): LengthAwarePaginator
     {
         return Post::active()
             ->with('category')
             ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
+            ->when($category, fn ($q) => $q->whereHas('category', fn ($q) => $q->where('slug', $category)))
             ->orderByDesc('created_at')
             ->paginate($perPage)
             ->withQueryString();
