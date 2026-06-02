@@ -15,7 +15,18 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans:    ['Manrope', ...defaultTheme.fontFamily.sans],
+                display: ['Space Grotesk', ...defaultTheme.fontFamily.sans],
+                mono:    ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
+            },
+            colors: {
+                hub: {
+                    bg:      '#0a131e',
+                    bgalt:   '#0c1828',
+                    surface: '#101f30',
+                    s2:      '#15243a',
+                    s3:      '#1b2e46',
+                },
             },
         },
     },

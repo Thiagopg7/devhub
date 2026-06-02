@@ -2,37 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-    scroll-behavior: smooth;
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  --accent:     #3cbdf8;
+  --accent-2:   #2a9be0;
+  --accent-ink: #03121d;
+  --violet:     #7b86ff;
+  --teal:       #2fd9c2;
+  --glow:       rgba(60,189,248,0.16);
+  --glow-2:     rgba(123,134,255,0.14);
+  --border:     rgba(150,178,208,0.12);
+  --border-s:   rgba(150,178,208,0.24);
 }
 
-.left-1 {
-    left: 0.25rem /* 4px */;
+html { scroll-behavior: smooth; }
+
+body { font-family: 'Manrope', system-ui, sans-serif; }
+
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+/* ── Eyebrow label ──────────────────────────────────────────── */
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 500;
+}
+.eyebrow::before { content: "//"; opacity: 0.7; }
+
+/* ── Dotgrid background ─────────────────────────────────────── */
+.dotgrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(150,178,208,0.10) 1px, transparent 1.4px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  pointer-events: none;
 }
 
-.top-1 {
-    top: 0.25rem /* 4px */;
+/* ── Reading progress bar ───────────────────────────────────── */
+.readbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  z-index: 200;
+  transition: width .12s ease-out;
+  box-shadow: 0 0 10px rgba(60,189,248,0.5);
 }
 
-.transition-transform {
-    transition-property: transform;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+/* ── Hero chip float animation ──────────────────────────────── */
+@keyframes chip-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-9px); }
 }
 
-.translate-x-6 {
-    --tw-translate-x: 1.5rem /* 24px */;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
+/* ── Hero rings spin animation ──────────────────────────────── */
+@keyframes ring-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes ring-spin-rev { to { transform: translate(-50%, -50%) rotate(-360deg); } }
 
+/* ── Post bar hover ─────────────────────────────────────────── */
+.post-bar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.post-card:hover .post-bar { transform: scaleX(1); }
+
+/* ── Quill / rich-text editor ───────────────────────────────── */
 .ql-editor {
   min-height: 200px;
   max-height: 400px;
   overflow-y: auto;
 }
 
+/* ── React Select ───────────────────────────────────────────── */
 .react-select__input:focus {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+/* ── Admin toggle fix ───────────────────────────────────────── */
+.left-1  { left: 0.25rem; }
+.top-1   { top: 0.25rem; }
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+.translate-x-6 {
+  --tw-translate-x: 1.5rem;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
