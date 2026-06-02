@@ -2,18 +2,26 @@ import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
 
 const CHIPS = [
-    { label: 'Laravel',   delay: '0s',    pos: 'top-[11%] left-[8%]',   bg: 'rgba(248,80,50,.16)',   color: '#ff6b53',
+    { label: 'Laravel',    delay: '0s',    pos: { top: '10%',    left: '7%'   }, bg: 'rgba(248,80,50,.16)',   color: '#ff6b53',
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><path d="M3 6l4 2v7l5 3 5-3V9l-5-3 5-2.6 4 2"/></svg> },
-    { label: 'React',     delay: '-1.4s', pos: 'top-[6%] right-[12%]',  bg: 'rgba(97,218,251,.16)',  color: '#61dafb',
+    { label: 'React',      delay: '-1.4s', pos: { top: '8%',     right: '8%'  }, bg: 'rgba(97,218,251,.16)',  color: '#61dafb',
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" style={{width:16,height:16}}><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg> },
-    { label: 'Inertia',   delay: '-2.6s', pos: 'top-[46%] right-[2%]',  bg: 'rgba(123,134,255,.16)', color: '#a4abff',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><path d="M5 6h14M5 12h9M5 18h14"/></svg> },
-    { label: 'Tailwind',  delay: '-3.4s', pos: 'bottom-[12%] right-[16%]', bg: 'rgba(56,189,248,.16)', color: '#38bdf8',
-      icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width:16,height:16}}><path d="M6.5 9C8 6 10 5 12.5 6c1.5.6 2 1.7 3.2 2.6 1.3 1 2.8 1 4.3-.3-1.5 3-3.5 4-6 3-1.5-.6-2-1.7-3.2-2.6C9.5 7.7 8 7.7 6.5 9zM2 14.4c1.5-3 3.5-4 6-3 1.5.6 2 1.7 3.2 2.6 1.3 1 2.8 1 4.3-.3-1.5 3-3.5 4-6 3-1.5-.6-2-1.7-3.2-2.6-1.3-1-2.8-1-4.3.3z"/></svg> },
-    { label: 'MySQL',     delay: '-2s',   pos: 'bottom-[8%] left-[12%]',  bg: 'rgba(47,217,194,.16)', color: '#2fd9c2',
+    { label: 'Next.js',    delay: '-4.8s', pos: { top: '29%',    left: '8%'   }, bg: 'rgba(255,255,255,.10)', color: '#e8f0fa',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><circle cx="12" cy="12" r="10"/><path d="M9 8l7 8M16 8v8"/></svg> },
+    { label: 'Vue',        delay: '-2.6s', pos: { top: '34%',    right: '4%'  }, bg: 'rgba(66,211,146,.16)',  color: '#42d392',
+      icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width:16,height:16}}><path d="M12 2L2 4l10 16L22 4l-10-2zM12 14.8L5.6 5.4H8.8l3.2 5.4 3.2-5.4h3.2L12 14.8z" opacity=".9"/></svg> },
+    { label: 'GraphQL',    delay: '-1.8s', pos: { top: '57%',    left: '4%'   }, bg: 'rgba(229,53,171,.16)',  color: '#e535ab',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><polygon points="12 2 21.5 7.5 21.5 16.5 12 22 2.5 16.5 2.5 7.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" opacity=".6"/><line x1="12" y1="4" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="20"/><line x1="19.4" y1="8" x2="14" y2="11"/><line x1="10" y1="13" x2="4.6" y2="16"/><line x1="4.6" y1="8" x2="10" y2="11"/><line x1="14" y1="13" x2="19.4" y2="16"/></svg> },
+    { label: 'TypeScript', delay: '-3.4s', pos: { top: '55%',    right: '6%'  }, bg: 'rgba(49,120,198,.18)',  color: '#5b9bd5',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M14 9v6"/></svg> },
+    { label: 'Postgres',   delay: '-3.0s', pos: { bottom: '20%', left: '4%'   }, bg: 'rgba(47,217,194,.16)',  color: '#2fd9c2',
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{width:16,height:16}}><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg> },
-    { label: 'API REST',  delay: '-4.2s', pos: 'top-[40%] left-[0%]',    bg: 'rgba(255,255,255,.1)', color: '#cfe3f5',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 6l-2 12"/></svg> },
+    { label: 'Tailwind',   delay: '-2s',   pos: { bottom: '18%', right: '8%'  }, bg: 'rgba(56,189,248,.16)',  color: '#38bdf8',
+      icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width:16,height:16}}><path d="M6.5 9C8 6 10 5 12.5 6c1.5.6 2 1.7 3.2 2.6 1.3 1 2.8 1 4.3-.3-1.5 3-3.5 4-6 3-1.5-.6-2-1.7-3.2-2.6C9.5 7.7 8 7.7 6.5 9zM2 14.4c1.5-3 3.5-4 6-3 1.5.6 2 1.7 3.2 2.6 1.3 1 2.8 1 4.3-.3-1.5 3-3.5 4-6 3-1.5-.6-2-1.7-3.2-2.6-1.3-1-2.8-1-4.3.3z"/></svg> },
+    { label: 'Docker',     delay: '-0.8s', pos: { bottom: '7%',  left: '14%'  }, bg: 'rgba(36,150,237,.18)',  color: '#2496ed',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><rect x="2" y="10" width="4" height="3" rx="1"/><rect x="7" y="10" width="4" height="3" rx="1"/><rect x="12" y="10" width="4" height="3" rx="1"/><rect x="7" y="6" width="4" height="3" rx="1"/><rect x="12" y="6" width="4" height="3" rx="1"/><path d="M2 15.5c1.5 2 4 2.5 6.5 2.5h2.5c4 0 7-2 8-5-.8.2-1.6.3-2.5 0-.5 1.2-1 1-2 1-1.2 0-1.5-.8-1.5-1H2z"/></svg> },
+    { label: 'Node.js',    delay: '-4.2s', pos: { bottom: '7%',  right: '20%' }, bg: 'rgba(104,160,99,.18)',  color: '#84cc70',
+      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><path d="M12 2l8.5 4.9v9.8L12 21.6l-8.5-4.9V6.9L12 2z"/><path d="M9 10v4M9 10c0-1.1.9-2 2-2h1a2 2 0 010 4h-1M15 8v8"/></svg> },
 ];
 
 export default function HeroBanner() {
@@ -106,25 +114,14 @@ export default function HeroBanner() {
                             {/* Tech chips */}
                             {CHIPS.map((chip) => (
                                 <div key={chip.label}
-                                    className={`absolute z-[4] flex items-center gap-2 font-mono text-[13px] font-medium rounded-full px-3 py-2 ${chip.pos}`}
-                                    style={{ background: 'rgba(16,31,48,0.82)', backdropFilter: 'blur(6px)', border: '1px solid rgba(150,178,208,0.24)', boxShadow: '0 18px 40px -22px rgba(0,0,0,0.7)', animation: `chip-float 6s ease-in-out ${chip.delay} infinite`, color: '#eaf1fa' }}>
+                                    className="absolute z-[4] flex items-center gap-2 font-mono text-[13px] font-medium rounded-full px-3 py-2"
+                                    style={{ ...chip.pos, background: 'rgba(16,31,48,0.82)', backdropFilter: 'blur(6px)', border: '1px solid rgba(150,178,208,0.24)', boxShadow: '0 18px 40px -22px rgba(0,0,0,0.7)', animation: `chip-float 6s ease-in-out ${chip.delay} infinite`, color: '#eaf1fa' }}>
                                     <span className="w-[22px] h-[22px] rounded-[6px] grid place-items-center shrink-0 text-[0px]" style={{ background: chip.bg, color: chip.color }}>
                                         {chip.icon}
                                     </span>
                                     {chip.label}
                                 </div>
                             ))}
-
-                            {/* Live card */}
-                            <div className="absolute left-4 bottom-4 right-4 z-[5] flex items-center gap-3 rounded-2xl px-3.5 py-3"
-                                style={{ background: 'rgba(10,19,30,0.78)', backdropFilter: 'blur(10px)', border: '1px solid rgba(150,178,208,0.12)' }}>
-                                <div className="w-[46px] h-[46px] rounded-[10px] shrink-0" style={{ background: 'linear-gradient(135deg,#101f30,#15243a)' }} />
-                                <div className="min-w-0 flex-1">
-                                    <div className="font-mono text-[10.5px] tracking-[0.08em] uppercase" style={{ color: '#3cbdf8' }}>Em alta · Frontend</div>
-                                    <div className="text-[13.5px] font-semibold text-white truncate">React com Inertia.js: SPA sem API REST</div>
-                                </div>
-                                <ArrowRight size={18} style={{ color: '#7b8da3', flexShrink: 0 }} />
-                            </div>
                         </div>
                     </div>
 
