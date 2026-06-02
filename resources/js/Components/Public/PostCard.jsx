@@ -32,7 +32,7 @@ export default function PostCard({ post }) {
     const palette = glyphFor(post.category);
 
     return (
-        <article className="post-card group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-[5px]"
+        <article className="group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-[5px]"
             style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)', boxShadow: 'none' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(150,178,208,0.24)'; e.currentTarget.style.boxShadow='0 18px 40px -22px rgba(0,0,0,0.7)'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(150,178,208,0.12)'; e.currentTarget.style.boxShadow='none'; }}>
@@ -55,7 +55,7 @@ export default function PostCard({ post }) {
                     </div>
                 )}
                 {/* Hover bar */}
-                <div className="post-bar" />
+                <div className="absolute inset-x-0 bottom-0 h-[3px] scale-x-0 origin-left transition-transform duration-[400ms] group-hover:scale-x-100 bg-[linear-gradient(90deg,var(--accent),var(--violet))]" />
             </Link>
 
             {/* Content */}
