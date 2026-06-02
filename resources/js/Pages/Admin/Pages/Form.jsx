@@ -13,6 +13,8 @@ import ToggleButton from "@/Components/Admin/ToggleButton";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
 import ImageSlot from "@/Components/Admin/ImageSlot";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
+import TabBar from "@/Components/Admin/TabBar";
+import SeoFields from "@/Components/Admin/SeoFields";
 import TextareaAutosize from "react-textarea-autosize";
 import { Trash2, Upload } from "lucide-react";
 import { useCan } from "@/hooks/useCan";
@@ -23,27 +25,6 @@ const TABS = [
     { id: "images",  label: "Imagens"  },
     { id: "seo",     label: "SEO"      },
 ];
-
-function TabBar({ active, onChange }) {
-    return (
-        <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6">
-            {TABS.map((tab) => (
-                <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => onChange(tab.id)}
-                    className={`px-5 py-3 text-sm font-medium transition-colors border-b-2 -mb-px ${
-                        active === tab.id
-                            ? "border-red-600 text-red-600 dark:text-red-400"
-                            : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                    }`}
-                >
-                    {tab.label}
-                </button>
-            ))}
-        </div>
-    );
-}
 
 function GallerySection({ page, processing, readonly, onDeleteRequest }) {
     const { data, setData, post: uploadImages, processing: uploading, reset } = useForm({ images: [] });
@@ -232,7 +213,7 @@ export default function Form({ page = null }) {
                                 <ValidationErrors errors={errors} className="mb-4" />
                                 {readonly && <ReadonlyBanner />}
 
-                                <TabBar active={tab} onChange={setTab} />
+                                <TabBar tabs={TABS} active={tab} onChange={setTab} />
 
                                 <form onSubmit={submit} className="flex flex-col gap-5">
 
@@ -331,36 +312,18 @@ export default function Form({ page = null }) {
                                                     </p>
                                                 </div>
                                             )}
-
-                                            <div>
-                                                <Label htmlFor="meta_title" value="Meta título" />
-                                                <Input
-                                                    id="meta_title"
-                                                    type="text"
-                                                    value={data.meta_title}
-                                                    className="mt-1 block w-full"
-                                                    placeholder={data.title || "Deixe em branco para usar o título"}
-                                                    onChange={(e) => setData("meta_title", e.target.value)}
-                                                    disabled={processing || readonly}
-                                                />
-                                            </div>
-
-                                            <div>
-                                                <Label htmlFor="meta_description" value="Meta descrição" />
-                                                <TextareaAutosize
-                                                    id="meta_description"
-                                                    value={data.meta_description}
-                                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
-                                                    minRows={3}
-                                                    maxRows={6}
-                                                    placeholder="Descrição para mecanismos de busca (máx. 500 caracteres)"
-                                                    onChange={(e) => setData("meta_description", e.target.value)}
-                                                    disabled={processing || readonly}
-                                                />
-                                                <p className="mt-1 text-xs text-gray-400">
-                                                    {data.meta_description?.length ?? 0}/500
-                                                </p>
-                                            </div>
+                                            <SeoFields
+                                                metaTitle={data.meta_title}
+                                                metaDescription={data.meta_description}
+                                                onChangeTitle={(v) => setData("meta_title", v)}
+                                                onChangeDescription={(v) => setData("meta_description", v)}
+                                                titlePlaceholder={data.title || "Deixe em branco para usar o título"}
+                                                disabled={processing || readonly}
+                                                descriptionMinRows={3}
+                                                descriptionMaxRows={6}
+                                                descriptionPlaceholder="Descrição para mecanismos de busca (máx. 500 caracteres)"
+                                                showCharCount
+                                            />
                                         </>
                                     )}
 

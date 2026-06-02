@@ -10,6 +10,7 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import ImageSlot from "@/Components/Admin/ImageSlot";
+import SeoFields from "@/Components/Admin/SeoFields";
 import TextareaAutosize from "react-textarea-autosize";
 import RichTextEditor from "@/Components/Admin/RichTextEditor";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
@@ -166,33 +167,14 @@ export default function Form({ post = {}, categories = [] }) {
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div className="flex flex-col gap-4">
-                                            <div>
-                                                <Label htmlFor="meta_title" value="Meta título" />
-                                                <Input
-                                                    id="meta_title"
-                                                    type="text"
-                                                    value={data.meta_title}
-                                                    className="mt-1 block w-full"
-                                                    placeholder={data.title || "Deixe em branco para usar o título"}
-                                                    onChange={(e) => setData("meta_title", e.target.value)}
-                                                    disabled={processing || readonly}
-                                                />
-                                            </div>
-                                            <div>
-                                                <Label htmlFor="meta_description" value="Meta descrição" />
-                                                <TextareaAutosize
-                                                    id="meta_description"
-                                                    value={data.meta_description}
-                                                    className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50"
-                                                    minRows={2}
-                                                    maxRows={8}
-                                                    onChange={(e) => setData("meta_description", e.target.value)}
-                                                    disabled={processing || readonly}
-                                                />
-                                            </div>
-                                        </div>
+                                        <SeoFields
+                                            metaTitle={data.meta_title}
+                                            metaDescription={data.meta_description}
+                                            onChangeTitle={(v) => setData("meta_title", v)}
+                                            onChangeDescription={(v) => setData("meta_description", v)}
+                                            titlePlaceholder={data.title || "Deixe em branco para usar o título"}
+                                            disabled={processing || readonly}
+                                        />
                                     </div>
 
                                     <div>

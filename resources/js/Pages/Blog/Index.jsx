@@ -3,21 +3,8 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PostCard from '@/Components/Public/PostCard';
 import Newsletter from '@/Components/Public/Newsletter';
-import {
-    ChevronLeft, ChevronRight, Search, X,
-    LayoutGrid, Server, Monitor, Cpu, Database, TrendingUp, Tag,
-} from 'lucide-react';
-
-function categoryIcon(slug) {
-    if (!slug) return LayoutGrid;
-    const s = slug.toLowerCase();
-    if (s.includes('backend') || s.includes('back-end')) return Server;
-    if (s.includes('frontend') || s.includes('front-end')) return Monitor;
-    if (s.includes('ia') || s.includes('dados') || s.includes('data') || s.includes('ml')) return Cpu;
-    if (s.includes('banco') || s.includes('database') || s.includes('db')) return Database;
-    if (s.includes('carreira') || s.includes('career')) return TrendingUp;
-    return Tag;
-}
+import { categoryIcon } from '@/lib/utils';
+import { ChevronLeft, ChevronRight, Search, X, LayoutGrid } from 'lucide-react';
 
 export default function BlogIndex({ posts, filters = {}, categories = [], totalPosts = 0 }) {
     const { siteConfig = {} } = usePage().props;

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Head, useForm, router } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import AdminSearchForm from "@/Components/Admin/AdminSearchForm";
 import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
-import Input from "@/Components/Admin/Input";
-import Label from "@/Components/Admin/Label";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaTrash, FaSearch } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import { Users } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
@@ -55,24 +54,7 @@ export default function Index({ subscribers, filter, total }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
-                                <form onSubmit={submit} className="mb-4">
-                                    <div className="w-full mb-4">
-                                        <Label htmlFor="q" value="Pesquisa" className="!font-semibold !text-base" />
-                                        <div className="flex gap-4 items-center">
-                                            <Input
-                                                id="q"
-                                                type="text"
-                                                value={data.q}
-                                                onChange={(e) => setData("q", e.target.value)}
-                                                className="border-gray-300 focus:border-red-600 focus:ring focus:ring-red-600 focus:ring-opacity-50 mt-1 block w-full"
-                                                placeholder="Nome ou e-mail..."
-                                            />
-                                            <button type="submit" className="bg-red-600 py-2 px-4 rounded-md text-white">
-                                                <FaSearch />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Nome ou e-mail..." />
 
                                 {subscribers.data.length > 0 ? (
                                     <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">

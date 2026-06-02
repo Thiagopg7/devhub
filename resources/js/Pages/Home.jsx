@@ -7,37 +7,9 @@ import TechCarousel from '@/Components/Public/TechCarousel';
 import StackMarquee from '@/Components/Public/StackMarquee';
 import Newsletter from '@/Components/Public/Newsletter';
 import Reveal from '@/Components/Public/Reveal';
-import { ArrowRight, Calendar, Clock, MapPin, LayoutGrid, Globe, Server, Database, Brain, Briefcase, Shield, Cloud, Code2, Layers, Cpu } from 'lucide-react';
-
-const CATEGORY_ICONS = {
-    all:       LayoutGrid,
-    frontend:  Globe,
-    web:       Globe,
-    backend:   Server,
-    servidor:  Server,
-    banco:     Database,
-    dados:     Database,
-    database:  Database,
-    ia:        Brain,
-    intelig:   Brain,
-    machine:   Cpu,
-    devops:    Cloud,
-    infra:     Cloud,
-    cloud:     Cloud,
-    carreira:  Briefcase,
-    emprego:   Briefcase,
-    segurança: Shield,
-    mobile:    Code2,
-    default:   Code2,
-};
-
-function categoryIcon(name) {
-    const key = name.toLowerCase();
-    for (const [token, Icon] of Object.entries(CATEGORY_ICONS)) {
-        if (key.includes(token)) return Icon;
-    }
-    return CATEGORY_ICONS.default;
-}
+import SectionHead from '@/Components/Public/SectionHead';
+import { categoryIcon } from '@/lib/utils';
+import { ArrowRight, Calendar, Clock, MapPin } from 'lucide-react';
 
 /* ── Static testimonials ───────────────────────────────────── */
 const TESTIMONIALS = [
@@ -61,24 +33,6 @@ function Stars() {
                     <path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/>
                 </svg>
             ))}
-        </div>
-    );
-}
-
-function SectionHead({ eyebrow, title, subtitle, linkHref, linkLabel }) {
-    return (
-        <div className="flex items-end justify-between gap-6 flex-wrap mb-11">
-            <div>
-                <span className="eyebrow">{eyebrow}</span>
-                <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3" style={{ fontSize: 'clamp(28px,3.4vw,40px)' }}>{title}</h2>
-                {subtitle && <p className="mt-2 text-base max-w-[52ch]" style={{ color: '#7b8da3' }}>{subtitle}</p>}
-            </div>
-            {linkHref && (
-                <Link href={linkHref} className="inline-flex items-center gap-2 text-sm font-mono transition-all hover:gap-3.5" style={{ color: '#3cbdf8', letterSpacing: '0.02em' }}>
-                    {linkLabel ?? 'Ver todos'}
-                    <ArrowRight size={15} />
-                </Link>
-            )}
         </div>
     );
 }
