@@ -91,9 +91,9 @@ class PostService
         }
 
         return [
-            'post'         => $post,
-            'prevPost'     => $prev,
-            'nextPost'     => $next,
+            'post' => $post,
+            'prevPost' => $prev,
+            'nextPost' => $next,
             'relatedPosts' => $related->values(),
         ];
     }

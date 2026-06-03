@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,7 +27,7 @@ class BlogController extends Controller
             'posts' => $this->postService->getAllActive(12, $search, $category),
             'filters' => ['busca' => $search, 'categoria' => $category],
             'categories' => $categories,
-            'totalPosts' => \App\Models\Post::active()->count(),
+            'totalPosts' => Post::active()->count(),
         ]);
     }
 
