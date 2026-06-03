@@ -26,7 +26,7 @@ class BlogController extends Controller
             'posts' => $this->postService->getAllActive(12, $search, $category),
             'filters' => ['busca' => $search, 'categoria' => $category],
             'categories' => $categories,
-            'totalPosts' => $categories->sum('posts_count'),
+            'totalPosts' => \App\Models\Post::active()->count(),
         ]);
     }
 

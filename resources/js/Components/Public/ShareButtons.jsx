@@ -17,12 +17,28 @@ function LinkedInIcon() {
     );
 }
 
+async function copyToClipboard(text) {
+    if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        Object.assign(ta.style, { position: 'fixed', opacity: '0', pointerEvents: 'none' });
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
+}
+
 function CopyLinkBtn() {
     const [copied, setCopied] = useState(false);
-    const copy = () => {
-        navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    const copy = async () => {
+        try {
+            await copyToClipboard(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch {}
     };
     return (
         <button onClick={copy} aria-label="Copiar link"
