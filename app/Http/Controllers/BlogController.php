@@ -18,8 +18,8 @@ class BlogController extends Controller
         $category = $request->input('categoria');
 
         $categories = Category::active()
+            ->whereHas('posts', fn ($q) => $q->active())
             ->withCount(['posts' => fn ($q) => $q->active()])
-            ->having('posts_count', '>', 0)
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'color']);
 
