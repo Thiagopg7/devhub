@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import PostCard from '@/Components/Public/PostCard';
@@ -11,6 +12,15 @@ export default function BlogIndex({ posts, filters = {}, categories = [], totalP
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
     const { data, current_page, last_page, prev_page_url, next_page_url } = posts;
+    const gridRef = useRef(null);
+
+    useEffect(() => {
+        const el = gridRef.current;
+        if (!el) return;
+        el.classList.remove('is-filtering');
+        void el.offsetWidth;
+        el.classList.add('is-filtering');
+    }, [data]);
 
     const pageUrl = (page) => route('blog.index', {
         page,
@@ -48,8 +58,10 @@ export default function BlogIndex({ posts, filters = {}, categories = [], totalP
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                     {data.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {data.map((post) => <PostCard key={post.id} post={post} />)}
+                            <div ref={gridRef} className="posts grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {data.map((post) => (
+                                    <div key={post.id} className="post"><PostCard post={post} /></div>
+                                ))}
                             </div>
 
                             <Pagination

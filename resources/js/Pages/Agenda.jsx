@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import Newsletter from '@/Components/Public/Newsletter';
@@ -19,6 +19,15 @@ export default function Agenda() {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
     const [activeFilter, setActiveFilter] = useState('all');
+    const gridRef = useRef(null);
+
+    useEffect(() => {
+        const el = gridRef.current;
+        if (!el) return;
+        el.classList.remove('is-filtering');
+        void el.offsetWidth;
+        el.classList.add('is-filtering');
+    }, [activeFilter]);
 
     const counts = {
         all: EVENTS.length,
@@ -93,9 +102,11 @@ export default function Agenda() {
             <section style={{ background: 'var(--base)', paddingTop: 64, paddingBottom: 80 }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {visible.length > 0 ? (
-                        <div className="flex flex-col gap-4">
+                        <div ref={gridRef} className="posts flex flex-col gap-4">
                             {visible.map(event => (
-                                <EventCard key={event.id} event={event} />
+                                <div key={event.id} className="post">
+                                    <EventCard event={event} />
+                                </div>
                             ))}
                         </div>
                     ) : (

@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Head, usePage } from '@inertiajs/react';
 import DOMPurify from 'dompurify';
 import PublicLayout from '@/Layouts/PublicLayout';
@@ -23,6 +23,31 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
 
     const sanitizedContent = post.content ? DOMPurify.sanitize(post.content) : '';
     const { headings, activeId } = useArticleContent(proseRef, sanitizedContent);
+
+    useEffect(() => {
+        const el = proseRef.current;
+        if (!el) return;
+        el.querySelectorAll('pre').forEach(pre => {
+            if (pre.parentElement?.classList.contains('codeblock-wrapper')) return;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'codeblock-wrapper';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+            const btn = document.createElement('button');
+            btn.className = 'codeblock-copy';
+            btn.textContent = 'Copiar';
+            btn.addEventListener('click', async () => {
+                const text = pre.querySelector('code')?.textContent ?? pre.textContent;
+                try {
+                    await navigator.clipboard.writeText(text);
+                    btn.textContent = 'Copiado!';
+                    btn.classList.add('copied');
+                    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+                } catch {}
+            });
+            wrapper.appendChild(btn);
+        });
+    }, [sanitizedContent]);
 
     return (
         <PublicLayout>

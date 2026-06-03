@@ -1,5 +1,62 @@
+import { useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
+
+function useParticleNet(canvasRef) {
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let w, h, dpr, nodes = [], raf;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function resize() {
+            const r = canvas.getBoundingClientRect();
+            dpr = Math.min(window.devicePixelRatio || 1, 2);
+            w = canvas.width = r.width * dpr;
+            h = canvas.height = r.height * dpr;
+            const count = Math.max(18, Math.round((r.width * r.height) / 9000));
+            nodes = Array.from({ length: count }, () => ({
+                x: Math.random() * w, y: Math.random() * h,
+                vx: (Math.random() - 0.5) * 0.18 * dpr,
+                vy: (Math.random() - 0.5) * 0.18 * dpr,
+                r: (Math.random() * 1.6 + 1) * dpr,
+            }));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, w, h);
+            const linkDist = 120 * dpr;
+            for (let i = 0; i < nodes.length; i++) {
+                const n = nodes[i];
+                n.x += n.vx; n.y += n.vy;
+                if (n.x < 0 || n.x > w) n.vx *= -1;
+                if (n.y < 0 || n.y > h) n.vy *= -1;
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const m = nodes[j];
+                    const d = Math.hypot(n.x - m.x, n.y - m.y);
+                    if (d < linkDist) {
+                        ctx.strokeStyle = `rgba(60,189,248,${(1 - d / linkDist) * 0.22})`;
+                        ctx.lineWidth = dpr;
+                        ctx.beginPath(); ctx.moveTo(n.x, n.y); ctx.lineTo(m.x, m.y); ctx.stroke();
+                    }
+                }
+            }
+            for (const n of nodes) {
+                ctx.fillStyle = 'rgba(150,200,240,0.55)';
+                ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+            }
+            raf = requestAnimationFrame(draw);
+        }
+
+        resize();
+        if (reduce) { draw(); cancelAnimationFrame(raf); } else draw();
+        let t;
+        const onResize = () => { clearTimeout(t); t = setTimeout(() => { cancelAnimationFrame(raf); resize(); if (!reduce) draw(); }, 180); };
+        window.addEventListener('resize', onResize);
+        return () => { cancelAnimationFrame(raf); clearTimeout(t); window.removeEventListener('resize', onResize); };
+    }, [canvasRef]);
+}
 
 const CHIPS = [
     { label: 'Laravel',    delay: '0s',    pos: { top: '10%',    left: '7%'   }, bg: 'rgba(248,80,50,.16)',   color: '#ff6b53',
@@ -25,8 +82,12 @@ const CHIPS = [
 ];
 
 export default function HeroBanner() {
+    const canvasRef = useRef(null);
+    useParticleNet(canvasRef);
+
     return (
         <section className="relative overflow-hidden pt-[70px] pb-24" style={{ background: 'var(--base)' }}>
+            <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.45 }} />
             <div className="absolute pointer-events-none" style={{ width: 900, height: 900, right: -200, top: -360, background: 'radial-gradient(circle,rgba(60,189,248,0.16) 0%,transparent 62%)', filter: 'blur(8px)' }} />
             <div className="absolute pointer-events-none" style={{ width: 620, height: 620, left: -240, bottom: -260, background: 'radial-gradient(circle,rgba(123,134,255,0.14) 0%,transparent 64%)' }} />
 
