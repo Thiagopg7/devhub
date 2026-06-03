@@ -88,7 +88,7 @@ export default function Index({ areas, filter }) {
                 }
             >
                 <div className="py-12">
-                    <div className="max-w-3xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
@@ -103,7 +103,7 @@ export default function Index({ areas, filter }) {
                                                         <th className="w-8" />
                                                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -113,8 +113,8 @@ export default function Index({ areas, filter }) {
                                                             <td className="px-6 py-4 text-center">
                                                                 <ToggleActive id={area.id} model="newsletter_area" value={area.is_active} />
                                                             </td>
-                                                            <td className="px-6 py-4 text-right">
-                                                                <div className="flex gap-2 justify-end">
+                                                            <td className="px-6 py-4 text-center">
+                                                                <div className="flex gap-2 justify-center">
                                                                     {!can('newsletter_areas.edit') && can('newsletter_areas.view') && (
                                                                         <NavButton href={route("admin.newsletter-areas.edit", area.id)} title="Visualizar">
                                                                             <FaEye />

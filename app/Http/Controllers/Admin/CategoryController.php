@@ -16,14 +16,17 @@ class CategoryController extends Controller
     {
         $search = $request->input('q');
 
+        $status = $request->input('status');
+
         $categories = Category::orderBy('name')
             ->when($search, fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($status !== null && $status !== '', fn ($q) => $q->where('is_active', $status === '1'))
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
-            'filter' => $request->only('q'),
+            'filter' => $request->only('q', 'status'),
             'trashedCount' => Category::onlyTrashed()->count(),
         ]);
     }

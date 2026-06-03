@@ -19,8 +19,13 @@ class UserController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Users/Index', [
-            'users' => $this->userService->getPaginated(20, $request->input('q')),
-            'filter' => $request->only('q'),
+            'users' => $this->userService->getPaginated(
+                20,
+                $request->input('q'),
+                $request->input('role') ? (int) $request->input('role') : null,
+            ),
+            'filter' => $request->only('q', 'role'),
+            'roles' => Role::orderBy('name')->get(['id', 'name']),
         ]);
     }
 

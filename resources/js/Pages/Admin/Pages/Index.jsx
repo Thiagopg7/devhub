@@ -12,9 +12,11 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
+const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
 export default function Index({ pages, filter, trashedCount = 0 }) {
     const can = useCan();
-    const { data, setData, get } = useForm({ q: filter?.q || "" });
+    const { data, setData, get } = useForm({ q: filter?.q || "", status: filter?.status || "" });
     const [pending, setPending] = useState(null);
 
     const submit = (e) => {
@@ -22,7 +24,7 @@ export default function Index({ pages, filter, trashedCount = 0 }) {
         get(route("admin.pages.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q },
+            params: { q: data.q, status: data.status },
         });
     };
 
@@ -62,7 +64,13 @@ export default function Index({ pages, filter, trashedCount = 0 }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Título da página...">
+                                    <select value={data.status} onChange={(e) => setData("status", e.target.value)} className={selectCls}>
+                                        <option value="">Qualquer status</option>
+                                        <option value="1">Ativa</option>
+                                        <option value="0">Inativa</option>
+                                    </select>
+                                </AdminSearchForm>
 
                                 {pages.data.length > 0 ? (
                                     <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -72,7 +80,7 @@ export default function Index({ pages, filter, trashedCount = 0 }) {
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Slug</th>
                                                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Pesquisável</th>
                                                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -97,8 +105,8 @@ export default function Index({ pages, filter, trashedCount = 0 }) {
                                                     <td className="px-6 py-4 text-center">
                                                         <ToggleActive id={page.id} model="page" value={page.is_active} />
                                                     </td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        <div className="flex gap-2 justify-end">
+                                                    <td className="px-6 py-4 text-center">
+                                                        <div className="flex gap-2 justify-center">
                                                             {!can('pages.edit') && can('pages.view') && (
                                                                 <NavButton href={route("admin.pages.edit", page.id)} title="Visualizar">
                                                                     <FaEye />

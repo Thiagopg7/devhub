@@ -22,9 +22,11 @@ const STATUS_COLORS = {
     full: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
 };
 
+const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
 export default function Index({ events, filter }) {
     const can = useCan();
-    const { data, setData, get } = useForm({ q: filter?.q || "" });
+    const { data, setData, get } = useForm({ q: filter?.q || "", type: filter?.type || "", event_status: filter?.event_status || "" });
     const [items, setItems] = useState(events.data);
     const { confirm, modalProps } = useConfirmModal();
 
@@ -37,7 +39,7 @@ export default function Index({ events, filter }) {
         get(route("admin.events.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q },
+            params: { q: data.q, type: data.type, event_status: data.event_status },
         });
     };
 
@@ -100,7 +102,21 @@ export default function Index({ events, filter }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Título ou organização...">
+                                    <select value={data.type} onChange={(e) => setData("type", e.target.value)} className={selectCls}>
+                                        <option value="">Todos os tipos</option>
+                                        <option value="conf">Conferência</option>
+                                        <option value="meetup">Meetup</option>
+                                        <option value="workshop">Workshop</option>
+                                        <option value="hack">Hackathon</option>
+                                    </select>
+                                    <select value={data.event_status} onChange={(e) => setData("event_status", e.target.value)} className={selectCls}>
+                                        <option value="">Qualquer status</option>
+                                        <option value="open">Aberto</option>
+                                        <option value="soon">Em breve</option>
+                                        <option value="full">Lotado</option>
+                                    </select>
+                                </AdminSearchForm>
 
                                 {items.length > 0 ? (
                                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -114,7 +130,7 @@ export default function Index({ events, filter }) {
                                                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Tipo</th>
                                                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -138,8 +154,8 @@ export default function Index({ events, filter }) {
                                                             <td className="px-6 py-4 text-center">
                                                                 <ToggleActive id={event.id} model="event" value={event.is_active} />
                                                             </td>
-                                                            <td className="px-6 py-4 text-right">
-                                                                <div className="flex gap-2 justify-end">
+                                                            <td className="px-6 py-4 text-center">
+                                                                <div className="flex gap-2 justify-center">
                                                                     {!can("events.edit") && can("events.view") && (
                                                                         <NavButton href={route("admin.events.edit", event.id)} title="Visualizar">
                                                                             <FaEye />

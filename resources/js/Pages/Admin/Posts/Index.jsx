@@ -11,10 +11,14 @@ import { FaPen, FaTrash, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
-export default function Index({ posts, filter, trashedCount = 0 }) {
+const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
+export default function Index({ posts, filter, trashedCount = 0, categories = [] }) {
     const can = useCan();
     const { data, setData, get } = useForm({
         q: filter?.q || "",
+        category: filter?.category || "",
+        status: filter?.status || "",
     });
     const [pending, setPending] = useState(null);
 
@@ -23,7 +27,7 @@ export default function Index({ posts, filter, trashedCount = 0 }) {
         get(route("admin.posts.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q },
+            params: { q: data.q, category: data.category, status: data.status },
         });
     };
 
@@ -66,7 +70,17 @@ export default function Index({ posts, filter, trashedCount = 0 }) {
                     <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Título do post...">
+                                    <select value={data.category} onChange={(e) => setData("category", e.target.value)} className={selectCls}>
+                                        <option value="">Todas as categorias</option>
+                                        {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                    <select value={data.status} onChange={(e) => setData("status", e.target.value)} className={selectCls}>
+                                        <option value="">Qualquer status</option>
+                                        <option value="1">Ativo</option>
+                                        <option value="0">Inativo</option>
+                                    </select>
+                                </AdminSearchForm>
 
                                 <div className="w-full">
                                     {posts.data.length > 0 ? (
@@ -82,7 +96,7 @@ export default function Index({ posts, filter, trashedCount = 0 }) {
                                                     <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ativo
                                                     </th>
-                                                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ações
                                                     </th>
                                                 </tr>
@@ -92,13 +106,15 @@ export default function Index({ posts, filter, trashedCount = 0 }) {
                                                     (post) => (
                                                         <tr key={post.id}>
                                                             <td className="py-4 px-6">
-                                                                <div>
-                                                                    {post.banner_image_url && (
+                                                                <div className="w-28 h-16 flex items-center justify-center bg-gray-100 dark:bg-gray-700 rounded overflow-hidden shrink-0">
+                                                                    {post.banner_image_url ? (
                                                                         <img
                                                                             src={post.banner_image_url}
                                                                             alt="Imagem"
-                                                                            className="max-h-30 max-w-24 bg-slate-200"
+                                                                            className="max-w-full max-h-full object-contain"
                                                                         />
+                                                                    ) : (
+                                                                        <span className="text-xs text-gray-400">Sem imagem</span>
                                                                     )}
                                                                 </div>
                                                             </td>
@@ -116,7 +132,7 @@ export default function Index({ posts, filter, trashedCount = 0 }) {
                                                                     }
                                                                 />
                                                             </td>
-                                                            <td className="py-4 px-6 flex gap-3 justify-end">
+                                                            <td className="py-4 px-6 align-middle"><div className="flex gap-3 justify-center items-center">
                                                                 {!can('posts.edit') && can('posts.view') && (
                                                                     <NavButton
                                                                         href={route("admin.posts.edit", post)}
@@ -151,7 +167,7 @@ export default function Index({ posts, filter, trashedCount = 0 }) {
                                                                         <FaTrash className="text-white" />
                                                                     </ActionButton>
                                                                 )}
-                                                            </td>
+                                                            </div></td>
                                                         </tr>
                                                     ),
                                                 )}

@@ -16,17 +16,22 @@ class EventController extends Controller
     {
         $search = $request->input('q');
 
+        $type = $request->input('type');
+        $eventStatus = $request->input('event_status');
+
         $events = Event::ordered()
             ->when($search, fn ($q) => $q->where(fn ($qq) => $qq
                 ->where('title', 'like', "%{$search}%")
                 ->orWhere('org', 'like', "%{$search}%")
             ))
+            ->when($type, fn ($q) => $q->where('type', $type))
+            ->when($eventStatus, fn ($q) => $q->where('status', $eventStatus))
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Admin/Events/Index', [
             'events' => $events,
-            'filter' => $request->only('q'),
+            'filter' => $request->only('q', 'type', 'event_status'),
         ]);
     }
 

@@ -16,9 +16,11 @@ import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 import { useConfirmModal } from "@/hooks/useConfirmModal";
 
+const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
 export default function Index({ technologies, filter }) {
     const can = useCan();
-    const { data, setData, get } = useForm({ q: filter?.q || "" });
+    const { data, setData, get } = useForm({ q: filter?.q || "", status: filter?.status || "" });
     const [items, setItems] = useState(technologies.data);
     const { confirm, modalProps } = useConfirmModal();
 
@@ -31,7 +33,7 @@ export default function Index({ technologies, filter }) {
         get(route("admin.technologies.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q },
+            params: { q: data.q, status: data.status },
         });
     };
 
@@ -94,7 +96,13 @@ export default function Index({ technologies, filter }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Nome da tecnologia...">
+                                    <select value={data.status} onChange={(e) => setData("status", e.target.value)} className={selectCls}>
+                                        <option value="">Qualquer status</option>
+                                        <option value="1">Ativa</option>
+                                        <option value="0">Inativa</option>
+                                    </select>
+                                </AdminSearchForm>
 
                                 {items.length > 0 ? (
                                     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -107,7 +115,7 @@ export default function Index({ technologies, filter }) {
                                                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
                                                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">URL</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -135,8 +143,8 @@ export default function Index({ technologies, filter }) {
                                                             <td className="px-6 py-4 text-center">
                                                                 <ToggleActive id={tech.id} model="technology" value={tech.is_active} />
                                                             </td>
-                                                            <td className="px-6 py-4 text-right">
-                                                                <div className="flex gap-2 justify-end">
+                                                            <td className="px-6 py-4 text-center">
+                                                                <div className="flex gap-2 justify-center">
                                                                     {!can('technologies.edit') && can('technologies.view') && (
                                                                         <NavButton href={route("admin.technologies.edit", tech.id)} title="Visualizar">
                                                                             <FaEye />
