@@ -2,37 +2,323 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-    scroll-behavior: smooth;
+/* ── Design tokens ─────────────────────────────────────────── */
+:root {
+  /* Backgrounds / surfaces */
+  --base:       #0a131e;   /* fundo da página */
+  --panel:      #0c1828;   /* seções alternadas */
+  --surface:    #101f30;   /* cards */
+  --surface-2:  #15243a;   /* cards elevados */
+  --surface-3:  #1b2e46;
+
+  /* Accent + status */
+  --accent:     #3cbdf8;
+  --accent-2:   #2a9be0;
+  --accent-ink: #03121d;   /* texto sobre o accent */
+  --accent-hi:  #76d3ff;   /* accent em hover */
+  --violet:     #7b86ff;
+  --teal:       #2fd9c2;
+  --gold:       #f0b65a;
+
+  /* Texto */
+  --text-bright: #eaf1fa;  /* títulos / ênfase */
+  --text-body:   #b6c5d8;  /* corpo */
+  --text-muted:  #7b8da3;  /* secundário / labels */
+
+  /* Glows */
+  --glow:       rgba(60,189,248,0.16);
+  --glow-2:     rgba(123,134,255,0.14);
+
+  /* Radius */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r:    16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.25);
+  --shadow:    0 18px 40px -22px rgba(0,0,0,0.7);
+  --shadow-lg: 0 40px 80px -30px rgba(0,0,0,0.75);
+
+  /* Bordas (linhas sutis sobre fundo escuro) */
+  --border:        rgba(150,178,208,0.12);
+  --border-2:      rgba(150,178,208,0.18);
+  --border-s:      rgba(150,178,208,0.24);
+  --border-faint:  rgba(150,178,208,0.08);
+  --border-h:      rgba(150,178,208,0.3);   /* hover */
 }
 
-.left-1 {
-    left: 0.25rem /* 4px */;
+html { scroll-behavior: smooth; }
+
+body { font-family: 'Manrope', system-ui, sans-serif; }
+
+::selection { background: var(--accent); color: var(--accent-ink); }
+
+/* ── Componentes / utilitários ──────────────────────────────── */
+@layer components {
+  /* Card base sobre fundo escuro */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .card-raised { background: var(--surface-2); }
+
+  /* Card clicável: só muda a borda no hover (substitui handlers JS) */
+  .card-hover { transition: border-color .25s, transform .25s, box-shadow .25s; }
+  .card-hover:hover { border-color: var(--border-h); }
+
+  /* Borda passa a accent no hover (paginação, links outline) */
+  .hover-accent { transition: border-color .2s, color .2s; }
+  .hover-accent:hover { border-color: var(--accent); }
+
+  /* Card de post: borda mais forte + sombra no hover */
+  .post-card-hover:hover {
+    border-color: var(--border-s);
+    box-shadow: 0 18px 40px -22px rgba(0,0,0,0.7);
+  }
+
+  /* Botão de compartilhar: vira accent no hover */
+  .share-tile {
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    color: var(--text-muted);
+    transition: background .2s, color .2s, border-color .2s, transform .2s;
+  }
+  .share-tile:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: transparent;
+  }
+
+  /* Item do índice (TOC) — escurece→clareia no hover */
+  .toc-link { transition: color .2s; }
+  .toc-link:hover { color: var(--text-bright) !important; }
+
+  /* Botões */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    border-radius: .75rem;
+    transition: transform .2s, border-color .2s, color .2s, box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    color: var(--accent-ink);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-s);
+    color: var(--text-bright);
+  }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  /* Pills de filtro */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: border-color .2s, transform .2s, background .2s, color .2s;
+  }
+  .pill-idle {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    color: var(--text-body);
+  }
+  .pill-active {
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    border: 1px solid transparent;
+    color: var(--accent-ink);
+  }
 }
 
-.top-1 {
-    top: 0.25rem /* 4px */;
+/* ── Eyebrow label ──────────────────────────────────────────── */
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 500;
+}
+.eyebrow::before { content: "//"; opacity: 0.7; }
+
+/* ── Dotgrid background ─────────────────────────────────────── */
+.dotgrid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(150,178,208,0.10) 1px, transparent 1.4px);
+  background-size: 30px 30px;
+  -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 78%);
+  pointer-events: none;
 }
 
-.transition-transform {
-    transition-property: transform;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 150ms;
+/* ── Reading progress bar ───────────────────────────────────── */
+.readbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--violet));
+  z-index: 200;
+  transition: width .12s ease-out;
+  box-shadow: 0 0 10px rgba(60,189,248,0.5);
 }
 
-.translate-x-6 {
-    --tw-translate-x: 1.5rem /* 24px */;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+/* ── Hero chip float animation ──────────────────────────────── */
+@keyframes chip-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-9px); }
 }
 
+/* ── Hero rings spin animation ──────────────────────────────── */
+@keyframes ring-spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes ring-spin-rev { to { transform: translate(-50%, -50%) rotate(-360deg); } }
+
+/* ── Reveal on scroll ───────────────────────────────────────── */
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ── Stack marquee ──────────────────────────────────────────── */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { animation: marquee 34s linear infinite; }
+.marquee-track:hover { animation-play-state: paused; }
+
+
+/* ── Event card — hover (antes feito via JS) ───────────────── */
+.event-card { transition: border-color .25s, transform .25s, box-shadow .25s; }
+.event-card:hover {
+  border-color: var(--border-h);
+  transform: translateX(4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.event-card:hover .event-accent-bar { transform: scaleY(1); }
+
+/* ── Event card — mobile layout ────────────────────────────── */
+@media (max-width: 760px) {
+  .event-card {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 20px !important;
+  }
+  .event-card > div:first-of-type {
+    flex-direction: row !important;
+    gap: 8px !important;
+    align-self: flex-start !important;
+    padding: 8px 14px !important;
+  }
+  .event-card > div:last-of-type {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+}
+
+/* ── Prose: code block copy button ─────────────────────────── */
+.codeblock-wrapper { position: relative; }
+.codeblock-copy {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(150,178,208,0.2);
+  background: rgba(11,22,35,0.85);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+  backdrop-filter: blur(4px);
+  z-index: 1;
+  line-height: 1;
+}
+.codeblock-copy:hover { color: var(--accent); border-color: rgba(60,189,248,0.4); }
+.codeblock-copy.copied { color: var(--teal); border-color: rgba(47,217,194,0.4); }
+
+/* ── Prose: callout blocks ──────────────────────────────────── */
+.prose .callout {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: rgba(60,189,248,0.06);
+  border: 1px solid rgba(60,189,248,0.2);
+  margin: 1.5em 0;
+  color: var(--text-body);
+  font-size: 15px;
+  line-height: 1.65;
+}
+.prose .callout--tip {
+  background: rgba(47,217,194,0.06);
+  border-color: rgba(47,217,194,0.2);
+}
+.prose .callout__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 2px;
+}
+.prose .callout--tip .callout__icon { color: var(--teal); }
+
+/* ── Back to top button ─────────────────────────────────────── */
+.totop {
+  position: fixed;
+  right: 26px;
+  bottom: 26px;
+  z-index: 150;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border-s);
+  color: var(--text-bright);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 18px 40px -22px rgba(0,0,0,0.7);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px);
+  transition: opacity .3s ease, transform .3s ease, background .2s ease, border-color .2s ease;
+  cursor: pointer;
+}
+.totop.show { opacity: 1; visibility: visible; transform: translateY(0); }
+.totop:hover { background: var(--accent); color: var(--accent-ink); border-color: transparent; transform: translateY(-3px); }
+.totop svg { width: 20px; height: 20px; }
+@media (max-width: 760px) { .totop { right: 16px; bottom: 16px; width: 44px; height: 44px; } }
+
+/* ── is-filtering: fade-in dos cards ao trocar filtro ──────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.posts.is-filtering .post { animation: fadeUp .4s ease both; }
+
+/* ── Quill / rich-text editor ───────────────────────────────── */
 .ql-editor {
   min-height: 200px;
   max-height: 400px;
   overflow-y: auto;
 }
 
+/* ── React Select ───────────────────────────────────────────── */
 .react-select__input:focus {
-    outline: none !important;
-    box-shadow: none !important;
-    border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
 }
+
