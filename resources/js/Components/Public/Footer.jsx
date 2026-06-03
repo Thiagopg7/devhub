@@ -40,17 +40,16 @@ export default function Footer() {
 
     const hasContact = email || address;
 
-    const linkCls = "text-sm transition-colors hover:text-[#3cbdf8]";
+    const linkCls = "text-sm transition-colors hover:text-[var(--accent)]";
 
     return (
-        <footer style={{ background: '#0c1828', borderTop: '1px solid rgba(150,178,208,0.12)' }}>
+        <footer style={{ background: 'var(--panel)', borderTop: '1px solid var(--border)' }}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
-                    {/* Marca */}
                     <div className="space-y-4 lg:col-span-1">
                         <Logo name={siteName} />
-                        <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#7b8da3' }}>{tagline}</p>
+                        <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>{tagline}</p>
                         <div className="flex items-center gap-4 pt-1">
                             {[
                                 { href: github,    label: 'GitHub',    icon: GH_ICON              },
@@ -61,15 +60,14 @@ export default function Footer() {
                                 <a key={label} href={href || '#'}
                                     {...(href ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                                     aria-label={label}
-                                    className="hover:text-[#3cbdf8] transition-colors"
-                                    style={{ color: '#7b8da3' }}>
+                                    className="hover:text-[var(--accent)] transition-colors"
+                                    style={{ color: 'var(--text-muted)' }}>
                                     {icon}
                                 </a>
                             ))}
                         </div>
                     </div>
 
-                    {/* Navegação */}
                     {menuItems.length > 0 && (
                         <div>
                             <h5 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">Navegação</h5>
@@ -79,13 +77,13 @@ export default function Footer() {
                                     .map((link) => (
                                         <li key={link.id}>
                                             <FooterLink href={link.url} openInNewTab={link.open_in_new_tab}
-                                                className={linkCls} style={{ color: '#7b8da3' }}>
+                                                className={linkCls} style={{ color: 'var(--text-muted)' }}>
                                                 {link.label}
                                             </FooterLink>
                                         </li>
                                     ))}
                                 <li>
-                                    <Link href="/politica-privacidade" className={linkCls} style={{ color: '#7b8da3' }}
+                                    <Link href="/politica-privacidade" className={linkCls} style={{ color: 'var(--text-muted)' }}
                                         target="_blank" rel="noopener noreferrer">
                                         Política de Privacidade
                                     </Link>
@@ -94,35 +92,33 @@ export default function Footer() {
                         </div>
                     )}
 
-                    {/* Trilhas */}
                     <div>
                         <h5 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">Trilhas</h5>
                         <ul className="space-y-2">
                             {TRACKS.map((t) => (
                                 <li key={t}>
-                                    <Link href="/blog" className={linkCls} style={{ color: '#7b8da3' }}>{t}</Link>
+                                    <Link href="/blog" className={linkCls} style={{ color: 'var(--text-muted)' }}>{t}</Link>
                                 </li>
                             ))}
                         </ul>
                     </div>
 
-                    {/* Contato */}
                     {hasContact && (
                         <div>
                             <h5 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">Contato</h5>
                             <ul className="space-y-3">
                                 {email && (
-                                    <li className="flex items-start gap-2 text-sm" style={{ color: '#7b8da3' }}>
-                                        <Mail size={16} className="mt-0.5 shrink-0" style={{ color: '#3cbdf8' }} />
-                                        <a href={`mailto:${email}`} className="hover:text-[#3cbdf8] transition-colors">{email}</a>
+                                    <li className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                                        <Mail size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--accent)' }} />
+                                        <a href={`mailto:${email}`} className="hover:text-[var(--accent)] transition-colors">{email}</a>
                                     </li>
                                 )}
                                 {address && (
-                                    <li className="flex items-start gap-2 text-sm" style={{ color: '#7b8da3' }}>
-                                        <MapPin size={16} className="mt-0.5 shrink-0" style={{ color: '#3cbdf8' }} />
+                                    <li className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                                        <MapPin size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--accent)' }} />
                                         {addressLink ? (
                                             <a href={addressLink} target="_blank" rel="noopener noreferrer"
-                                                className="hover:text-[#3cbdf8] transition-colors">{address}</a>
+                                                className="hover:text-[var(--accent)] transition-colors">{address}</a>
                                         ) : (
                                             <span>{address}</span>
                                         )}
@@ -133,10 +129,10 @@ export default function Footer() {
                     )}
                 </div>
 
-                <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid rgba(150,178,208,0.12)' }}>
-                    <p className="text-xs" style={{ color: '#7b8da3' }}>{footerMsg}</p>
-                    <span className="text-xs" style={{ color: '#7b8da3' }}>
-                        Feito com <b className="text-[#3cbdf8]">Laravel</b> + <b className="text-[#61dafb]">React</b>
+                <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3" style={{ borderTop: '1px solid var(--border)' }}>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{footerMsg}</p>
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        Feito com <b className="text-[var(--accent)]">Laravel</b> + <b className="text-[#61dafb]">React</b>
                     </span>
                 </div>
             </div>

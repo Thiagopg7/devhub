@@ -1,53 +1,15 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import Reveal from '@/Components/Public/Reveal';
-import { Calendar, Info, Mail } from 'lucide-react';
+import PageHero from '@/Components/Public/PageHero';
+import Breadcrumb from '@/Components/Public/Breadcrumb';
+import { Section, Ul, Ol, Callout } from '@/Components/Public/Doc';
+import { Calendar, Mail } from 'lucide-react';
 
-function Section({ id, title, children }) {
-    return (
-        <section id={id} className="mt-10">
-            <h2 className="font-display font-semibold text-white mb-4"
-                style={{ fontSize: 'clamp(18px,2.2vw,22px)', borderBottom: '1px solid rgba(150,178,208,0.12)', paddingBottom: '10px' }}>
-                {title}
-            </h2>
-            <div className="space-y-3 text-base leading-relaxed" style={{ color: '#b6c5d8' }}>
-                {children}
-            </div>
-        </section>
-    );
-}
-
-function Ul({ items }) {
-    return (
-        <ul className="space-y-2 pl-5">
-            {items.map((item, i) => (
-                <li key={i} className="relative before:absolute before:-left-4 before:top-[0.6em] before:w-1.5 before:h-1.5 before:rounded-full before:bg-[#3cbdf8]">
-                    {item}
-                </li>
-            ))}
-        </ul>
-    );
-}
-
-function Ol({ items }) {
-    return (
-        <ol className="space-y-2 pl-5 list-decimal marker:text-[#3cbdf8] marker:font-semibold">
-            {items.map((item, i) => (
-                <li key={i}>{item}</li>
-            ))}
-        </ol>
-    );
-}
-
-function Callout({ children }) {
-    return (
-        <div className="flex gap-4 rounded-xl p-5 mt-4"
-            style={{ background: 'rgba(60,189,248,0.06)', border: '1px solid rgba(60,189,248,0.2)' }}>
-            <Info size={20} className="shrink-0 mt-0.5" style={{ color: '#3cbdf8' }} />
-            <p className="text-sm leading-relaxed" style={{ color: '#b6c5d8' }}>{children}</p>
-        </div>
-    );
-}
+const HERO_GLOW = {
+    width: 600, height: 600, right: -100, top: -200,
+    background: 'radial-gradient(circle,rgba(60,189,248,0.08) 0%,transparent 60%)',
+};
 
 export default function Privacidade() {
     const { siteConfig = {} } = usePage().props;
@@ -64,40 +26,29 @@ export default function Privacidade() {
                 <meta property="og:url" content={route('privacidade')} />
             </Head>
 
-            {/* ── Hero ─────────────────────────────────────────────── */}
-            <section className="relative overflow-hidden" style={{ background: '#0a131e', borderBottom: '1px solid rgba(150,178,208,0.12)' }}>
-                <div className="dotgrid" />
-                <div className="absolute pointer-events-none" style={{ width: 600, height: 600, right: -100, top: -200, background: 'radial-gradient(circle,rgba(60,189,248,0.08) 0%,transparent 60%)' }} />
+            <PageHero py="py-14" glowStyle={HERO_GLOW}>
+                <Breadcrumb items={[{ label: 'Home', href: '/' }, { label: 'Política de Privacidade' }]} />
 
-                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                    <nav className="flex items-center gap-2 font-mono text-xs mb-8" style={{ color: '#7b8da3' }}>
-                        <Link href="/" className="hover:text-[#3cbdf8] transition-colors">Home</Link>
-                        <span>/</span>
-                        <span style={{ color: '#eaf1fa' }}>Política de Privacidade</span>
-                    </nav>
+                <span className="eyebrow">Transparência &amp; confiança</span>
+                <h1 className="font-display font-semibold text-white leading-tight tracking-tight mt-3 mb-4"
+                    style={{ fontSize: 'clamp(34px,5vw,56px)' }}>
+                    Política de Privacidade
+                </h1>
+                <p className="max-w-[60ch] mb-5" style={{ color: 'var(--text-body)', fontSize: 16 }}>
+                    Como o {siteName} coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).
+                </p>
 
-                    <span className="eyebrow">Transparência &amp; confiança</span>
-                    <h1 className="font-display font-semibold text-white leading-tight tracking-tight mt-3 mb-4"
-                        style={{ fontSize: 'clamp(34px,5vw,56px)' }}>
-                        Política de Privacidade
-                    </h1>
-                    <p className="max-w-[60ch] mb-5" style={{ color: '#b6c5d8', fontSize: 16 }}>
-                        Como o {siteName} coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).
-                    </p>
+                <span className="inline-flex items-center gap-2 font-mono text-xs px-3.5 py-2 rounded-full"
+                    style={{ background: 'var(--surface)', border: '1px solid var(--border-2)', color: 'var(--text-muted)' }}>
+                    <Calendar size={13} style={{ color: 'var(--accent)' }} />
+                    Última atualização: 1º de junho de 2026
+                </span>
+            </PageHero>
 
-                    <span className="inline-flex items-center gap-2 font-mono text-xs px-3.5 py-2 rounded-full"
-                        style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.18)', color: '#7b8da3' }}>
-                        <Calendar size={13} style={{ color: '#3cbdf8' }} />
-                        Última atualização: 1º de junho de 2026
-                    </span>
-                </div>
-            </section>
-
-            {/* ── Content ──────────────────────────────────────────── */}
-            <div style={{ background: '#0a131e' }}>
+            <div style={{ background: 'var(--base)' }}>
                 <Reveal className="max-w-[760px] mx-auto px-4 sm:px-6 py-14 pb-20">
 
-                    <p className="text-base leading-relaxed" style={{ color: '#b6c5d8' }}>
+                    <p className="text-base leading-relaxed" style={{ color: 'var(--text-body)' }}>
                         O {siteName} valoriza a sua privacidade. Esta política explica, de forma direta, quais dados coletamos
                         quando você usa nosso site, por que coletamos e quais são os seus direitos sobre eles. Ao usar o {siteName},
                         você concorda com as práticas descritas aqui.
@@ -174,9 +125,9 @@ export default function Privacidade() {
                         <p>Tem alguma dúvida sobre como tratamos seus dados? Estamos à disposição.</p>
 
                         <div className="flex items-center gap-4 rounded-2xl p-6 mt-5"
-                            style={{ background: 'linear-gradient(135deg,#101f30,#15243a)', border: '1px solid rgba(150,178,208,0.18)' }}>
+                            style={{ background: 'linear-gradient(135deg,var(--surface),var(--surface-2))', border: '1px solid var(--border-2)' }}>
                             <div className="w-12 h-12 rounded-xl grid place-items-center shrink-0"
-                                style={{ background: 'rgba(60,189,248,0.1)', color: '#3cbdf8' }}>
+                                style={{ background: 'rgba(60,189,248,0.1)', color: 'var(--accent)' }}>
                                 <Mail size={22} />
                             </div>
                             <div>
@@ -185,12 +136,12 @@ export default function Privacidade() {
                                 </div>
                                 {email ? (
                                     <a href={`mailto:${email}`}
-                                        className="text-sm mt-0.5 block transition-colors hover:text-[#76d3ff]"
-                                        style={{ color: '#3cbdf8' }}>
+                                        className="text-sm mt-0.5 block transition-colors hover:text-[var(--accent-hi)]"
+                                        style={{ color: 'var(--accent)' }}>
                                         {email}
                                     </a>
                                 ) : (
-                                    <span className="text-sm mt-0.5 block" style={{ color: '#7b8da3' }}>
+                                    <span className="text-sm mt-0.5 block" style={{ color: 'var(--text-muted)' }}>
                                         E-mail não configurado
                                     </span>
                                 )}

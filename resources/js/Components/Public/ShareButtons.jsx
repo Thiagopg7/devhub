@@ -28,9 +28,9 @@ function CopyLinkBtn() {
         <button onClick={copy} aria-label="Copiar link"
             className="w-9 h-9 grid place-items-center rounded-lg transition-all hover:-translate-y-0.5"
             style={{
-                background: '#15243a',
-                border: '1px solid rgba(150,178,208,0.18)',
-                color: copied ? '#3cbdf8' : '#7b8da3',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border-2)',
+                color: copied ? 'var(--accent)' : 'var(--text-muted)',
             }}>
             {copied
                 ? <Check size={14} />
@@ -50,21 +50,16 @@ function shareUrl(platform, url, title) {
 }
 
 export default function ShareButtons({ url, title, className = '' }) {
-    const btnCls = "w-9 h-9 grid place-items-center rounded-lg transition-all hover:-translate-y-0.5";
-    const btnStyle = { background: '#15243a', border: '1px solid rgba(150,178,208,0.18)', color: '#7b8da3' };
-    const hoverIn  = e => { e.currentTarget.style.background = '#3cbdf8'; e.currentTarget.style.color = '#03121d'; e.currentTarget.style.borderColor = 'transparent'; };
-    const hoverOut = e => { e.currentTarget.style.background = '#15243a'; e.currentTarget.style.color = '#7b8da3'; e.currentTarget.style.borderColor = 'rgba(150,178,208,0.18)'; };
+    const btnCls = "share-tile w-9 h-9 grid place-items-center rounded-lg hover:-translate-y-0.5";
 
     return (
         <div className={`flex gap-2 ${className}`}>
             <a href={shareUrl('x', url, title)} target="_blank" rel="noopener noreferrer"
-                aria-label="Compartilhar no X" className={btnCls} style={btnStyle}
-                onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+                aria-label="Compartilhar no X" className={btnCls}>
                 <XIcon />
             </a>
             <a href={shareUrl('linkedin', url, title)} target="_blank" rel="noopener noreferrer"
-                aria-label="Compartilhar no LinkedIn" className={btnCls} style={btnStyle}
-                onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+                aria-label="Compartilhar no LinkedIn" className={btnCls}>
                 <LinkedInIcon />
             </a>
             <CopyLinkBtn />

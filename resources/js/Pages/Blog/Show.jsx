@@ -1,101 +1,28 @@
-import { useEffect, useState, useRef } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { useRef } from 'react';
+import { Head, usePage } from '@inertiajs/react';
 import DOMPurify from 'dompurify';
 import PublicLayout from '@/Layouts/PublicLayout';
-import PostCard from '@/Components/Public/PostCard';
-import Reveal from '@/Components/Public/Reveal';
-import ShareButtons from '@/Components/Public/ShareButtons';
 import ReadingProgressBar from '@/Components/Public/ReadingProgressBar';
-import { formatDate, estimateReadTime } from '@/lib/utils';
-import { Calendar, Clock, Tag, ArrowLeft, ArrowRight } from 'lucide-react';
+import ArticleHeader from '@/Components/Public/Blog/ArticleHeader';
+import ArticleToc from '@/Components/Public/Blog/ArticleToc';
+import AuthorBox from '@/Components/Public/Blog/AuthorBox';
+import PostNav from '@/Components/Public/Blog/PostNav';
+import RelatedPosts from '@/Components/Public/Blog/RelatedPosts';
+import useArticleContent from '@/hooks/useArticleContent';
+import { estimateReadTime } from '@/lib/utils';
 
-const COVER_PALETTE = {
-    backend:  { bg: 'radial-gradient(120% 120% at 30% 20%,#163a52,#0c1c2e)', accent: '#3cbdf8' },
-    frontend: { bg: 'radial-gradient(120% 120% at 30% 20%,#163a52,#0c1c2e)', accent: '#61dafb' },
-    ia:       { bg: 'radial-gradient(120% 120% at 30% 20%,#2a2c5a,#131430)', accent: '#7b86ff' },
-    banco:    { bg: 'radial-gradient(120% 120% at 30% 20%,#12423c,#0a1f24)', accent: '#2fd9c2' },
-    carreira: { bg: 'radial-gradient(120% 120% at 30% 20%,#3d2f17,#1c1407)', accent: '#f0b65a' },
-    default:  { bg: 'radial-gradient(120% 120% at 30% 20%,#243347,#111c2a)', accent: '#3cbdf8' },
-};
-
-function coverPalette(category) {
-    const slug = category?.slug?.toLowerCase() ?? '';
-    if (slug.includes('backend'))  return COVER_PALETTE.backend;
-    if (slug.includes('frontend')) return COVER_PALETTE.frontend;
-    if (slug.includes('ia') || slug.includes('dados')) return COVER_PALETTE.ia;
-    if (slug.includes('banco'))    return COVER_PALETTE.banco;
-    if (slug.includes('carreira')) return COVER_PALETTE.carreira;
-    return COVER_PALETTE.default;
-}
-
-/* ── Main component ──────────────────────────────────────────── */
 export default function BlogShow({ post, prevPost = null, nextPost = null, relatedPosts = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
     const proseRef = useRef(null);
-    const [headings, setHeadings] = useState([]);
-    const [activeId, setActiveId] = useState('');
 
     const ogTitle       = post.meta_title || post.title;
     const ogDescription = post.meta_description || post.description;
     const readTime      = estimateReadTime(post.content);
     const pageUrl       = typeof window !== 'undefined' ? window.location.href : route('blog.show', post.slug);
-    const palette       = coverPalette(post.category);
 
     const sanitizedContent = post.content ? DOMPurify.sanitize(post.content) : '';
-
-    /* Inject IDs into headings after render */
-    useEffect(() => {
-        if (!proseRef.current) return;
-        const nodes = [...proseRef.current.querySelectorAll('h2, h3')];
-        const items = nodes.map((el, i) => {
-            if (!el.id) el.id = `h-${i}`;
-            return { id: el.id, text: el.textContent, level: el.tagName.toLowerCase() };
-        });
-        setHeadings(items);
-    }, [sanitizedContent]);
-
-    /* Highlight active TOC item on scroll */
-    useEffect(() => {
-        if (headings.length === 0) return;
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const visible = entries.filter(e => e.isIntersecting);
-                if (visible.length > 0) setActiveId(visible[0].target.id);
-            },
-            { rootMargin: '-20% 0% -70% 0%', threshold: 0 }
-        );
-        headings.forEach(({ id }) => {
-            const el = document.getElementById(id);
-            if (el) observer.observe(el);
-        });
-        return () => observer.disconnect();
-    }, [headings]);
-
-    /* Inject copy buttons into <pre> blocks */
-    useEffect(() => {
-        if (!proseRef.current) return;
-        proseRef.current.querySelectorAll('pre').forEach(pre => {
-            if (pre.closest('.codeblock-wrapper')) return;
-            const wrapper = document.createElement('div');
-            wrapper.className = 'codeblock-wrapper';
-            pre.parentNode.insertBefore(wrapper, pre);
-            wrapper.appendChild(pre);
-
-            const btn = document.createElement('button');
-            btn.textContent = 'Copiar';
-            btn.className = 'codeblock-copy';
-            btn.setAttribute('aria-label', 'Copiar código');
-            btn.addEventListener('click', () => {
-                const code = pre.querySelector('code') || pre;
-                navigator.clipboard.writeText(code.textContent ?? '');
-                btn.textContent = '✓ Copiado!';
-                btn.classList.add('copied');
-                setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
-            });
-            wrapper.appendChild(btn);
-        });
-    }, [sanitizedContent]);
+    const { headings, activeId } = useArticleContent(proseRef, sanitizedContent);
 
     return (
         <PublicLayout>
@@ -111,100 +38,12 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
                 {post.banner_image_url && <meta property="og:image" content={post.banner_image_url} />}
             </Head>
 
-            {/* ── Article pagehead ───────────────────────────────── */}
-            <section className="relative overflow-hidden" style={{ background: '#0a131e', borderBottom: '1px solid rgba(150,178,208,0.12)' }}>
-                <div className="dotgrid" />
-                <div className="absolute pointer-events-none" style={{ width: 600, height: 600, right: -100, top: -200, background: 'radial-gradient(circle,rgba(60,189,248,0.1) 0%,transparent 60%)' }} />
+            <ArticleHeader post={post} readTime={readTime} pageUrl={pageUrl} />
 
-                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                    {/* Breadcrumb */}
-                    <nav className="flex items-center gap-2 font-mono text-xs mb-8" style={{ color: '#7b8da3' }}>
-                        <Link href="/" className="hover:text-[#3cbdf8] transition-colors">Home</Link>
-                        <span>/</span>
-                        <Link href="/blog" className="hover:text-[#3cbdf8] transition-colors">Blog</Link>
-                        {post.category && (
-                            <>
-                                <span>/</span>
-                                <Link href={route('blog.category', post.category.slug)} className="hover:text-[#3cbdf8] transition-colors">
-                                    {post.category.name}
-                                </Link>
-                            </>
-                        )}
-                        <span>/</span>
-                        <span className="truncate max-w-[200px]" style={{ color: '#eaf1fa' }}>{post.title}</span>
-                    </nav>
-
-                    {/* Category pill */}
-                    {post.category && (
-                        <Link href={route('blog.category', post.category.slug)}
-                            className="inline-flex items-center gap-1.5 font-mono text-[11px] tracking-[0.1em] uppercase px-3 py-1.5 rounded-full font-semibold mb-5 transition-colors"
-                            style={{ background: 'rgba(60,189,248,0.12)', color: '#3cbdf8', border: '1px solid rgba(60,189,248,0.2)' }}>
-                            <Tag size={11} /> {post.category.name}
-                        </Link>
-                    )}
-
-                    <h1 className="font-display font-semibold text-white leading-tight tracking-tight mb-4"
-                        style={{ fontSize: 'clamp(30px,4.5vw,52px)', maxWidth: '820px' }}>
-                        {post.title}
-                    </h1>
-
-                    {post.description && (
-                        <p className="mb-6 max-w-[64ch]" style={{ color: '#b6c5d8', fontSize: 'clamp(17px,1.6vw,20px)' }}>
-                            {post.description}
-                        </p>
-                    )}
-
-                    {/* Byline */}
-                    <div className="flex flex-wrap items-center gap-4 mt-7">
-                        <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full grid place-items-center font-display font-semibold text-xs text-white shrink-0"
-                                style={{ background: 'linear-gradient(135deg,#3cbdf8,#2a9be0)' }}>DH</div>
-                            <div>
-                                <div className="text-sm font-semibold text-white">Equipe DevHub</div>
-                                <div className="text-xs" style={{ color: '#7b8da3' }}>Engenharia &amp; Conteúdo</div>
-                            </div>
-                        </div>
-                        <span className="w-px h-8 shrink-0" style={{ background: 'rgba(150,178,208,0.18)' }} />
-                        <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: '#7b8da3' }}>
-                            <Calendar size={13} style={{ color: '#3cbdf8', flexShrink: 0 }} />
-                            {formatDate(post.created_at)}
-                        </span>
-                        <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: '#7b8da3' }}>
-                            <Clock size={13} style={{ color: '#3cbdf8', flexShrink: 0 }} />
-                            {readTime} min de leitura
-                        </span>
-
-                        <div className="flex items-center gap-3 ml-auto">
-                            <span className="text-xs font-mono hidden sm:block" style={{ color: '#7b8da3' }}>Compartilhar</span>
-                            <ShareButtons url={pageUrl} title={post.title} />
-                        </div>
-                    </div>
-
-                    {/* Cover image / glyph */}
-                    <div className="mt-10 rounded-2xl overflow-hidden"
-                        style={{ height: 'clamp(220px,28vw,360px)', border: '1px solid rgba(150,178,208,0.18)' }}>
-                        {post.banner_image_url ? (
-                            <img src={post.banner_image_url} alt={post.title}
-                                className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full grid place-items-center"
-                                style={{ background: palette.bg }}>
-                                <span className="font-display font-bold text-center leading-tight px-8"
-                                    style={{ color: palette.accent, opacity: 0.85, fontSize: 'clamp(22px,3vw,38px)' }}>
-                                    {post.category?.name ?? 'DevHub'}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </section>
-
-            {/* ── Article body + TOC ─────────────────────────────── */}
-            <div style={{ background: '#0a131e' }}>
+            <div style={{ background: 'var(--base)' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex gap-14 items-start pt-16 pb-10">
 
-                        {/* Prose */}
                         <article className="min-w-0 flex-1">
                             {sanitizedContent && (
                                 <div
@@ -216,9 +55,9 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
                                         prose-p:text-slate-300 prose-p:leading-relaxed prose-p:text-[17px]
                                         prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline
                                         prose-strong:text-white prose-strong:font-bold
-                                        prose-code:text-sky-300 prose-code:bg-[#101f30] prose-code:border prose-code:border-[rgba(150,178,208,0.15)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.86em] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
-                                        prose-pre:bg-[#0b1623] prose-pre:border prose-pre:border-[rgba(150,178,208,0.18)] prose-pre:rounded-xl prose-pre:p-5
-                                        prose-blockquote:border-l-[#3cbdf8] prose-blockquote:border-l-2 prose-blockquote:text-slate-400 prose-blockquote:not-italic prose-blockquote:pl-5
+                                        prose-code:text-sky-300 prose-code:bg-[var(--surface)] prose-code:border prose-code:border-[rgba(150,178,208,0.15)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-[0.86em] prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
+                                        prose-pre:bg-[#0b1623] prose-pre:border prose-pre:border-[var(--border-2)] prose-pre:rounded-xl prose-pre:p-5
+                                        prose-blockquote:border-l-[var(--accent)] prose-blockquote:border-l-2 prose-blockquote:text-slate-400 prose-blockquote:not-italic prose-blockquote:pl-5
                                         prose-img:rounded-2xl prose-img:border prose-img:border-[rgba(150,178,208,0.15)]
                                         prose-li:text-slate-300 prose-li:text-[17px]
                                         prose-ul:gap-2 prose-ol:gap-2"
@@ -226,134 +65,16 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
                                 />
                             )}
 
-                            {/* ── Author box ─────────────────────────────────── */}
-                            <Reveal className="flex items-start gap-5 rounded-2xl p-6 mt-14"
-                                style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}>
-                                <div className="w-16 h-16 rounded-2xl grid place-items-center font-display font-bold text-xl text-white shrink-0"
-                                    style={{ background: 'linear-gradient(135deg,#3cbdf8,#2a9be0)' }}>
-                                    DH
-                                </div>
-                                <div>
-                                    <div className="font-display font-semibold text-white text-base">Equipe DevHub</div>
-                                    <div className="text-xs font-mono mb-3" style={{ color: '#3cbdf8' }}>Engenharia &amp; Conteúdo</div>
-                                    <p className="text-sm leading-relaxed" style={{ color: '#b6c5d8' }}>
-                                        Conteúdo produzido pela equipe do DevHub — desenvolvedores que escrevem sobre o que usam no dia a dia.
-                                        Tutoriais testados, arquiteturas reais e nenhum "hello world" sem propósito.
-                                    </p>
-                                </div>
-                            </Reveal>
-
-                            {/* ── Article nav prev / next ─────────────────────── */}
-                            {(prevPost || nextPost) && (
-                                <Reveal className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-                                    {prevPost ? (
-                                        <Link href={route('blog.show', prevPost.slug)}
-                                            className="group flex flex-col gap-2 rounded-2xl p-5 transition-all"
-                                            style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}
-                                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.3)'}
-                                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.12)'}>
-                                            <span className="inline-flex items-center gap-1.5 font-mono text-xs" style={{ color: '#7b8da3' }}>
-                                                <ArrowLeft size={12} /> Anterior
-                                            </span>
-                                            <span className="text-sm font-semibold text-white leading-snug group-hover:text-[#3cbdf8] transition-colors line-clamp-2">
-                                                {prevPost.title}
-                                            </span>
-                                        </Link>
-                                    ) : <div />}
-
-                                    {nextPost ? (
-                                        <Link href={route('blog.show', nextPost.slug)}
-                                            className="group flex flex-col gap-2 rounded-2xl p-5 transition-all text-right"
-                                            style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)' }}
-                                            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.3)'}
-                                            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.12)'}>
-                                            <span className="inline-flex items-center justify-end gap-1.5 font-mono text-xs" style={{ color: '#7b8da3' }}>
-                                                Próximo <ArrowRight size={12} />
-                                            </span>
-                                            <span className="text-sm font-semibold text-white leading-snug group-hover:text-[#3cbdf8] transition-colors line-clamp-2">
-                                                {nextPost.title}
-                                            </span>
-                                        </Link>
-                                    ) : <div />}
-                                </Reveal>
-                            )}
+                            <AuthorBox />
+                            <PostNav prevPost={prevPost} nextPost={nextPost} />
                         </article>
 
-                        {/* TOC sidebar */}
-                        <aside className="hidden lg:block sticky top-24 shrink-0" style={{ width: 248 }}>
-                            {headings.length > 0 && (
-                                <>
-                                    <h5 className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-4" style={{ color: '#7b8da3' }}>
-                                        Neste artigo
-                                    </h5>
-                                    <ul className="flex flex-col gap-0.5 m-0 p-0 list-none"
-                                        style={{ borderLeft: '1px solid rgba(150,178,208,0.15)' }}>
-                                        {headings.map(({ id, text, level }) => {
-                                            const isActive = activeId === id;
-                                            return (
-                                                <li key={id} className="m-0 p-0">
-                                                    <a href={`#${id}`}
-                                                        className="block text-[13.5px] leading-snug transition-colors"
-                                                        style={{
-                                                            padding: '8px 0 8px 16px',
-                                                            marginLeft: -1,
-                                                            paddingLeft: level === 'h3' ? 28 : 16,
-                                                            borderLeft: `2px solid ${isActive ? '#3cbdf8' : 'transparent'}`,
-                                                            color: isActive ? '#3cbdf8' : '#7b8da3',
-                                                            fontWeight: isActive ? 600 : 400,
-                                                        }}
-                                                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = '#eaf1fa'; }}
-                                                        onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#7b8da3'; }}>
-                                                        {text}
-                                                    </a>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </>
-                            )}
-
-                            <div className={`pt-5 ${headings.length > 0 ? 'mt-7' : ''}`}
-                                style={headings.length > 0 ? { borderTop: '1px solid rgba(150,178,208,0.12)' } : {}}>
-                                <div className="font-mono text-[11.5px] uppercase tracking-[.12em] mb-3" style={{ color: '#7b8da3' }}>
-                                    Compartilhar
-                                </div>
-                                <ShareButtons url={pageUrl} title={post.title} />
-                            </div>
-                        </aside>
+                        <ArticleToc headings={headings} activeId={activeId} pageUrl={pageUrl} title={post.title} />
                     </div>
                 </div>
             </div>
 
-            {/* ── Related posts ──────────────────────────────────── */}
-            {relatedPosts.length > 0 && (
-                <section style={{ background: '#0c1828', borderTop: '1px solid rgba(150,178,208,0.12)' }}>
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                        <Reveal className="flex items-end justify-between gap-4 flex-wrap mb-10">
-                            <div>
-                                <span className="eyebrow">Continue lendo</span>
-                                <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3"
-                                    style={{ fontSize: 'clamp(24px,3vw,34px)' }}>
-                                    Artigos relacionados
-                                </h2>
-                            </div>
-                            <Link href={route('blog.index')}
-                                className="inline-flex items-center gap-2 text-sm font-mono transition-all hover:gap-3"
-                                style={{ color: '#3cbdf8' }}>
-                                Ver todos
-                                <ArrowRight size={14} />
-                            </Link>
-                        </Reveal>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {relatedPosts.map((p, i) => (
-                                <Reveal key={p.id} delay={i * 100}>
-                                    <PostCard post={p} />
-                                </Reveal>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            )}
+            <RelatedPosts posts={relatedPosts} />
         </PublicLayout>
     );
 }

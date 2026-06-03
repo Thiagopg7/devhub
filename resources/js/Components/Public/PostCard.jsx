@@ -10,12 +10,12 @@ function formatDate(dateString) {
 }
 
 const GLYPH_PALETTE = {
-    backend:    { bg: '#101f30', accent: '#3cbdf8',  label: 'bg-[#3cbdf8]/10'  },
+    backend:    { bg: 'var(--surface)', accent: 'var(--accent)',  label: 'bg-[var(--accent)]/10'  },
     frontend:   { bg: '#0e1e2e', accent: '#61dafb',  label: 'bg-[#61dafb]/10'  },
-    ia:         { bg: '#120e2a', accent: '#7b86ff',  label: 'bg-[#7b86ff]/10'  },
-    banco:      { bg: '#0e2228', accent: '#2fd9c2',  label: 'bg-[#2fd9c2]/10'  },
-    carreira:   { bg: '#1e1505', accent: '#f0b65a',  label: 'bg-[#f0b65a]/10'  },
-    default:    { bg: '#101f30', accent: '#3cbdf8',  label: 'bg-[#3cbdf8]/10'  },
+    ia:         { bg: '#120e2a', accent: 'var(--violet)',  label: 'bg-[var(--violet)]/10'  },
+    banco:      { bg: '#0e2228', accent: 'var(--teal)',  label: 'bg-[var(--teal)]/10'  },
+    carreira:   { bg: '#1e1505', accent: 'var(--gold)',  label: 'bg-[var(--gold)]/10'  },
+    default:    { bg: 'var(--surface)', accent: 'var(--accent)',  label: 'bg-[var(--accent)]/10'  },
 };
 
 function glyphFor(category) {
@@ -32,12 +32,8 @@ export default function PostCard({ post }) {
     const palette = glyphFor(post.category);
 
     return (
-        <article className="group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-[5px]"
-            style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)', boxShadow: 'none' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(150,178,208,0.24)'; e.currentTarget.style.boxShadow='0 18px 40px -22px rgba(0,0,0,0.7)'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(150,178,208,0.12)'; e.currentTarget.style.boxShadow='none'; }}>
+        <article className="card post-card-hover group flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-[5px]">
 
-            {/* Media / glyph */}
             <Link href={route('blog.show', post.slug)} className="relative block aspect-video overflow-hidden">
                 {post.banner_image_url ? (
                     <img
@@ -54,18 +50,16 @@ export default function PostCard({ post }) {
                         </span>
                     </div>
                 )}
-                {/* Hover bar */}
                 <div className="absolute inset-x-0 bottom-0 h-[3px] scale-x-0 origin-left transition-transform duration-[400ms] group-hover:scale-x-100 bg-[linear-gradient(90deg,var(--accent),var(--violet))]" />
             </Link>
 
-            {/* Content */}
             <div className="p-5 flex flex-col flex-1">
-                <div className="flex items-center justify-between gap-2 mb-3 font-mono text-[11.5px]" style={{ color: '#7b8da3' }}>
+                <div className="flex items-center justify-between gap-2 mb-3 font-mono text-[11.5px]" style={{ color: 'var(--text-muted)' }}>
                     {post.category && (
                         <Link
                             href={route('blog.category', post.category.slug)}
                             className="inline-flex items-center gap-1.5 leading-none transition-colors"
-                            style={{ color: '#3cbdf8' }}
+                            style={{ color: 'var(--accent)' }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor" style={{ display: 'block', flexShrink: 0 }}><circle cx="12" cy="12" r="5"/></svg>
@@ -80,13 +74,13 @@ export default function PostCard({ post }) {
 
                 <h3 className="font-display font-semibold text-[18.5px] leading-[1.25] tracking-[-0.01em] mb-2 line-clamp-2">
                     <Link href={route('blog.show', post.slug)}
-                        className="transition-colors text-white hover:text-[#3cbdf8]">
+                        className="transition-colors text-white hover:text-[var(--accent)]">
                         {post.title}
                     </Link>
                 </h3>
 
                 {post.description && (
-                    <p className="text-sm leading-relaxed line-clamp-2 mb-4 flex-1" style={{ color: '#7b8da3' }}>
+                    <p className="text-sm leading-relaxed line-clamp-2 mb-4 flex-1" style={{ color: 'var(--text-muted)' }}>
                         {post.description}
                     </p>
                 )}
@@ -94,7 +88,7 @@ export default function PostCard({ post }) {
                 <Link
                     href={route('blog.show', post.slug)}
                     className="inline-flex items-center gap-1.5 text-sm font-medium mt-auto transition-all hover:gap-2.5"
-                    style={{ color: '#3cbdf8', fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                    style={{ color: 'var(--accent)', fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
                 >
                     Ler artigo
                     <ArrowRight size={14} />

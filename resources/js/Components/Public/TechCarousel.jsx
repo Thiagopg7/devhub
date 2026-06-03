@@ -44,11 +44,10 @@ function TechCard({ tech, glyphBg }) {
     return (
         <a href={tech.url || '#'} target="_blank" rel="noopener noreferrer"
             className="group flex flex-col h-full overflow-hidden transition-all duration-300 hover:-translate-y-1"
-            style={{ background: '#101f30', border: '1px solid rgba(150,178,208,0.12)', borderRadius: 18 }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.28)'}
-            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(150,178,208,0.12)'}>
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18 }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-h)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
 
-            {/* Banner / glyph — altura fixa para uniformidade */}
             <div className="relative overflow-hidden shrink-0" style={{ aspectRatio: '16/10', background: glyphBg, borderBottom: '1px solid rgba(150,178,208,0.10)' }}>
                 <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: 'radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.4px)', backgroundSize: '18px 18px' }} />
                 {tech.screenshot_image_url ? (
@@ -64,14 +63,13 @@ function TechCard({ tech, glyphBg }) {
                 )}
             </div>
 
-            {/* Body */}
             <div className="flex flex-col flex-1 p-[22px]">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-[11px] grid place-items-center shrink-0" style={{ background: '#15243a', border: '1px solid rgba(150,178,208,0.18)' }}>
+                    <div className="w-10 h-10 rounded-[11px] grid place-items-center shrink-0" style={{ background: 'var(--surface-2)', border: '1px solid var(--border-2)' }}>
                         {tech.icon_image_url ? (
                             <img src={tech.icon_image_url} alt={tech.name} loading="lazy" className="w-6 h-6 object-contain" />
                         ) : (
-                            <span className="font-mono text-[11px] font-bold" style={{ color: '#7b8da3' }}>
+                            <span className="font-mono text-[11px] font-bold" style={{ color: 'var(--text-muted)' }}>
                                 {tech.name.slice(0, 2).toUpperCase()}
                             </span>
                         )}
@@ -79,18 +77,18 @@ function TechCard({ tech, glyphBg }) {
                     <div>
                         <div className="font-display font-semibold text-white leading-tight" style={{ fontSize: 15 }}>{tech.name}</div>
                         {cat && (
-                            <div className="font-mono text-[10.5px] uppercase tracking-[0.06em] mt-0.5" style={{ color: '#7b8da3' }}>{cat}</div>
+                            <div className="font-mono text-[10.5px] uppercase tracking-[0.06em] mt-0.5" style={{ color: 'var(--text-muted)' }}>{cat}</div>
                         )}
                     </div>
                 </div>
 
                 {tech.description && (
-                    <p className="mt-4 text-sm leading-relaxed flex-1" style={{ color: '#7b8da3' }}>
+                    <p className="mt-4 text-sm leading-relaxed flex-1" style={{ color: 'var(--text-muted)' }}>
                         {tech.description}
                     </p>
                 )}
 
-                <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: '#3cbdf8' }}>
+                <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium" style={{ color: 'var(--accent)' }}>
                     Acessar
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                         <path d="M7 17L17 7M7 7h10v10" />
@@ -136,46 +134,40 @@ export default function TechCarousel({ technologies = [] }) {
 
     return (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            {/* Header */}
-            <div className="mb-10">
-                <span className="eyebrow">Ferramentas &amp; Tecnologias</span>
-                <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3" style={{ fontSize: 'clamp(28px,3.4vw,40px)' }}>No nosso radar</h2>
-                <p className="mt-2 text-base max-w-[52ch]" style={{ color: '#7b8da3' }}>As plataformas que estão moldando como a gente escreve código e cria produtos.</p>
-            </div>
-
-            {/* Carousel wrapper com padding para os botões */}
-            <div className="relative" style={{ paddingInline: 62 }}>
-                {/* Viewport */}
-                <div ref={viewportRef} className="overflow-hidden">
-                    <div
-                        className="flex"
-                        style={{
-                            gap: GAP,
-                            transform: `translateX(${-offset}px)`,
-                            transition: 'transform .5s cubic-bezier(.4,0,.2,1)',
-                        }}
-                    >
-                        {technologies.map((tech, i) => (
-                            <div key={tech.id} className="shrink-0 flex flex-col"
-                                style={{ width: `calc((100% - ${(perPage - 1) * GAP}px) / ${perPage})` }}>
-                                <TechCard tech={tech} glyphBg={GLYPH_BGS[i % GLYPH_BGS.length]} />
-                            </div>
-                        ))}
-                    </div>
+            <div className="flex items-end justify-between mb-10">
+                <div>
+                    <span className="eyebrow">Ferramentas &amp; Tecnologias</span>
+                    <h2 className="font-display font-semibold text-white leading-tight tracking-tight mt-3" style={{ fontSize: 'clamp(28px,3.4vw,40px)' }}>No nosso radar</h2>
+                    <p className="mt-2 text-base max-w-[52ch]" style={{ color: 'var(--text-muted)' }}>As plataformas que estão moldando como a gente escreve código e cria produtos.</p>
                 </div>
-
-                {/* Prev */}
-                <NavBtn onClick={prev} disabled={safeIdx === 0} aria-label="Anterior" side="left">
-                    <ChevronLeft size={20} />
-                </NavBtn>
-
-                {/* Next */}
-                <NavBtn onClick={next} disabled={safeIdx >= maxIdx} aria-label="Próxima" side="right">
-                    <ChevronRight size={20} />
-                </NavBtn>
+                <div className="flex items-center gap-2 shrink-0">
+                    <NavBtn onClick={prev} disabled={safeIdx === 0} aria-label="Anterior" side="left">
+                        <ChevronLeft size={20} />
+                    </NavBtn>
+                    <NavBtn onClick={next} disabled={safeIdx >= maxIdx} aria-label="Próxima" side="right">
+                        <ChevronRight size={20} />
+                    </NavBtn>
+                </div>
             </div>
 
-            {/* Dots */}
+            <div ref={viewportRef} className="overflow-hidden">
+                <div
+                    className="flex"
+                    style={{
+                        gap: GAP,
+                        transform: `translateX(${-offset}px)`,
+                        transition: 'transform .5s cubic-bezier(.4,0,.2,1)',
+                    }}
+                >
+                    {technologies.map((tech, i) => (
+                        <div key={tech.id} className="shrink-0 flex flex-col"
+                            style={{ width: `calc((100% - ${(perPage - 1) * GAP}px) / ${perPage})` }}>
+                            <TechCard tech={tech} glyphBg={GLYPH_BGS[i % GLYPH_BGS.length]} />
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             {technologies.length > perPage && (
                 <div className="flex justify-center items-center gap-[9px] mt-8">
                     {Array.from({ length: maxIdx + 1 }).map((_, i) => (
@@ -186,7 +178,7 @@ export default function TechCarousel({ technologies = [] }) {
                             className="h-2 rounded-full transition-all duration-300"
                             style={{
                                 width: i === safeIdx ? 26 : 8,
-                                background: i === safeIdx ? '#3cbdf8' : '#15243a',
+                                background: i === safeIdx ? 'var(--accent)' : 'var(--surface-2)',
                             }}
                         />
                     ))}
@@ -196,29 +188,28 @@ export default function TechCarousel({ technologies = [] }) {
     );
 }
 
-function NavBtn({ onClick, disabled, side, children, ...rest }) {
+function NavBtn({ onClick, disabled, children, ...rest }) {
     return (
         <button
             onClick={onClick}
             disabled={disabled}
-            className="absolute top-1/2 -translate-y-1/2 w-[46px] h-[46px] grid place-items-center rounded-full transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
+            className="w-[46px] h-[46px] grid place-items-center rounded-full transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
             style={{
-                [side]: 0,
-                background: '#15243a',
-                border: '1px solid rgba(150,178,208,0.24)',
-                color: '#b6c5d8',
+                background: 'var(--surface-2)',
+                border: '1px solid var(--border-s)',
+                color: 'var(--text-body)',
             }}
             onMouseEnter={e => {
                 if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = '#3cbdf8';
-                    e.currentTarget.style.color = '#03121d';
+                    e.currentTarget.style.background = 'var(--accent)';
+                    e.currentTarget.style.color = 'var(--accent-ink)';
                     e.currentTarget.style.borderColor = 'transparent';
                 }
             }}
             onMouseLeave={e => {
-                e.currentTarget.style.background = '#15243a';
-                e.currentTarget.style.color = '#b6c5d8';
-                e.currentTarget.style.borderColor = 'rgba(150,178,208,0.24)';
+                e.currentTarget.style.background = 'var(--surface-2)';
+                e.currentTarget.style.color = 'var(--text-body)';
+                e.currentTarget.style.borderColor = 'var(--border-s)';
             }}
             {...rest}
         >

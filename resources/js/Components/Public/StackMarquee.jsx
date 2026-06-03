@@ -47,22 +47,20 @@ const STACK = [
 
 function TechItem({ name, icon }) {
     return (
-        <span className="inline-flex items-center gap-2.5 select-none" style={{ color: '#7b8da3' }}>
+        <span className="inline-flex items-center gap-2.5 select-none" style={{ color: 'var(--text-muted)' }}>
             <span className="w-5 h-5 shrink-0" style={{ display: 'block' }}>{icon}</span>
-            <span className="font-display font-medium text-[15px]" style={{ color: '#b6c5d8' }}>{name}</span>
+            <span className="font-display font-medium text-[15px]" style={{ color: 'var(--text-body)' }}>{name}</span>
         </span>
     );
 }
 
 export default function StackMarquee() {
     return (
-        <div style={{ paddingBlock: 48, borderBlock: '1px solid rgba(150,178,208,0.12)', background: '#0a131e' }}>
-            {/* Label */}
-            <p className="text-center font-mono text-[12px] tracking-[0.12em] uppercase mb-7" style={{ color: '#7b8da3' }}>
+        <div style={{ paddingBlock: 48, borderBlock: '1px solid var(--border)', background: 'var(--base)' }}>
+            <p className="text-center font-mono text-[12px] tracking-[0.12em] uppercase mb-7" style={{ color: 'var(--text-muted)' }}>
                 Construído com as ferramentas que a gente ensina
             </p>
 
-            {/* Marquee */}
             <div className="relative overflow-hidden"
                 style={{ maskImage: 'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)', WebkitMaskImage: 'linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent)' }}>
                 <div className="marquee-track flex" style={{ gap: 56, width: 'max-content' }}>

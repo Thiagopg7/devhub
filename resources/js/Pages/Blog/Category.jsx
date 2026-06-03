@@ -15,18 +15,17 @@ export default function BlogCategory({ category, posts }) {
         <PublicLayout>
             <Head title={`${category.name} — Blog — ${siteName}`} />
 
-            {/* Pagehead */}
-            <section className="relative overflow-hidden" style={{ background: '#0a131e', borderBottom: '1px solid rgba(150,178,208,0.12)' }}>
+            <section className="relative overflow-hidden" style={{ background: 'var(--base)', borderBottom: '1px solid var(--border)' }}>
                 <div className="dotgrid" />
                 <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                    <nav className="flex items-center gap-2 font-mono text-xs mb-6" style={{ color: '#7b8da3' }}>
-                        <Link href="/" className="hover:text-[#3cbdf8] transition-colors">Home</Link>
+                    <nav className="flex items-center gap-2 font-mono text-xs mb-6" style={{ color: 'var(--text-muted)' }}>
+                        <Link href="/" className="hover:text-[var(--accent)] transition-colors">Home</Link>
                         <span>/</span>
-                        <Link href="/blog" className="hover:text-[#3cbdf8] transition-colors">Blog</Link>
+                        <Link href="/blog" className="hover:text-[var(--accent)] transition-colors">Blog</Link>
                         <span>/</span>
-                        <span style={{ color: '#eaf1fa' }}>{category.name}</span>
+                        <span style={{ color: 'var(--text-bright)' }}>{category.name}</span>
                     </nav>
-                    <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm mb-5 transition-colors hover:text-[#3cbdf8]" style={{ color: '#7b8da3' }}>
+                    <Link href="/blog" className="inline-flex items-center gap-1.5 text-sm mb-5 transition-colors hover:text-[var(--accent)]" style={{ color: 'var(--text-muted)' }}>
                         <ArrowLeft size={15} /> Voltar ao blog
                     </Link>
                     <span className="eyebrow">Categoria</span>
@@ -34,13 +33,12 @@ export default function BlogCategory({ category, posts }) {
                         {category.name}
                     </h1>
                     {category.description && (
-                        <p className="mt-3 max-w-[60ch]" style={{ color: '#b6c5d8' }}>{category.description}</p>
+                        <p className="mt-3 max-w-[60ch]" style={{ color: 'var(--text-body)' }}>{category.description}</p>
                     )}
                 </div>
             </section>
 
-            {/* Posts grid */}
-            <section style={{ background: '#0a131e' }}>
+            <section style={{ background: 'var(--base)' }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
                     {data.length > 0 ? (
                         <>
@@ -51,23 +49,23 @@ export default function BlogCategory({ category, posts }) {
                             {last_page > 1 && (
                                 <div className="flex items-center justify-center gap-4 mt-12">
                                     {prev_page_url ? (
-                                        <Link href={prev_page_url} className={`${paginatorBtn} hover:text-[#3cbdf8]`}
-                                            style={{ border: '1px solid rgba(150,178,208,0.18)', color: '#b6c5d8' }}>
+                                        <Link href={prev_page_url} className={`${paginatorBtn} hover:text-[var(--accent)]`}
+                                            style={{ border: '1px solid var(--border-2)', color: 'var(--text-body)' }}>
                                             <ChevronLeft size={16} /> Anterior
                                         </Link>
                                     ) : (
-                                        <span className={paginatorBtn} style={{ border: '1px solid rgba(150,178,208,0.08)', color: '#7b8da3', cursor: 'not-allowed' }}>
+                                        <span className={paginatorBtn} style={{ border: '1px solid var(--border-faint)', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
                                             <ChevronLeft size={16} /> Anterior
                                         </span>
                                     )}
-                                    <span className="text-sm font-mono" style={{ color: '#7b8da3' }}>Página {current_page} de {last_page}</span>
+                                    <span className="text-sm font-mono" style={{ color: 'var(--text-muted)' }}>Página {current_page} de {last_page}</span>
                                     {next_page_url ? (
-                                        <Link href={next_page_url} className={`${paginatorBtn} hover:text-[#3cbdf8]`}
-                                            style={{ border: '1px solid rgba(150,178,208,0.18)', color: '#b6c5d8' }}>
+                                        <Link href={next_page_url} className={`${paginatorBtn} hover:text-[var(--accent)]`}
+                                            style={{ border: '1px solid var(--border-2)', color: 'var(--text-body)' }}>
                                             Próxima <ChevronRight size={16} />
                                         </Link>
                                     ) : (
-                                        <span className={paginatorBtn} style={{ border: '1px solid rgba(150,178,208,0.08)', color: '#7b8da3', cursor: 'not-allowed' }}>
+                                        <span className={paginatorBtn} style={{ border: '1px solid var(--border-faint)', color: 'var(--text-muted)', cursor: 'not-allowed' }}>
                                             Próxima <ChevronRight size={16} />
                                         </span>
                                     )}
@@ -75,10 +73,10 @@ export default function BlogCategory({ category, posts }) {
                             )}
                         </>
                     ) : (
-                        <div className="text-center py-24" style={{ color: '#7b8da3' }}>
+                        <div className="text-center py-24" style={{ color: 'var(--text-muted)' }}>
                             <p className="text-lg">Nenhum post nesta categoria ainda.</p>
                             <p className="text-sm mt-1">
-                                <Link href="/blog" className="hover:underline" style={{ color: '#3cbdf8' }}>Ver todos os posts</Link>
+                                <Link href="/blog" className="hover:underline" style={{ color: 'var(--accent)' }}>Ver todos os posts</Link>
                             </p>
                         </div>
                     )}

@@ -4,15 +4,37 @@
 
 /* ── Design tokens ─────────────────────────────────────────── */
 :root {
+  /* Backgrounds / surfaces */
+  --base:       #0a131e;   /* fundo da página */
+  --panel:      #0c1828;   /* seções alternadas */
+  --surface:    #101f30;   /* cards */
+  --surface-2:  #15243a;   /* cards elevados */
+  --surface-3:  #1b2e46;
+
+  /* Accent + status */
   --accent:     #3cbdf8;
   --accent-2:   #2a9be0;
-  --accent-ink: #03121d;
+  --accent-ink: #03121d;   /* texto sobre o accent */
+  --accent-hi:  #76d3ff;   /* accent em hover */
   --violet:     #7b86ff;
   --teal:       #2fd9c2;
+  --gold:       #f0b65a;
+
+  /* Texto */
+  --text-bright: #eaf1fa;  /* títulos / ênfase */
+  --text-body:   #b6c5d8;  /* corpo */
+  --text-muted:  #7b8da3;  /* secundário / labels */
+
+  /* Glows */
   --glow:       rgba(60,189,248,0.16);
   --glow-2:     rgba(123,134,255,0.14);
-  --border:     rgba(150,178,208,0.12);
-  --border-s:   rgba(150,178,208,0.24);
+
+  /* Bordas (linhas sutis sobre fundo escuro) */
+  --border:        rgba(150,178,208,0.12);
+  --border-2:      rgba(150,178,208,0.18);
+  --border-s:      rgba(150,178,208,0.24);
+  --border-faint:  rgba(150,178,208,0.08);
+  --border-h:      rgba(150,178,208,0.3);   /* hover */
 }
 
 html { scroll-behavior: smooth; }
@@ -20,6 +42,88 @@ html { scroll-behavior: smooth; }
 body { font-family: 'Manrope', system-ui, sans-serif; }
 
 ::selection { background: var(--accent); color: var(--accent-ink); }
+
+/* ── Componentes / utilitários ──────────────────────────────── */
+@layer components {
+  /* Card base sobre fundo escuro */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .card-raised { background: var(--surface-2); }
+
+  /* Card clicável: só muda a borda no hover (substitui handlers JS) */
+  .card-hover { transition: border-color .25s, transform .25s, box-shadow .25s; }
+  .card-hover:hover { border-color: var(--border-h); }
+
+  /* Borda passa a accent no hover (paginação, links outline) */
+  .hover-accent { transition: border-color .2s, color .2s; }
+  .hover-accent:hover { border-color: var(--accent); }
+
+  /* Card de post: borda mais forte + sombra no hover */
+  .post-card-hover:hover {
+    border-color: var(--border-s);
+    box-shadow: 0 18px 40px -22px rgba(0,0,0,0.7);
+  }
+
+  /* Botão de compartilhar: vira accent no hover */
+  .share-tile {
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    color: var(--text-muted);
+    transition: background .2s, color .2s, border-color .2s, transform .2s;
+  }
+  .share-tile:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: transparent;
+  }
+
+  /* Item do índice (TOC) — escurece→clareia no hover */
+  .toc-link { transition: color .2s; }
+  .toc-link:hover { color: var(--text-bright) !important; }
+
+  /* Botões */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    border-radius: .75rem;
+    transition: transform .2s, border-color .2s, color .2s, box-shadow .2s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    color: var(--accent-ink);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-s);
+    color: var(--text-bright);
+  }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  /* Pills de filtro */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: border-color .2s, transform .2s, background .2s, color .2s;
+  }
+  .pill-idle {
+    background: var(--surface);
+    border: 1px solid var(--border-2);
+    color: var(--text-body);
+  }
+  .pill-active {
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    border: 1px solid transparent;
+    color: var(--accent-ink);
+  }
+}
 
 /* ── Eyebrow label ──────────────────────────────────────────── */
 .eyebrow {
@@ -79,6 +183,15 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
 .marquee-track:hover { animation-play-state: paused; }
 
 
+/* ── Event card — hover (antes feito via JS) ───────────────── */
+.event-card { transition: border-color .25s, transform .25s, box-shadow .25s; }
+.event-card:hover {
+  border-color: var(--border-h);
+  transform: translateX(4px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.event-card:hover .event-accent-bar { transform: scaleY(1); }
+
 /* ── Event card — mobile layout ────────────────────────────── */
 @media (max-width: 760px) {
   .event-card {
@@ -112,15 +225,15 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
   border-radius: 8px;
   border: 1px solid rgba(150,178,208,0.2);
   background: rgba(11,22,35,0.85);
-  color: #7b8da3;
+  color: var(--text-muted);
   cursor: pointer;
   transition: color .15s, border-color .15s;
   backdrop-filter: blur(4px);
   z-index: 1;
   line-height: 1;
 }
-.codeblock-copy:hover { color: #3cbdf8; border-color: rgba(60,189,248,0.4); }
-.codeblock-copy.copied { color: #2fd9c2; border-color: rgba(47,217,194,0.4); }
+.codeblock-copy:hover { color: var(--accent); border-color: rgba(60,189,248,0.4); }
+.codeblock-copy.copied { color: var(--teal); border-color: rgba(47,217,194,0.4); }
 
 /* ── Prose: callout blocks ──────────────────────────────────── */
 .prose .callout {
@@ -132,7 +245,7 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
   background: rgba(60,189,248,0.06);
   border: 1px solid rgba(60,189,248,0.2);
   margin: 1.5em 0;
-  color: #b6c5d8;
+  color: var(--text-body);
   font-size: 15px;
   line-height: 1.65;
 }
@@ -144,10 +257,10 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  color: #3cbdf8;
+  color: var(--accent);
   margin-top: 2px;
 }
-.prose .callout--tip .callout__icon { color: #2fd9c2; }
+.prose .callout--tip .callout__icon { color: var(--teal); }
 
 /* ── Back to top button ─────────────────────────────────────── */
 .totop {
@@ -158,9 +271,9 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #15243a;
-  border: 1px solid rgba(150,178,208,0.24);
-  color: #eaf1fa;
+  background: var(--surface-2);
+  border: 1px solid var(--border-s);
+  color: var(--text-bright);
   display: grid;
   place-items: center;
   box-shadow: 0 18px 40px -22px rgba(0,0,0,0.7);
@@ -171,7 +284,7 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
   cursor: pointer;
 }
 .totop.show { opacity: 1; visibility: visible; transform: translateY(0); }
-.totop:hover { background: #3cbdf8; color: #03121d; border-color: transparent; transform: translateY(-3px); }
+.totop:hover { background: var(--accent); color: var(--accent-ink); border-color: transparent; transform: translateY(-3px); }
 .totop svg { width: 20px; height: 20px; }
 @media (max-width: 760px) { .totop { right: 16px; bottom: 16px; width: 44px; height: 44px; } }
 

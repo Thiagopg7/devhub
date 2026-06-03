@@ -14,7 +14,7 @@ const CHIPS = [
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><polygon points="12 2 21.5 7.5 21.5 16.5 12 22 2.5 16.5 2.5 7.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none" opacity=".6"/><line x1="12" y1="4" x2="12" y2="10"/><line x1="12" y1="14" x2="12" y2="20"/><line x1="19.4" y1="8" x2="14" y2="11"/><line x1="10" y1="13" x2="4.6" y2="16"/><line x1="4.6" y1="8" x2="10" y2="11"/><line x1="14" y1="13" x2="19.4" y2="16"/></svg> },
     { label: 'TypeScript', delay: '-3.4s', pos: { top: '55%',    right: '6%'  }, bg: 'rgba(49,120,198,.18)',  color: '#5b9bd5',
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M14 9v6"/></svg> },
-    { label: 'Postgres',   delay: '-3.0s', pos: { bottom: '20%', left: '4%'   }, bg: 'rgba(47,217,194,.16)',  color: '#2fd9c2',
+    { label: 'Postgres',   delay: '-3.0s', pos: { bottom: '20%', left: '4%'   }, bg: 'rgba(47,217,194,.16)',  color: 'var(--teal)',
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" style={{width:16,height:16}}><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg> },
     { label: 'Tailwind',   delay: '-2s',   pos: { bottom: '18%', right: '8%'  }, bg: 'rgba(56,189,248,.16)',  color: '#38bdf8',
       icon: <svg viewBox="0 0 24 24" fill="currentColor" style={{width:16,height:16}}><path d="M6.5 9C8 6 10 5 12.5 6c1.5.6 2 1.7 3.2 2.6 1.3 1 2.8 1 4.3-.3-1.5 3-3.5 4-6 3-1.5-.6-2-1.7-3.2-2.6C9.5 7.7 8 7.7 6.5 9zM2 14.4c1.5-3 3.5-4 6-3 1.5.6 2 1.7 3.2 2.6 1.3 1 2.8 1 4.3-.3-1.5 3-3.5 4-6 3-1.5-.6-2-1.7-3.2-2.6-1.3-1-2.8-1-4.3.3z"/></svg> },
@@ -26,96 +26,86 @@ const CHIPS = [
 
 export default function HeroBanner() {
     return (
-        <section className="relative overflow-hidden pt-[70px] pb-24" style={{ background: '#0a131e' }}>
-            {/* Glow effects */}
+        <section className="relative overflow-hidden pt-[70px] pb-24" style={{ background: 'var(--base)' }}>
             <div className="absolute pointer-events-none" style={{ width: 900, height: 900, right: -200, top: -360, background: 'radial-gradient(circle,rgba(60,189,248,0.16) 0%,transparent 62%)', filter: 'blur(8px)' }} />
             <div className="absolute pointer-events-none" style={{ width: 620, height: 620, left: -240, bottom: -260, background: 'radial-gradient(circle,rgba(123,134,255,0.14) 0%,transparent 64%)' }} />
 
             <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-14 items-center">
 
-                    {/* Left column — copy */}
                     <div>
-                        {/* Badge */}
                         <span className="inline-flex items-center gap-2 font-mono text-[12.5px] tracking-[0.06em] border rounded-full px-[15px] py-[7px]"
                             style={{ color: '#bfe6fb', background: 'rgba(60,189,248,0.08)', borderColor: 'rgba(60,189,248,0.28)' }}>
                             <span className="w-[7px] h-[7px] rounded-full shrink-0"
-                                style={{ background: '#3cbdf8', boxShadow: '0 0 0 4px rgba(60,189,248,0.18)', animation: 'chip-float 2.4s ease-in-out infinite' }} />
+                                style={{ background: 'var(--accent)', boxShadow: '0 0 0 4px rgba(60,189,248,0.18)', animation: 'chip-float 2.4s ease-in-out infinite' }} />
                             Hub de Inovação &amp; Tecnologia
                         </span>
 
-                        {/* Headline */}
                         <h1 className="font-display font-semibold leading-[1.02] tracking-[-0.03em] mt-5 mb-0"
                             style={{ fontSize: 'clamp(40px,5.6vw,70px)' }}>
                             Conhecimento técnico<br />
-                            para <span style={{ background: 'linear-gradient(100deg,#3cbdf8 10%,#8fe0ff 55%,#7b86ff 110%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>construir o futuro.</span>
+                            para <span style={{ background: 'linear-gradient(100deg,var(--accent) 10%,#8fe0ff 55%,var(--violet) 110%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>construir o futuro.</span>
                         </h1>
 
-                        <p className="mt-6 max-w-[46ch]" style={{ color: '#b6c5d8', fontSize: 'clamp(16px,1.4vw,18.5px)' }}>
+                        <p className="mt-6 max-w-[46ch]" style={{ color: 'var(--text-body)', fontSize: 'clamp(16px,1.4vw,18.5px)' }}>
                             Artigos práticos, insights e tendências sobre desenvolvimento, tecnologia e inovação — para quem vive de colocar a mão no código.
                         </p>
 
-                        {/* CTAs */}
                         <div className="flex flex-wrap gap-3 mt-9">
                             <Link href="/blog"
                                 className="inline-flex items-center gap-2.5 px-[22px] py-[14px] rounded-xl font-semibold text-[15px] transition-all hover:-translate-y-0.5"
-                                style={{ background: 'linear-gradient(180deg,#3cbdf8,#2a9be0)', color: '#03121d', boxShadow: '0 12px 30px -12px rgba(60,189,248,0.4)' }}>
+                                style={{ background: 'linear-gradient(180deg,var(--accent),var(--accent-2))', color: 'var(--accent-ink)', boxShadow: '0 12px 30px -12px rgba(60,189,248,0.4)' }}>
                                 Explorar Posts
                                 <ArrowRight size={17} />
                             </Link>
                             <a href="#newsletter"
                                 className="inline-flex items-center gap-2.5 px-[22px] py-[14px] rounded-xl font-semibold text-[15px] transition-all hover:-translate-y-0.5"
-                                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(150,178,208,0.24)', color: '#eaf1fa' }}
-                                onMouseEnter={e => { e.currentTarget.style.borderColor='#3cbdf8'; e.currentTarget.style.background='rgba(60,189,248,0.07)'; }}
-                                onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(150,178,208,0.24)'; e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}>
+                                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-s)', color: 'var(--text-bright)' }}
+                                onMouseEnter={e => { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.background='rgba(60,189,248,0.07)'; }}
+                                onMouseLeave={e => { e.currentTarget.style.borderColor='var(--border-s)'; e.currentTarget.style.background='rgba(255,255,255,0.03)'; }}>
                                 Receber novidades
                             </a>
                         </div>
 
-                        {/* Stats */}
                         <div className="flex items-center flex-wrap gap-7 mt-10">
                             <div>
                                 <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">
-                                    +<span style={{ color: '#3cbdf8' }}>120</span>
+                                    +<span style={{ color: 'var(--accent)' }}>120</span>
                                 </div>
-                                <div className="text-[12.5px] mt-1" style={{ color: '#7b8da3' }}>artigos publicados</div>
+                                <div className="text-[12.5px] mt-1" style={{ color: 'var(--text-muted)' }}>artigos publicados</div>
                             </div>
-                            <div className="w-px h-9" style={{ background: 'rgba(150,178,208,0.12)' }} />
+                            <div className="w-px h-9" style={{ background: 'var(--border)' }} />
                             <div>
                                 <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">6</div>
-                                <div className="text-[12.5px] mt-1" style={{ color: '#7b8da3' }}>trilhas de conteúdo</div>
+                                <div className="text-[12.5px] mt-1" style={{ color: 'var(--text-muted)' }}>trilhas de conteúdo</div>
                             </div>
-                            <div className="w-px h-9" style={{ background: 'rgba(150,178,208,0.12)' }} />
+                            <div className="w-px h-9" style={{ background: 'var(--border)' }} />
                             <div>
                                 <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">semanal</div>
-                                <div className="text-[12.5px] mt-1" style={{ color: '#7b8da3' }}>novos conteúdos</div>
+                                <div className="text-[12.5px] mt-1" style={{ color: 'var(--text-muted)' }}>novos conteúdos</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Right column — visual panel */}
                     <div className="hidden lg:block relative" style={{ height: 'clamp(430px,42vw,520px)' }}>
                         <div className="absolute inset-0 rounded-[30px] overflow-hidden"
-                            style={{ background: 'linear-gradient(160deg,rgba(27,46,70,0.55),rgba(13,24,40,0.4))', border: '1px solid rgba(150,178,208,0.24)', boxShadow: '0 40px 80px -30px rgba(0,0,0,0.75)' }}>
+                            style={{ background: 'linear-gradient(160deg,rgba(27,46,70,0.55),rgba(13,24,40,0.4))', border: '1px solid var(--border-s)', boxShadow: '0 40px 80px -30px rgba(0,0,0,0.75)' }}>
 
-                            {/* Spinning rings */}
                             <div className="absolute" style={{ left: '50%', top: '50%', width: 280, height: 280, marginLeft: -140, marginTop: -140, border: '1px dashed rgba(60,189,248,0.28)', borderRadius: '50%', transformOrigin: 'center', animation: 'ring-spin 34s linear infinite', transform: 'translate(-50%,-50%)' }} />
                             <div className="absolute" style={{ left: '50%', top: '50%', width: 420, height: 420, marginLeft: -210, marginTop: -210, border: '1px dashed rgba(123,134,255,0.18)', borderRadius: '50%', animation: 'ring-spin-rev 52s linear infinite', transform: 'translate(-50%,-50%)' }} />
 
-                            {/* Center core */}
                             <div className="absolute z-[3] grid place-items-center rounded-[26px]"
-                                style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 96, height: 96, background: 'linear-gradient(160deg,#1b2e46,#101f30)', border: '1px solid rgba(150,178,208,0.24)', boxShadow: '0 0 0 8px rgba(60,189,248,0.06), 0 20px 50px -16px rgba(0,0,0,0.7)' }}>
-                                <svg width="46" height="46" viewBox="0 0 32 32" fill="none" style={{ color: '#3cbdf8' }}>
+                                style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)', width: 96, height: 96, background: 'linear-gradient(160deg,var(--surface-3),var(--surface))', border: '1px solid var(--border-s)', boxShadow: '0 0 0 8px rgba(60,189,248,0.06), 0 20px 50px -16px rgba(0,0,0,0.7)' }}>
+                                <svg width="46" height="46" viewBox="0 0 32 32" fill="none" style={{ color: 'var(--accent)' }}>
                                     <path d="M16 2v28M2 16h28M5.8 5.8l20.4 20.4M26.2 5.8L5.8 26.2" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"/>
-                                    <circle cx="16" cy="16" r="4.4" fill="#101f30" stroke="currentColor" strokeWidth="2.4"/>
+                                    <circle cx="16" cy="16" r="4.4" fill="var(--surface)" stroke="currentColor" strokeWidth="2.4"/>
                                 </svg>
                             </div>
 
-                            {/* Tech chips */}
                             {CHIPS.map((chip) => (
                                 <div key={chip.label}
                                     className="absolute z-[4] flex items-center gap-2 font-mono text-[13px] font-medium rounded-full px-3 py-2"
-                                    style={{ ...chip.pos, background: 'rgba(16,31,48,0.82)', backdropFilter: 'blur(6px)', border: '1px solid rgba(150,178,208,0.24)', boxShadow: '0 18px 40px -22px rgba(0,0,0,0.7)', animation: `chip-float 6s ease-in-out ${chip.delay} infinite`, color: '#eaf1fa' }}>
+                                    style={{ ...chip.pos, background: 'rgba(16,31,48,0.82)', backdropFilter: 'blur(6px)', border: '1px solid var(--border-s)', boxShadow: '0 18px 40px -22px rgba(0,0,0,0.7)', animation: `chip-float 6s ease-in-out ${chip.delay} infinite`, color: 'var(--text-bright)' }}>
                                     <span className="w-[22px] h-[22px] rounded-[6px] grid place-items-center shrink-0 text-[0px]" style={{ background: chip.bg, color: chip.color }}>
                                         {chip.icon}
                                     </span>
