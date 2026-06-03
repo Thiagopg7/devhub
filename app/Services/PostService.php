@@ -12,11 +12,12 @@ class PostService
 {
     public function __construct(private readonly FileUploadService $uploadService) {}
 
-    public function getAllActive(int $perPage = 15, ?string $search = null): LengthAwarePaginator
+    public function getAllActive(int $perPage = 15, ?string $search = null, ?string $category = null): LengthAwarePaginator
     {
         return Post::active()
             ->with('category')
             ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
+            ->when($category, fn ($q) => $q->whereHas('category', fn ($q) => $q->where('slug', $category)))
             ->orderByDesc('created_at')
             ->paginate($perPage)
             ->withQueryString();
@@ -48,6 +49,53 @@ class PostService
     public function findBySlug(string $slug): ?Post
     {
         return Post::active()->with('category')->where('slug', $slug)->first();
+    }
+
+    public function findBySlugWithRelated(string $slug): ?array
+    {
+        $post = Post::active()->with('category')->where('slug', $slug)->first();
+
+        if (! $post) {
+            return null;
+        }
+
+        $prev = Post::active()
+            ->where('created_at', '<', $post->created_at)
+            ->orderByDesc('created_at')
+            ->select(['id', 'title', 'slug'])
+            ->first();
+
+        $next = Post::active()
+            ->where('created_at', '>', $post->created_at)
+            ->orderBy('created_at')
+            ->select(['id', 'title', 'slug'])
+            ->first();
+
+        $related = Post::active()
+            ->with('category')
+            ->where('id', '!=', $post->id)
+            ->when($post->category_id, fn ($q) => $q->where('category_id', $post->category_id))
+            ->orderByDesc('created_at')
+            ->limit(3)
+            ->get();
+
+        if ($related->count() < 3) {
+            $excluded = $related->pluck('id')->push($post->id);
+            $filler = Post::active()
+                ->with('category')
+                ->whereNotIn('id', $excluded)
+                ->orderByDesc('created_at')
+                ->limit(3 - $related->count())
+                ->get();
+            $related = $related->merge($filler);
+        }
+
+        return [
+            'post' => $post,
+            'prevPost' => $prev,
+            'nextPost' => $next,
+            'relatedPosts' => $related->values(),
+        ];
     }
 
     public function getByCategory(string $categorySlug, int $perPage = 12): array

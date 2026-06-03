@@ -36,16 +36,13 @@ export default function Form({ category = {} }) {
         e.preventDefault();
 
         if (isEditing) {
-            send(
-                route("admin.categories.update", category.id),
-                transform((d) => ({ ...d, _method: "PUT" })),
-                {
-                    forceFormData: true,
-                    onError: () => toast.error("Erro ao atualizar a categoria."),
-                },
-            );
+            transform((d) => ({ ...d, _method: "PUT" }));
+            send(route("admin.categories.update", category.id), {
+                forceFormData: true,
+                onError: () => toast.error("Erro ao atualizar a categoria."),
+            });
         } else {
-            send(route("admin.categories.store"), data, {
+            send(route("admin.categories.store"), {
                 onError: () => toast.error("Erro ao criar a categoria."),
             });
         }

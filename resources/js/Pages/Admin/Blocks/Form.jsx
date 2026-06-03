@@ -35,15 +35,12 @@ export default function Form({ block = {} }) {
         e.preventDefault();
 
         if (isEditing) {
-            send(
-                route("admin.blocks.update", block.id),
-                transform((d) => ({ ...d, _method: "PUT" })),
-                {
-                    onError: () => toast.error("Erro ao atualizar o bloco."),
-                },
-            );
+            transform((d) => ({ ...d, _method: "PUT" }));
+            send(route("admin.blocks.update", block.id), {
+                onError: () => toast.error("Erro ao atualizar o bloco."),
+            });
         } else {
-            send(route("admin.blocks.store"), data, {
+            send(route("admin.blocks.store"), {
                 onError: () => toast.error("Erro ao criar o bloco."),
             });
         }
