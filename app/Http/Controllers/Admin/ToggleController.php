@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Block;
 use App\Models\Category;
+use App\Models\Event;
 use App\Models\MenuItem;
 use App\Models\NewsletterArea;
 use App\Models\Page;
@@ -19,6 +20,7 @@ class ToggleController extends Controller
         'category' => ['class' => Category::class,       'module' => 'categories'],
         'block' => ['class' => Block::class,          'module' => 'blocks'],
         'menu_item' => ['class' => MenuItem::class,       'module' => 'menu'],
+        'event' => ['class' => Event::class,           'module' => 'events'],
         'technology' => ['class' => Technology::class,     'module' => 'technologies'],
         'page' => ['class' => Page::class,           'module' => 'pages'],
         'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas'],

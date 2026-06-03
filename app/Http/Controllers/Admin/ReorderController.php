@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use App\Models\MenuItem;
 use App\Models\NewsletterArea;
 use App\Models\Technology;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 class ReorderController extends Controller
 {
     private const ALLOWED_MODELS = [
+        'event' => ['class' => Event::class,           'module' => 'events',           'tags' => [],                       'keys' => []],
         'technology' => ['class' => Technology::class,     'module' => 'technologies',     'tags' => [ApiCache::TECHNOLOGIES], 'keys' => []],
         'menu_item' => ['class' => MenuItem::class,       'module' => 'menu',             'tags' => [ApiCache::MENU],         'keys' => ['menu.shared']],
         'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas', 'tags' => [],                       'keys' => ['newsletter_areas.active']],
