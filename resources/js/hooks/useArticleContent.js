@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 
-/**
- * Efeitos do corpo do artigo (Blog/Show):
- *  - injeta IDs nos headings e monta a lista para o índice (TOC);
- *  - destaca o heading ativo conforme o scroll;
- *  - adiciona botão "Copiar" em cada bloco de código.
- *
- * @param {React.RefObject} proseRef  ref do container do conteúdo renderizado
- * @param {string} content            HTML sanitizado (dispara recálculo quando muda)
- * @returns {{ headings: Array, activeId: string }}
- */
+async function copyText(text) {
+    if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+    } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        Object.assign(ta.style, { position: 'fixed', opacity: '0', pointerEvents: 'none' });
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+    }
+}
+
 export default function useArticleContent(proseRef, content) {
     const [headings, setHeadings] = useState([]);
     const [activeId, setActiveId] = useState('');
@@ -56,12 +60,14 @@ export default function useArticleContent(proseRef, content) {
             btn.textContent = 'Copiar';
             btn.className = 'codeblock-copy';
             btn.setAttribute('aria-label', 'Copiar código');
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 const code = pre.querySelector('code') || pre;
-                navigator.clipboard.writeText(code.textContent ?? '');
-                btn.textContent = '✓ Copiado!';
-                btn.classList.add('copied');
-                setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+                try {
+                    await copyText(code.textContent ?? '');
+                    btn.textContent = '✓ Copiado!';
+                    btn.classList.add('copied');
+                    setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+                } catch {}
             });
             wrapper.appendChild(btn);
         });
