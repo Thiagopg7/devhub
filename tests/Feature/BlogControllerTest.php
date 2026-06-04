@@ -56,6 +56,25 @@ class BlogControllerTest extends TestCase
             );
     }
 
+    public function test_show_retorna_autor_com_bio_sem_expor_email(): void
+    {
+        $author = User::factory()->create([
+            'name' => 'Autora Teste',
+            'email' => 'secreto@example.com',
+            'bio' => 'Bio do autor.',
+        ]);
+        $post = Post::factory()->create(['is_active' => true, 'user_id' => $author->id]);
+
+        $this->get(route('blog.show', $post->slug))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Blog/Show')
+                ->where('post.user.name', 'Autora Teste')
+                ->where('post.user.bio', 'Bio do autor.')
+                ->has('post.user.avatar_image_url')
+                ->missing('post.user.email')
+            );
+    }
+
     public function test_show_retorna_404_para_post_inativo(): void
     {
         $author = $this->author();

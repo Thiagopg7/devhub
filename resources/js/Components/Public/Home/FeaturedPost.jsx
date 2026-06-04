@@ -55,7 +55,7 @@ export default function FeaturedPost({ post }) {
                             <p className="text-base mb-8 max-w-[50ch]" style={{ color: 'var(--text-body)' }}>{post.description}</p>
                         )}
                         <div className="flex items-center gap-3 mt-auto">
-                            <AuthorBadge size="md" />
+                            <AuthorBadge size="md" author={post.user} />
                             <Button href={route('blog.show', post.slug)} variant="ghost" className="ml-auto">
                                 Ler artigo <ArrowRight size={14} />
                             </Button>

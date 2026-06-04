@@ -18,6 +18,15 @@ export function estimateReadTime(content) {
     return Math.max(1, Math.ceil(words / 200));
 }
 
+export function initials(name = '') {
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((w) => w[0].toUpperCase())
+        .join('') || 'DH';
+}
+
 const CATEGORY_ICON_MAP = [
     [['frontend', 'front-end'],          Globe],
     [['backend', 'back-end', 'servidor'], Server],

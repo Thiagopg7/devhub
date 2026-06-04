@@ -14,12 +14,19 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'is_super_admin'])]
+#[Fillable(['name', 'email', 'password', 'is_super_admin', 'bio', 'avatar_image'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasActivityLog, HasApiTokens, HasFactory, HasRoles, Notifiable;
+
+    protected $appends = ['avatar_image_url'];
+
+    public function getAvatarImageUrlAttribute(): ?string
+    {
+        return $this->avatar_image ? asset('storage/'.$this->avatar_image) : null;
+    }
 
     public function posts(): HasMany
     {

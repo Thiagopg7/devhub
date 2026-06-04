@@ -59,7 +59,7 @@ export default function ArticleHeader({ post, readTime, pageUrl }) {
             )}
 
             <div className="flex flex-wrap items-center gap-4 mt-7">
-                <AuthorBadge size="sm" />
+                <AuthorBadge size="sm" author={post.user} />
                 <span className="w-px h-8 shrink-0" style={{ background: 'var(--border-2)' }} />
                 <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: 'var(--text-muted)' }}>
                     <Calendar size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />
