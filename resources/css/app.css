@@ -190,6 +190,18 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.in { opacity: 1; transform: none; }
 
+/* ── Testimonials swiper ────────────────────────────────────── */
+.testimonials-swiper { --swiper-pagination-bottom: 0px; }
+.testimonials-swiper .swiper-pagination-bullet {
+    background: var(--text-muted);
+    opacity: 0.35;
+    transition: opacity .25s ease, background .25s ease;
+}
+.testimonials-swiper .swiper-pagination-bullet-active {
+    background: var(--accent);
+    opacity: 1;
+}
+
 /* ── Stack marquee ──────────────────────────────────────────── */
 @keyframes marquee { to { transform: translateX(-50%); } }
 .marquee-track { animation: marquee 34s linear infinite; }

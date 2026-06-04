@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Technology;
+use App\Models\Testimonial;
 use App\Services\PostService;
 use Inertia\Inertia;
 
@@ -21,6 +22,7 @@ class HomeController extends Controller
                 ->orderBy('date')
                 ->limit(3)
                 ->get(),
+            'testimonials' => Testimonial::active()->ordered()->get(),
         ]);
     }
 }

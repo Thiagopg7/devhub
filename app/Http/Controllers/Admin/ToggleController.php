@@ -11,6 +11,7 @@ use App\Models\NewsletterArea;
 use App\Models\Page;
 use App\Models\Post;
 use App\Models\Technology;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 
 class ToggleController extends Controller
@@ -22,6 +23,7 @@ class ToggleController extends Controller
         'menu_item' => ['class' => MenuItem::class,       'module' => 'menu'],
         'event' => ['class' => Event::class,           'module' => 'events'],
         'technology' => ['class' => Technology::class,     'module' => 'technologies'],
+        'testimonial' => ['class' => Testimonial::class,   'module' => 'testimonials'],
         'page' => ['class' => Page::class,           'module' => 'pages'],
         'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas'],
     ];
