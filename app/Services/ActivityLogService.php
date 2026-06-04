@@ -22,6 +22,7 @@ class ActivityLogService
         'Page' => 'Página',
         'Block' => 'Bloco',
         'Technology' => 'Tecnologia',
+        'Event' => 'Evento',
         'MenuItem' => 'Item de menu',
         'NewsletterArea' => 'Área de newsletter',
         'NewsletterCampaign' => 'Campanha',

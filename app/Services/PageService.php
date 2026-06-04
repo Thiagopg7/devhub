@@ -10,12 +10,16 @@ class PageService
 {
     public function __construct(private readonly FileUploadService $uploadService) {}
 
-    public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
+    public function getPaginated(int $perPage = 20, ?string $search = null, ?string $status = null): LengthAwarePaginator
     {
         $query = Page::orderBy('title');
 
         if ($search) {
             $query->where('title', 'like', "%{$search}%");
+        }
+
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', $status === '1');
         }
 
         return $query->paginate($perPage)->withQueryString();

@@ -11,29 +11,35 @@ import SortableTr from "@/Components/Admin/SortableTr";
 import AdminSearchForm from "@/Components/Admin/AdminSearchForm";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
 import { FaPen, FaTrash, FaEye } from "react-icons/fa";
-import { ExternalLink } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 import { useConfirmModal } from "@/hooks/useConfirmModal";
 
+const STATUS_LABELS = { open: "Aberto", soon: "Em breve", full: "Lotado" };
+const STATUS_COLORS = {
+    open: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+    soon: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+    full: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+};
+
 const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
 
-export default function Index({ technologies, filter }) {
+export default function Index({ events, filter }) {
     const can = useCan();
-    const { data, setData, get } = useForm({ q: filter?.q || "", status: filter?.status || "" });
-    const [items, setItems] = useState(technologies.data);
+    const { data, setData, get } = useForm({ q: filter?.q || "", type: filter?.type || "", event_status: filter?.event_status || "" });
+    const [items, setItems] = useState(events.data);
     const { confirm, modalProps } = useConfirmModal();
 
     useEffect(() => {
-        setItems(technologies.data);
-    }, [technologies.data]);
+        setItems(events.data);
+    }, [events.data]);
 
     const submit = (e) => {
         e.preventDefault();
-        get(route("admin.technologies.index"), {
+        get(route("admin.events.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q, status: data.status },
+            params: { q: data.q, type: data.type, event_status: data.event_status },
         });
     };
 
@@ -53,7 +59,7 @@ export default function Index({ technologies, filter }) {
         router.post(
             route("admin.reorder"),
             {
-                model: "technology",
+                model: "event",
                 items: reordered.map((item, idx) => ({ id: item.id, order: idx + 1 })),
             },
             {
@@ -67,10 +73,10 @@ export default function Index({ technologies, filter }) {
 
     const deleteConfirm = (id) => {
         confirm({
-            message: "Deseja realmente excluir esta tecnologia?",
-            onConfirm: () => router.delete(route("admin.technologies.destroy", id), {
+            message: "Deseja realmente excluir este evento?",
+            onConfirm: () => router.delete(route("admin.events.destroy", id), {
                 preserveScroll: true,
-                onError: () => toast.error("Erro ao excluir a tecnologia."),
+                onError: () => toast.error("Erro ao excluir o evento."),
             }),
         });
     };
@@ -79,14 +85,14 @@ export default function Index({ technologies, filter }) {
 
     return (
         <>
-            <Head title="Tecnologias" />
+            <Head title="Eventos" />
 
             <AuthenticatedLayout
                 header={
                     <div className="flex w-full justify-between items-center">
-                        <h2 className="font-semibold text-xl leading-tight">Tecnologias</h2>
-                        {can('technologies.create') && (
-                            <NavButton href={route("admin.technologies.create")}>Cadastrar</NavButton>
+                        <h2 className="font-semibold text-xl leading-tight">Eventos</h2>
+                        {can("events.create") && (
+                            <NavButton href={route("admin.events.create")}>Cadastrar</NavButton>
                         )}
                     </div>
                 }
@@ -96,11 +102,19 @@ export default function Index({ technologies, filter }) {
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Nome da tecnologia...">
-                                    <select value={data.status} onChange={(e) => setData("status", e.target.value)} className={selectCls}>
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Título ou organização...">
+                                    <select value={data.type} onChange={(e) => setData("type", e.target.value)} className={selectCls}>
+                                        <option value="">Todos os tipos</option>
+                                        <option value="conf">Conferência</option>
+                                        <option value="meetup">Meetup</option>
+                                        <option value="workshop">Workshop</option>
+                                        <option value="hack">Hackathon</option>
+                                    </select>
+                                    <select value={data.event_status} onChange={(e) => setData("event_status", e.target.value)} className={selectCls}>
                                         <option value="">Qualquer status</option>
-                                        <option value="1">Ativa</option>
-                                        <option value="0">Inativa</option>
+                                        <option value="open">Aberto</option>
+                                        <option value="soon">Em breve</option>
+                                        <option value="full">Lotado</option>
                                     </select>
                                 </AdminSearchForm>
 
@@ -111,52 +125,49 @@ export default function Index({ technologies, filter }) {
                                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                                     <tr>
                                                         <th className="w-8" />
-                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ícone</th>
-                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
-                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">URL</th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Data</th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Título</th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Tipo</th>
+                                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                                    {items.map((tech) => (
-                                                        <SortableTr key={tech.id} id={tech.id} disabled={isFiltering}>
-                                                            <td className="px-6 py-4">
-                                                                {tech.icon_image_url ? (
-                                                                    <img
-                                                                        src={tech.icon_image_url}
-                                                                        alt={tech.name}
-                                                                        className="w-8 h-8 rounded object-contain bg-gray-100 dark:bg-gray-700 p-0.5"
-                                                                    />
-                                                                ) : (
-                                                                    <span className="inline-block w-8 h-8 rounded bg-gray-100 dark:bg-gray-700" />
-                                                                )}
+                                                    {items.map((event) => (
+                                                        <SortableTr key={event.id} id={event.id} disabled={isFiltering}>
+                                                            <td className="px-6 py-4 text-sm font-mono text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                                                                {event.day}/{event.month}/{event.year}
                                                             </td>
-                                                            <td className="px-6 py-4 font-medium dark:text-gray-100">{tech.name}</td>
-                                                            <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                                                <a href={tech.url} target="_blank" rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 hover:text-sky-500 transition-colors">
-                                                                    {tech.url}
-                                                                    <ExternalLink size={12} />
-                                                                </a>
+                                                            <td className="px-6 py-4">
+                                                                <div className="font-medium dark:text-gray-100">{event.title}</div>
+                                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{event.org}</div>
+                                                            </td>
+                                                            <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
+                                                                {event.type_label}
+                                                            </td>
+                                                            <td className="px-6 py-4">
+                                                                <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[event.status] ?? ""}`}>
+                                                                    {STATUS_LABELS[event.status] ?? event.status}
+                                                                </span>
                                                             </td>
                                                             <td className="px-6 py-4 text-center">
-                                                                <ToggleActive id={tech.id} model="technology" value={tech.is_active} />
+                                                                <ToggleActive id={event.id} model="event" value={event.is_active} />
                                                             </td>
                                                             <td className="px-6 py-4 text-center">
                                                                 <div className="flex gap-2 justify-center">
-                                                                    {!can('technologies.edit') && can('technologies.view') && (
-                                                                        <NavButton href={route("admin.technologies.edit", tech.id)} title="Visualizar">
+                                                                    {!can("events.edit") && can("events.view") && (
+                                                                        <NavButton href={route("admin.events.edit", event.id)} title="Visualizar">
                                                                             <FaEye />
                                                                         </NavButton>
                                                                     )}
-                                                                    {can('technologies.edit') && (
-                                                                        <NavButton href={route("admin.technologies.edit", tech.id)} title="Editar">
+                                                                    {can("events.edit") && (
+                                                                        <NavButton href={route("admin.events.edit", event.id)} title="Editar">
                                                                             <FaPen />
                                                                         </NavButton>
                                                                     )}
-                                                                    {can('technologies.delete') && (
-                                                                        <ActionButton theme="light" onClick={() => deleteConfirm(tech.id)}>
+                                                                    {can("events.delete") && (
+                                                                        <ActionButton theme="light" onClick={() => deleteConfirm(event.id)}>
                                                                             <FaTrash className="text-white" />
                                                                         </ActionButton>
                                                                     )}
@@ -170,12 +181,12 @@ export default function Index({ technologies, filter }) {
                                     </DndContext>
                                 ) : (
                                     <div className="text-center py-8 text-sm text-gray-500 dark:text-gray-400">
-                                        Nenhuma tecnologia encontrada.
+                                        Nenhum evento encontrado.
                                     </div>
                                 )}
 
                                 <div className="w-full mt-4">
-                                    <Pagination links={technologies.links} />
+                                    <Pagination links={events.links} />
                                 </div>
                             </div>
                         </div>

@@ -19,9 +19,15 @@ class PostController extends Controller
     public function index(Request $request): Response
     {
         return Inertia::render('Admin/Posts/Index', [
-            'posts' => $this->postService->getPaginated(20, $request->input('q')),
-            'filter' => $request->only('q'),
+            'posts' => $this->postService->getPaginated(
+                20,
+                $request->input('q'),
+                $request->input('category') ? (int) $request->input('category') : null,
+                $request->input('status'),
+            ),
+            'filter' => $request->only('q', 'category', 'status'),
             'trashedCount' => Post::onlyTrashed()->count(),
+            'categories' => Category::active()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 

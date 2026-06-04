@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
@@ -16,7 +17,7 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/tecnologias', [TechnologyController::class, 'index'])->name('technologies.index');
 Route::get('/sobre', fn () => Inertia::render('Sobre'))->name('sobre');
 Route::get('/politica-privacidade', fn () => Inertia::render('Privacidade'))->name('privacidade');
-Route::get('/agenda', fn () => Inertia::render('Agenda'))->name('agenda');
+Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])

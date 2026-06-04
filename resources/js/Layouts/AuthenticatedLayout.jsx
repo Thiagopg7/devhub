@@ -39,6 +39,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 { permission: 'pages.view',        label: 'Páginas',     routeName: 'admin.pages.index',        activePattern: 'admin.pages.*' },
                 { permission: 'menu.view',         label: 'Menu',        routeName: 'admin.menu.index',         activePattern: 'admin.menu.*' },
                 { permission: 'technologies.view', label: 'Tecnologias', routeName: 'admin.technologies.index', activePattern: 'admin.technologies.*' },
+                { permission: 'events.view',       label: 'Eventos',     routeName: 'admin.events.index',       activePattern: 'admin.events.*' },
             ],
         },
         {

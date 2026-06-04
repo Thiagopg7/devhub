@@ -19,14 +19,17 @@ class TechnologyController extends Controller
     {
         $search = $request->input('q');
 
+        $status = $request->input('status');
+
         $technologies = Technology::ordered()
             ->when($search, fn ($query) => $query->where('name', 'like', "%{$search}%"))
+            ->when($status !== null && $status !== '', fn ($q) => $q->where('is_active', $status === '1'))
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Admin/Technologies/Index', [
             'technologies' => $technologies,
-            'filter' => $request->only('q'),
+            'filter' => $request->only('q', 'status'),
         ]);
     }
 

@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             NewsletterAreaSeeder::class,
             ConfigSeeder::class,
             MenuSeeder::class,
+            EventSeeder::class,
         ]);
     }
 }
