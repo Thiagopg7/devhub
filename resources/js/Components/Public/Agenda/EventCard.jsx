@@ -75,17 +75,21 @@ export default function EventCard({ event }) {
                     por <strong style={{ color: 'var(--text-body)', fontWeight: 600 }}>{event.org}</strong>
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 12, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
-                        <Clock size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                        {event.time}
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
-                        {event.is_online
-                            ? <Globe size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                            : <MapPin size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                        }
-                        {event.location}
-                    </span>
+                    {event.time && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
+                            <Clock size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                            {event.time}
+                        </span>
+                    )}
+                    {event.location && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
+                            {event.is_online
+                                ? <Globe size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                                : <MapPin size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                            }
+                            {event.location}
+                        </span>
+                    )}
                 </div>
             </div>
 
