@@ -89,10 +89,10 @@ export default function Testimonials({ testimonials = [] }) {
                             640: { slidesPerView: 2 },
                             1024: { slidesPerView: 3 },
                         }}
-                        className="testimonials-swiper"
+                        className="public-swiper"
                     >
                         {testimonials.map((t, i) => (
-                            <SwiperSlide key={t.id} style={{ height: 'auto' }} className="pb-12">
+                            <SwiperSlide key={t.id} style={{ height: 'auto' }}>
                                 <TestimonialCard testimonial={t} index={i} />
                             </SwiperSlide>
                         ))}
