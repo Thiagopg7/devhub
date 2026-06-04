@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Technology;
 use App\Services\PostService;
 use Inertia\Inertia;
@@ -15,6 +16,11 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'featuredPosts' => $this->postService->getLatest(3),
             'technologies' => Technology::active()->ordered()->limit(8)->get(),
+            'upcomingEvents' => Event::active()
+                ->where('date', '>=', now())
+                ->orderBy('date')
+                ->limit(3)
+                ->get(),
         ]);
     }
 }
