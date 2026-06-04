@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ConfigSeeder::class,
             MenuSeeder::class,
             EventSeeder::class,
+            TestimonialSeeder::class,
         ]);
     }
 }
