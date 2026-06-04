@@ -32,15 +32,23 @@ class PostService
             ->get();
     }
 
-    public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
+    public function getPaginated(int $perPage = 20, ?string $search = null, ?int $categoryId = null, ?string $status = null): LengthAwarePaginator
     {
-        $query = Post::with('category')->orderBy('id', 'ASC');
+        $query = Post::with('category')->orderByDesc('created_at');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->when(is_numeric($search), fn ($q) => $q->where('id', $search))
                     ->orWhere('title', 'like', "%{$search}%");
             });
+        }
+
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+
+        if ($status !== null && $status !== '') {
+            $query->where('is_active', $status === '1');
         }
 
         return $query->paginate($perPage)->withQueryString();

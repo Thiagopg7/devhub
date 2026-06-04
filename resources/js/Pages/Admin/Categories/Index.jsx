@@ -11,11 +11,11 @@ import { FaPen, FaTrash, FaEye } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
+const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
 export default function Index({ categories, filter, trashedCount = 0 }) {
     const can = useCan();
-    const { data, setData, get } = useForm({
-        q: filter?.q || "",
-    });
+    const { data, setData, get } = useForm({ q: filter?.q || "", status: filter?.status || "" });
     const [pending, setPending] = useState(null);
 
     const submit = (e) => {
@@ -23,7 +23,7 @@ export default function Index({ categories, filter, trashedCount = 0 }) {
         get(route("admin.categories.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q },
+            params: { q: data.q, status: data.status },
         });
     };
 
@@ -66,7 +66,13 @@ export default function Index({ categories, filter, trashedCount = 0 }) {
                     <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Nome da categoria...">
+                                    <select value={data.status} onChange={(e) => setData("status", e.target.value)} className={selectCls}>
+                                        <option value="">Qualquer status</option>
+                                        <option value="1">Ativa</option>
+                                        <option value="0">Inativa</option>
+                                    </select>
+                                </AdminSearchForm>
 
                                 <div className="w-full">
                                     {categories.data.length > 0 ? (
@@ -85,7 +91,7 @@ export default function Index({ categories, filter, trashedCount = 0 }) {
                                                     <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ativo
                                                     </th>
-                                                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ações
                                                     </th>
                                                 </tr>
@@ -120,7 +126,7 @@ export default function Index({ categories, filter, trashedCount = 0 }) {
                                                                     }
                                                                 />
                                                             </td>
-                                                            <td className="px-6 py-4 flex gap-3 justify-end">
+                                                            <td className="px-6 py-4 align-middle"><div className="flex gap-3 justify-center items-center">
                                                                 {!can('categories.edit') && can('categories.view') && (
                                                                     <NavButton
                                                                         href={route("admin.categories.edit", category)}
@@ -155,7 +161,7 @@ export default function Index({ categories, filter, trashedCount = 0 }) {
                                                                         <FaTrash className="text-white" />
                                                                     </ActionButton>
                                                                 )}
-                                                            </td>
+                                                            </div></td>
                                                         </tr>
                                                     ),
                                                 )}

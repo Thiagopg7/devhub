@@ -9,7 +9,7 @@ import PostsExplorer from '@/Components/Public/Home/PostsExplorer';
 import EventsPreview from '@/Components/Public/Home/EventsPreview';
 import Testimonials from '@/Components/Public/Home/Testimonials';
 
-export default function Home({ featuredPosts = [], technologies = [] }) {
+export default function Home({ featuredPosts = [], technologies = [], upcomingEvents = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName  = siteConfig.site_name || 'DevHub';
     const homeTitle = `${siteName} — Hub de Inovação e Tecnologia`;
@@ -37,7 +37,7 @@ export default function Home({ featuredPosts = [], technologies = [] }) {
                 <TechCarousel technologies={technologies} />
             </div>
 
-            <EventsPreview />
+            <EventsPreview events={upcomingEvents} />
 
             <Testimonials />
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\NewsletterArea;
 use App\Models\NewsletterSubscriber;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,10 +24,15 @@ class NewsletterSubscriberController extends Controller
             });
         }
 
+        if ($area = $request->input('area')) {
+            $query->where('newsletter_area_id', $area);
+        }
+
         return Inertia::render('Admin/NewsletterSubscribers/Index', [
             'subscribers' => $query->paginate(20)->withQueryString(),
-            'filter' => $request->only('q'),
+            'filter' => $request->only('q', 'area'),
             'total' => NewsletterSubscriber::count(),
+            'areas' => NewsletterArea::orderBy('name')->get(['id', 'name']),
         ]);
     }
 

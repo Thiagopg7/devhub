@@ -55,7 +55,7 @@ export default function Index({ campaigns }) {
                 }
             >
                 <div className="py-12">
-                    <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6">
                                 {campaigns.data.length > 0 ? (
@@ -66,7 +66,7 @@ export default function Index({ campaigns }) {
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Envios</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Criada em</th>
-                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -89,7 +89,7 @@ export default function Index({ campaigns }) {
                                                         <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                             {new Date(c.created_at).toLocaleDateString('pt-BR')}
                                                         </td>
-                                                        <td className="px-6 py-4 text-right flex justify-end gap-2">
+                                                        <td className="px-6 py-4 text-center align-middle"><div className="flex justify-center items-center gap-2">
                                                             {can('newsletter_campaigns.view') && (
                                                                 <NavButton
                                                                     href={route('admin.newsletter-campaigns.show', c.id)}
@@ -109,7 +109,7 @@ export default function Index({ campaigns }) {
                                                                     <FaTrash className="text-white" />
                                                                 </ActionButton>
                                                             )}
-                                                        </td>
+                                                        </div></td>
                                                     </tr>
                                                 );
                                             })}

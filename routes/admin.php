@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\BlockController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ConfigController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\GalleryImageController;
 use App\Http\Controllers\Admin\ImageDeleteController;
 use App\Http\Controllers\Admin\MenuController;
@@ -36,6 +37,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::resource('/technologies', TechnologyController::class)
         ->except(['show'])
         ->middleware('resource.permission:technologies');
+
+    Route::resource('/events', EventController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:events');
 
     Route::get('/pages/trashed', [PageController::class, 'trashed'])->name('pages.trashed')->middleware('can:pages.delete');
     Route::post('/pages/{id}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware('can:pages.delete');

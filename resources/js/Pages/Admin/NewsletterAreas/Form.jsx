@@ -49,7 +49,7 @@ export default function Form({ area = null }) {
                 }
             >
                 <div className="py-12">
-                    <div className="max-w-xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-2xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
                             <div className="block p-5">
                                 <ValidationErrors errors={errors} className="mb-4" />

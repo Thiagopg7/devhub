@@ -5,7 +5,6 @@ import Newsletter from '@/Components/Public/Newsletter';
 import PageHero from '@/Components/Public/PageHero';
 import Breadcrumb from '@/Components/Public/Breadcrumb';
 import EventCard from '@/Components/Public/Agenda/EventCard';
-import { EVENTS } from '@/Components/Public/Agenda/events';
 import { Calendar, CheckCircle, Clock, Minus } from 'lucide-react';
 
 const FILTERS = [
@@ -15,7 +14,7 @@ const FILTERS = [
     { key: 'full', label: 'Lotado',              icon: <Minus size={16} /> },
 ];
 
-export default function Agenda() {
+export default function Agenda({ events = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
     const [activeFilter, setActiveFilter] = useState('all');
@@ -30,15 +29,15 @@ export default function Agenda() {
     }, [activeFilter]);
 
     const counts = {
-        all: EVENTS.length,
-        open: EVENTS.filter(e => e.status === 'open').length,
-        soon: EVENTS.filter(e => e.status === 'soon').length,
-        full: EVENTS.filter(e => e.status === 'full').length,
+        all: events.length,
+        open: events.filter(e => e.status === 'open').length,
+        soon: events.filter(e => e.status === 'soon').length,
+        full: events.filter(e => e.status === 'full').length,
     };
 
     const visible = activeFilter === 'all'
-        ? EVENTS
-        : EVENTS.filter(e => e.status === activeFilter);
+        ? events
+        : events.filter(e => e.status === activeFilter);
 
     return (
         <PublicLayout>

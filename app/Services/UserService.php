@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function getPaginated(int $perPage = 20, ?string $search = null): LengthAwarePaginator
+    public function getPaginated(int $perPage = 20, ?string $search = null, ?int $roleId = null): LengthAwarePaginator
     {
         $query = User::with('roles:id,name,is_system')->orderBy('name');
 
@@ -19,6 +19,10 @@ class UserService
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
             });
+        }
+
+        if ($roleId) {
+            $query->whereHas('roles', fn ($q) => $q->where('roles.id', $roleId));
         }
 
         return $query->paginate($perPage)->withQueryString();

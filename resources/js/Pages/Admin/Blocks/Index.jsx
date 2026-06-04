@@ -75,7 +75,7 @@ export default function Index({ blocks, filter }) {
                                                     <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ativo
                                                     </th>
-                                                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ações
                                                     </th>
                                                 </tr>
@@ -98,7 +98,7 @@ export default function Index({ blocks, filter }) {
                                                                 }
                                                             />
                                                         </td>
-                                                        <td className="px-6 py-4 flex gap-3 justify-end">
+                                                        <td className="px-6 py-4 align-middle"><div className="flex gap-3 justify-center items-center">
                                                             {!can('blocks.edit') && can('blocks.view') && (
                                                                 <NavButton
                                                                     href={route("admin.blocks.edit", block)}
@@ -133,7 +133,7 @@ export default function Index({ blocks, filter }) {
                                                                     <FaTrash className="text-white" />
                                                                 </ActionButton>
                                                             )}
-                                                        </td>
+                                                        </div></td>
                                                     </tr>
                                                 ))}
                                             </tbody>

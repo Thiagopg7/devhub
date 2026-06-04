@@ -49,7 +49,7 @@ export default function Index({ roles, filter }) {
                 }
             >
                 <div className="py-12">
-                    <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                                 <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
@@ -61,7 +61,7 @@ export default function Index({ roles, filter }) {
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nome</th>
                                                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Permissões</th>
                                                 <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Usuários</th>
-                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -82,7 +82,7 @@ export default function Index({ roles, filter }) {
                                                     </td>
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.permissions_count}</td>
                                                     <td className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">{role.users_count}</td>
-                                                    <td className="px-6 py-4 flex gap-3 justify-end">
+                                                    <td className="px-6 py-4 align-middle"><div className="flex gap-3 justify-center items-center">
                                                         {!can('roles.edit') && can('roles.view') && (
                                                             <NavButton href={route("admin.roles.edit", role.id)} title="Visualizar">
                                                                 <FaEye />
@@ -101,7 +101,7 @@ export default function Index({ roles, filter }) {
                                                                 <FaTrash className="text-white" />
                                                             </ActionButton>
                                                         )}
-                                                    </td>
+                                                    </div></td>
                                                 </tr>
                                             ))}
                                         </tbody>

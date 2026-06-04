@@ -38,8 +38,8 @@ function MenuRowCells({ item, isChild = false, onDeleteRequest }) {
             <td className="px-6 py-3 text-center">
                 <ToggleActive id={item.id} model="menu_item" value={item.is_active} />
             </td>
-            <td className="px-6 py-3 text-right">
-                <div className="flex gap-2 justify-end">
+            <td className="px-6 py-3 text-center">
+                <div className="flex gap-2 justify-center">
                     {!can('menu.edit') && can('menu.view') && (
                         <NavButton href={route("admin.menu.edit", item.id)} title="Visualizar">
                             <FaEye />
@@ -135,7 +135,7 @@ export default function Index({ items: initialItems, filter }) {
                 }
             >
                 <div className="py-12">
-                    <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                                 <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} />
@@ -151,7 +151,7 @@ export default function Index({ items: initialItems, filter }) {
                                                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">URL</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Nova aba</th>
                                                         <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ativo</th>
-                                                        <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                        <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">

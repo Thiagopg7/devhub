@@ -10,9 +10,11 @@ import { Users } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
-export default function Index({ subscribers, filter, total }) {
+const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
+export default function Index({ subscribers, filter, total, areas = [] }) {
     const can = useCan();
-    const { data, setData, get } = useForm({ q: filter?.q || "" });
+    const { data, setData, get } = useForm({ q: filter?.q || "", area: filter?.area || "" });
     const [pending, setPending] = useState(null);
 
     const submit = (e) => {
@@ -20,7 +22,7 @@ export default function Index({ subscribers, filter, total }) {
         get(route("admin.newsletter-subscribers.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q },
+            params: { q: data.q, area: data.area },
         });
     };
 
@@ -50,11 +52,16 @@ export default function Index({ subscribers, filter, total }) {
                 }
             >
                 <div className="py-12">
-                    <div className="max-w-5xl mx-auto sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
-                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Nome ou e-mail..." />
+                                <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Nome ou e-mail...">
+                                    <select value={data.area} onChange={(e) => setData("area", e.target.value)} className={selectCls}>
+                                        <option value="">Todas as áreas</option>
+                                        {areas.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                                    </select>
+                                </AdminSearchForm>
 
                                 {subscribers.data.length > 0 ? (
                                     <table className="w-full min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -65,7 +72,7 @@ export default function Index({ subscribers, filter, total }) {
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Área</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">LGPD</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Data</th>
-                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
+                                                <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">Ações</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -89,7 +96,7 @@ export default function Index({ subscribers, filter, total }) {
                                                     <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                                                         {new Date(sub.created_at).toLocaleDateString("pt-BR")}
                                                     </td>
-                                                    <td className="px-6 py-4 text-right">
+                                                    <td className="px-6 py-4 text-center">
                                                         {can('newsletter_subscribers.delete') && (
                                                             <ActionButton theme="light" onClick={() => deleteConfirm(sub.id)}>
                                                                 <FaTrash className="text-white" />

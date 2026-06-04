@@ -9,7 +9,7 @@ const TYPE_STYLES = {
 
 export default function EventCard({ event }) {
     const typeStyle = TYPE_STYLES[event.type] || TYPE_STYLES.conf;
-    const isPrimary = event.ctaStyle === 'primary';
+    const isPrimary = event.cta_style === 'primary';
 
     return (
         <article className="event-card card group"
@@ -55,17 +55,17 @@ export default function EventCard({ event }) {
                         fontWeight: 500, padding: '4px 10px', borderRadius: 999,
                         color: typeStyle.color, background: typeStyle.bg,
                     }}>
-                        {event.typeLabel}
+                        {event.type_label}
                     </span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--text-body)' }}>
                         <span style={{
                             width: 7, height: 7, borderRadius: '50%',
-                            background: event.online ? 'var(--teal)' : 'var(--accent)',
-                            boxShadow: event.online
+                            background: event.is_online ? 'var(--teal)' : 'var(--accent)',
+                            boxShadow: event.is_online
                                 ? '0 0 0 3px rgba(47,217,194,0.18)'
                                 : '0 0 0 3px rgba(60,189,248,0.18)',
                         }} />
-                        {event.online ? 'Online' : 'Presencial'}
+                        {event.is_online ? 'Online' : 'Presencial'}
                     </span>
                 </div>
                 <h4 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 19, letterSpacing: '-0.01em', lineHeight: 1.25, color: '#fff', margin: 0 }}>
@@ -75,46 +75,54 @@ export default function EventCard({ event }) {
                     por <strong style={{ color: 'var(--text-body)', fontWeight: 600 }}>{event.org}</strong>
                 </p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginTop: 12, flexWrap: 'wrap' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
-                        <Clock size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                        {event.time}
-                    </span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
-                        {event.online
-                            ? <Globe size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                            : <MapPin size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                        }
-                        {event.location}
-                    </span>
+                    {event.time && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
+                            <Clock size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                            {event.time}
+                        </span>
+                    )}
+                    {event.location && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--text-muted)' }}>
+                            {event.is_online
+                                ? <Globe size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                                : <MapPin size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+                            }
+                            {event.location}
+                        </span>
+                    )}
                 </div>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
-                <a href={event.ctaUrl}
-                    className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5"
-                    style={isPrimary ? {
-                        background: 'linear-gradient(180deg,var(--accent),var(--accent-2))',
-                        color: 'var(--accent-ink)',
-                        padding: '11px 18px',
-                        borderRadius: 12,
-                        boxShadow: '0 8px 24px -8px rgba(60,189,248,0.35)',
-                    } : {
-                        background: 'transparent',
-                        color: 'var(--text-body)',
-                        padding: '10px 18px',
-                        borderRadius: 12,
-                        border: '1px solid var(--border-s)',
+                {event.cta_url ? (
+                    <a href={event.cta_url}
+                        className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5"
+                        style={isPrimary ? {
+                            background: 'linear-gradient(180deg,var(--accent),var(--accent-2))',
+                            color: 'var(--accent-ink)',
+                            padding: '11px 18px',
+                            borderRadius: 12,
+                            boxShadow: '0 8px 24px -8px rgba(60,189,248,0.35)',
+                        } : {
+                            background: 'transparent',
+                            color: 'var(--text-body)',
+                            padding: '10px 18px',
+                            borderRadius: 12,
+                            border: '1px solid var(--border-s)',
+                        }}>
+                        {event.cta_label}
+                        <ArrowRight size={14} />
+                    </a>
+                ) : null}
+                {event.seats && (
+                    <span style={{
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 11,
+                        color: event.seats_low ? 'var(--gold)' : 'var(--text-muted)',
                     }}>
-                    {event.ctaLabel}
-                    <ArrowRight size={14} />
-                </a>
-                <span style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: 11,
-                    color: event.seatsLow ? 'var(--gold)' : 'var(--text-muted)',
-                }}>
-                    {event.seats}
-                </span>
+                        {event.seats}
+                    </span>
+                )}
             </div>
         </article>
     );
