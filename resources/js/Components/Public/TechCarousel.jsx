@@ -1,5 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 const GLYPH_BGS = [
     'radial-gradient(120% 120% at 30% 20%, #3d2f17, #1c1407)',
@@ -35,8 +39,6 @@ const TECH_CATS = {
 function techCat(name) {
     return TECH_CATS[name.toLowerCase().trim()] || '';
 }
-
-const GAP = 24;
 
 function TechCard({ tech, glyphBg }) {
     const cat = techCat(tech.name);
@@ -99,38 +101,18 @@ function TechCard({ tech, glyphBg }) {
     );
 }
 
+const navBtnCls = [
+    'grid place-items-center w-[46px] h-[46px] rounded-full cursor-pointer transition-colors',
+    'bg-[var(--surface-2)] border border-[var(--border-s)] text-[var(--text-body)]',
+    'hover:bg-[var(--accent)] hover:text-[var(--accent-ink)] hover:border-transparent',
+    '[&.swiper-button-disabled]:opacity-30 [&.swiper-button-disabled]:cursor-not-allowed [&.swiper-button-disabled]:pointer-events-none',
+].join(' ');
+
 export default function TechCarousel({ technologies = [] }) {
-    const [index, setIndex] = useState(0);
-    const [perPage, setPerPage] = useState(3);
-    const [containerWidth, setContainerWidth] = useState(0);
-    const viewportRef = useRef(null);
-
-    const getPerPage = () => {
-        const w = window.innerWidth;
-        if (w <= 760) return 1;
-        if (w <= 1024) return 2;
-        return 3;
-    };
-
-    useEffect(() => {
-        if (!viewportRef.current) return;
-        const ro = new ResizeObserver(entries => {
-            setContainerWidth(entries[0].contentRect.width);
-            setPerPage(getPerPage());
-        });
-        ro.observe(viewportRef.current);
-        return () => ro.disconnect();
-    }, []);
+    const prevRef = useRef(null);
+    const nextRef = useRef(null);
 
     if (technologies.length === 0) return null;
-
-    const maxIdx = Math.max(0, technologies.length - perPage);
-    const safeIdx = Math.min(index, maxIdx);
-    const cardWidth = containerWidth > 0 ? (containerWidth - (perPage - 1) * GAP) / perPage : 0;
-    const offset = safeIdx * (cardWidth + GAP);
-
-    const prev = () => setIndex(i => Math.max(0, i - 1));
-    const next = () => setIndex(i => Math.min(maxIdx, i + 1));
 
     return (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -141,79 +123,38 @@ export default function TechCarousel({ technologies = [] }) {
                     <p className="mt-2 text-base max-w-[52ch]" style={{ color: 'var(--text-muted)' }}>As plataformas que estão moldando como a gente escreve código e cria produtos.</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                    <NavBtn onClick={prev} disabled={safeIdx === 0} aria-label="Anterior" side="left">
+                    <button ref={prevRef} type="button" className={navBtnCls} aria-label="Anterior">
                         <ChevronLeft size={20} />
-                    </NavBtn>
-                    <NavBtn onClick={next} disabled={safeIdx >= maxIdx} aria-label="Próxima" side="right">
+                    </button>
+                    <button ref={nextRef} type="button" className={navBtnCls} aria-label="Próxima">
                         <ChevronRight size={20} />
-                    </NavBtn>
+                    </button>
                 </div>
             </div>
 
-            <div ref={viewportRef} className="overflow-hidden">
-                <div
-                    className="flex"
-                    style={{
-                        gap: GAP,
-                        transform: `translateX(${-offset}px)`,
-                        transition: 'transform .5s cubic-bezier(.4,0,.2,1)',
-                    }}
-                >
-                    {technologies.map((tech, i) => (
-                        <div key={tech.id} className="shrink-0 flex flex-col"
-                            style={{ width: `calc((100% - ${(perPage - 1) * GAP}px) / ${perPage})` }}>
-                            <TechCard tech={tech} glyphBg={GLYPH_BGS[i % GLYPH_BGS.length]} />
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {technologies.length > perPage && (
-                <div className="flex justify-center items-center gap-[9px] mt-8">
-                    {Array.from({ length: maxIdx + 1 }).map((_, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setIndex(i)}
-                            aria-label={`Ir para slide ${i + 1}`}
-                            className="h-2 rounded-full transition-all duration-300"
-                            style={{
-                                width: i === safeIdx ? 26 : 8,
-                                background: i === safeIdx ? 'var(--accent)' : 'var(--surface-2)',
-                            }}
-                        />
-                    ))}
-                </div>
-            )}
+            <Swiper
+                modules={[Navigation, Pagination]}
+                grabCursor
+                spaceBetween={24}
+                slidesPerView={1}
+                pagination={{ clickable: true }}
+                navigation={{ prevEl: prevRef.current, nextEl: nextRef.current }}
+                onBeforeInit={(swiper) => {
+                    swiper.params.navigation.prevEl = prevRef.current;
+                    swiper.params.navigation.nextEl = nextRef.current;
+                }}
+                breakpoints={{
+                    768: { slidesPerView: 2 },
+                    1024: { slidesPerView: 3 },
+                }}
+                className="public-swiper"
+            >
+                {technologies.map((tech, i) => (
+                    <SwiperSlide key={tech.id} style={{ height: 'auto' }}>
+                        <TechCard tech={tech} glyphBg={GLYPH_BGS[i % GLYPH_BGS.length]} />
+                    </SwiperSlide>
+                ))}
+            </Swiper>
         </section>
-    );
-}
-
-function NavBtn({ onClick, disabled, children, ...rest }) {
-    return (
-        <button
-            onClick={onClick}
-            disabled={disabled}
-            className="w-[46px] h-[46px] grid place-items-center rounded-full transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
-            style={{
-                background: 'var(--surface-2)',
-                border: '1px solid var(--border-s)',
-                color: 'var(--text-body)',
-            }}
-            onMouseEnter={e => {
-                if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.background = 'var(--accent)';
-                    e.currentTarget.style.color = 'var(--accent-ink)';
-                    e.currentTarget.style.borderColor = 'transparent';
-                }
-            }}
-            onMouseLeave={e => {
-                e.currentTarget.style.background = 'var(--surface-2)';
-                e.currentTarget.style.color = 'var(--text-body)';
-                e.currentTarget.style.borderColor = 'var(--border-s)';
-            }}
-            {...rest}
-        >
-            {children}
-        </button>
     );
 }

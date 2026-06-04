@@ -190,16 +190,24 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
 .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.in { opacity: 1; transform: none; }
 
-/* ── Testimonials swiper ────────────────────────────────────── */
-.testimonials-swiper { --swiper-pagination-bottom: 0px; }
-.testimonials-swiper .swiper-pagination-bullet {
-    background: var(--text-muted);
-    opacity: 0.35;
-    transition: opacity .25s ease, background .25s ease;
+/* ── Public swipers (depoimentos + tecnologias) ─────────────── */
+/* Mira o DOM gerado pelo Swiper (paginação), então precisa ser CSS.
+   Dots em "pílula" posicionados abaixo dos slides. */
+.public-swiper .swiper-pagination {
+    position: static;
+    margin-top: 2rem;
 }
-.testimonials-swiper .swiper-pagination-bullet-active {
-    background: var(--accent);
+.public-swiper .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--surface-2);
     opacity: 1;
+    transition: width .3s ease, background .3s ease;
+}
+.public-swiper .swiper-pagination-bullet-active {
+    width: 26px;
+    background: var(--accent);
 }
 
 /* ── Stack marquee ──────────────────────────────────────────── */
