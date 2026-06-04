@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\TechnologyController;
+use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\ToggleController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -41,6 +42,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::resource('/events', EventController::class)
         ->except(['show'])
         ->middleware('resource.permission:events');
+
+    Route::resource('/testimonials', TestimonialController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:testimonials');
 
     Route::get('/pages/trashed', [PageController::class, 'trashed'])->name('pages.trashed')->middleware('can:pages.delete');
     Route::post('/pages/{id}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware('can:pages.delete');

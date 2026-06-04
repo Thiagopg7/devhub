@@ -1,12 +1,25 @@
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination } from 'swiper/modules';
 import Reveal from '@/Components/Public/Reveal';
 import SectionHead from '@/Components/Public/SectionHead';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
-/* ── Depoimentos estáticos ──────────────────────────────────────────── */
-const TESTIMONIALS = [
-    { text: 'Exemplo de depoimento — este espaço será preenchido com feedback real de leitores.', name: 'Leitor DevHub', role: 'Desenvolvedor', initials: '?', gradient: 'linear-gradient(135deg,var(--accent),var(--accent-2))' },
-    { text: 'Exemplo de depoimento — este espaço será preenchido com feedback real de leitores.', name: 'Leitor DevHub', role: 'Desenvolvedor', initials: '?', gradient: 'linear-gradient(135deg,var(--violet),#5560e6)' },
-    { text: 'Exemplo de depoimento — este espaço será preenchido com feedback real de leitores.', name: 'Leitor DevHub', role: 'Desenvolvedor', initials: '?', gradient: 'linear-gradient(135deg,var(--teal),#1b9e8c)' },
+const GRADIENTS = [
+    'linear-gradient(135deg,var(--accent),var(--accent-2))',
+    'linear-gradient(135deg,var(--violet),#5560e6)',
+    'linear-gradient(135deg,var(--teal),#1b9e8c)',
+    'linear-gradient(135deg,#e66,#c44)',
 ];
+
+function initials(name) {
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((w) => w[0].toUpperCase())
+        .join('');
+}
 
 function Stars() {
     return (
@@ -20,40 +33,71 @@ function Stars() {
     );
 }
 
-export default function Testimonials() {
+function TestimonialCard({ testimonial, index }) {
+    const gradient = GRADIENTS[index % GRADIENTS.length];
+
+    return (
+        <figure className="flex flex-col h-full rounded-2xl p-7"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-5xl leading-none mb-4 font-display" style={{ color: 'var(--accent)', opacity: 0.5 }}>&ldquo;</div>
+            <p className="flex-1 text-sm leading-relaxed mb-5 italic" style={{ color: 'var(--text-muted)' }}>
+                {testimonial.content}
+            </p>
+            <Stars />
+            <figcaption className="flex items-center gap-3 mt-5">
+                {testimonial.avatar_image_url ? (
+                    <img
+                        src={testimonial.avatar_image_url}
+                        alt={testimonial.name}
+                        className="w-10 h-10 rounded-full object-cover shrink-0"
+                    />
+                ) : (
+                    <div className="w-10 h-10 rounded-full grid place-items-center font-display font-semibold text-sm text-white shrink-0"
+                        style={{ background: gradient }}>
+                        {initials(testimonial.name)}
+                    </div>
+                )}
+                <div>
+                    <div className="text-sm font-semibold text-white">{testimonial.name}</div>
+                    <div className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                        {testimonial.role}{testimonial.company ? ` — ${testimonial.company}` : ''}
+                    </div>
+                </div>
+            </figcaption>
+        </figure>
+    );
+}
+
+export default function Testimonials({ testimonials = [] }) {
+    if (testimonials.length === 0) return null;
+
     return (
         <section style={{ background: 'var(--panel)', borderTop: '1px solid var(--border)' }}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <Reveal><SectionHead eyebrow="O que dizem" title="Quem lê, recomenda" subtitle="A comunidade de devs que acompanha o DevHub no dia a dia." /></Reveal>
-
                 <Reveal>
-                    <div className="inline-flex items-center gap-2 font-mono text-xs px-3 py-1.5 rounded-full mb-8"
-                        style={{ background: 'rgba(123,134,255,0.1)', border: '1px solid rgba(123,134,255,0.25)', color: 'var(--violet)' }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="12" height="12"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        Seção em construção — depoimentos reais em breve
-                    </div>
+                    <SectionHead eyebrow="O que dizem" title="Quem lê, recomenda" subtitle="A comunidade de devs que acompanha o DevHub no dia a dia." />
                 </Reveal>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {TESTIMONIALS.map((t, i) => (
-                        <Reveal key={t.name} delay={i * 120} as="figure" className="flex flex-col rounded-2xl p-7"
-                            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-                            <div className="text-5xl leading-none mb-4 font-display" style={{ color: 'var(--accent)', opacity: 0.5 }}>&ldquo;</div>
-                            <p className="flex-1 text-sm leading-relaxed mb-5 italic" style={{ color: 'var(--text-muted)' }}>{t.text}</p>
-                            <Stars />
-                            <figcaption className="flex items-center gap-3 mt-5">
-                                <div className="w-10 h-10 rounded-full grid place-items-center font-display font-semibold text-sm text-white shrink-0"
-                                    style={{ background: t.gradient }}>
-                                    {t.initials}
-                                </div>
-                                <div>
-                                    <div className="text-sm font-semibold text-white">{t.name}</div>
-                                    <div className="text-xs" style={{ color: 'var(--text-muted)' }}>{t.role}</div>
-                                </div>
-                            </figcaption>
-                        </Reveal>
-                    ))}
-                </div>
+                <Reveal>
+                    <Swiper
+                        modules={[Pagination]}
+                        grabCursor
+                        spaceBetween={24}
+                        slidesPerView={1}
+                        pagination={{ clickable: true }}
+                        breakpoints={{
+                            640: { slidesPerView: 2 },
+                            1024: { slidesPerView: 3 },
+                        }}
+                        className="testimonials-swiper"
+                    >
+                        {testimonials.map((t, i) => (
+                            <SwiperSlide key={t.id} style={{ height: 'auto' }} className="pb-12">
+                                <TestimonialCard testimonial={t} index={i} />
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
+                </Reveal>
             </div>
         </section>
     );

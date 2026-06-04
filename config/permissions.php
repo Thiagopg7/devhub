@@ -16,6 +16,7 @@ return [
         'menu' => 'Menu',
         'technologies' => 'Tecnologias',
         'events' => 'Eventos',
+        'testimonials' => 'Depoimentos',
         'configs' => 'Configurações',
         'newsletter_areas' => 'Áreas de newsletter',
         'newsletter_subscribers' => 'Inscritos da newsletter',
