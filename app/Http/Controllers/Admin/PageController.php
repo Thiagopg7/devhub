@@ -59,7 +59,6 @@ class PageController extends Controller
     {
         $this->pageService->create(
             $request->validated(),
-            $request->file('banner_image'),
             $request->file('main_image'),
         );
 
@@ -79,7 +78,6 @@ class PageController extends Controller
         $this->pageService->update(
             $page,
             $request->validated(),
-            $request->file('banner_image'),
             $request->file('main_image'),
         );
 

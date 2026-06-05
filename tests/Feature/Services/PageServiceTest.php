@@ -19,44 +19,25 @@ class PageServiceTest extends TestCase
         return new PageService(app(FileUploadService::class));
     }
 
-    public function test_create_sem_imagens_salva_pagina(): void
+    public function test_create_sem_imagem_salva_pagina(): void
     {
         $service = $this->makeService();
-        $page = $service->create(['title' => 'Sobre', 'is_active' => true], null, null);
+        $page = $service->create(['title' => 'Sobre', 'is_active' => true], null);
 
         $this->assertInstanceOf(Page::class, $page);
-        $this->assertDatabaseHas('pages', ['title' => 'Sobre', 'banner_image' => null, 'main_image' => null]);
+        $this->assertDatabaseHas('pages', ['title' => 'Sobre', 'main_image' => null]);
     }
 
-    public function test_create_faz_upload_de_banner_e_imagem_principal(): void
+    public function test_create_faz_upload_da_imagem_principal(): void
     {
         Storage::fake('public');
         $service = $this->makeService();
-        $banner = UploadedFile::fake()->create('banner.jpg', 512, 'image/jpeg');
         $mainImage = UploadedFile::fake()->create('main.jpg', 512, 'image/jpeg');
 
-        $page = $service->create(['title' => 'Portfólio', 'is_active' => true], $banner, $mainImage);
+        $page = $service->create(['title' => 'Portfólio', 'is_active' => true], $mainImage);
 
-        $this->assertNotNull($page->banner_image);
         $this->assertNotNull($page->main_image);
-        Storage::disk('public')->assertExists($page->banner_image);
         Storage::disk('public')->assertExists($page->main_image);
-    }
-
-    public function test_update_troca_banner_e_deleta_antigo(): void
-    {
-        Storage::fake('public');
-        $oldPath = 'pages/old-banner.jpg';
-        Storage::disk('public')->put($oldPath, 'antigo');
-        $page = Page::create(['title' => 'Página', 'banner_image' => $oldPath, 'is_active' => true]);
-        $service = $this->makeService();
-
-        $newBanner = UploadedFile::fake()->create('new-banner.jpg', 512, 'image/jpeg');
-        $service->update($page, ['title' => 'Página'], $newBanner, null);
-
-        Storage::disk('public')->assertMissing($oldPath);
-        $this->assertNotSame($oldPath, $page->fresh()->banner_image);
-        Storage::disk('public')->assertExists($page->fresh()->banner_image);
     }
 
     public function test_update_troca_imagem_principal_e_deleta_antiga(): void
@@ -68,27 +49,23 @@ class PageServiceTest extends TestCase
         $service = $this->makeService();
 
         $newMain = UploadedFile::fake()->create('new-main.jpg', 512, 'image/jpeg');
-        $service->update($page, ['title' => 'Página'], null, $newMain);
+        $service->update($page, ['title' => 'Página'], $newMain);
 
         Storage::disk('public')->assertMissing($oldPath);
         Storage::disk('public')->assertExists($page->fresh()->main_image);
     }
 
-    public function test_update_sem_novas_imagens_mantem_existentes(): void
+    public function test_update_sem_nova_imagem_mantem_existente(): void
     {
         Storage::fake('public');
-        $bannerPath = 'pages/banner.jpg';
         $mainPath = 'pages/main.jpg';
-        Storage::disk('public')->put($bannerPath, 'b');
         Storage::disk('public')->put($mainPath, 'm');
-        $page = Page::create(['title' => 'Página', 'banner_image' => $bannerPath, 'main_image' => $mainPath, 'is_active' => true]);
+        $page = Page::create(['title' => 'Página', 'main_image' => $mainPath, 'is_active' => true]);
         $service = $this->makeService();
 
-        $service->update($page, ['title' => 'Atualizada'], null, null);
+        $service->update($page, ['title' => 'Atualizada'], null);
 
-        Storage::disk('public')->assertExists($bannerPath);
         Storage::disk('public')->assertExists($mainPath);
-        $this->assertSame($bannerPath, $page->fresh()->banner_image);
         $this->assertSame($mainPath, $page->fresh()->main_image);
     }
 
@@ -102,20 +79,17 @@ class PageServiceTest extends TestCase
         $this->assertSoftDeleted('pages', ['id' => $page->id]);
     }
 
-    public function test_purge_remove_arquivos_e_exclui_permanentemente(): void
+    public function test_purge_remove_arquivo_e_exclui_permanentemente(): void
     {
         Storage::fake('public');
-        $bannerPath = 'pages/banner.jpg';
         $mainPath = 'pages/main.jpg';
-        Storage::disk('public')->put($bannerPath, 'b');
         Storage::disk('public')->put($mainPath, 'm');
-        $page = Page::create(['title' => 'Purgar', 'banner_image' => $bannerPath, 'main_image' => $mainPath, 'is_active' => true]);
+        $page = Page::create(['title' => 'Purgar', 'main_image' => $mainPath, 'is_active' => true]);
         $service = $this->makeService();
 
         $service->purge($page);
 
         $this->assertDatabaseMissing('pages', ['id' => $page->id]);
-        Storage::disk('public')->assertMissing($bannerPath);
         Storage::disk('public')->assertMissing($mainPath);
     }
 

@@ -158,8 +158,8 @@ export default function Form({ page = null }) {
     const { data, setData, processing, errors, post: send, transform } = useForm({
         title:            page?.title            ?? "",
         subtitle:         page?.subtitle         ?? "",
+        eyebrow:          page?.eyebrow          ?? "",
         content:          page?.content          ?? "",
-        banner_image:     null,
         main_image:       null,
         is_active:        page?.is_active        ?? true,
         is_searchable:    page?.is_searchable    ?? true,
@@ -245,6 +245,22 @@ export default function Form({ page = null }) {
                                             </div>
 
                                             <div>
+                                                <Label htmlFor="eyebrow" value="Eyebrow (linha acima do título)" />
+                                                <Input
+                                                    id="eyebrow"
+                                                    type="text"
+                                                    value={data.eyebrow}
+                                                    className="mt-1 block w-full"
+                                                    placeholder="Ex.: Transparência & confiança"
+                                                    onChange={(e) => setData("eyebrow", e.target.value)}
+                                                    disabled={processing || readonly}
+                                                />
+                                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                    Opcional. Aparece em destaque acima do título, no topo da página.
+                                                </p>
+                                            </div>
+
+                                            <div>
                                                 <Label value="Conteúdo" />
                                                 <div className="mt-1">
                                                     <RichTextEditor
@@ -278,15 +294,6 @@ export default function Form({ page = null }) {
 
                                     {tab === "images" && (
                                         <>
-                                            <ImageSlot
-                                                label="Banner"
-                                                currentUrl={page?.banner_image_url}
-                                                onDelete={() => deleteImage("banner_image", "o banner")}
-                                                fieldName="banner_image"
-                                                onChange={setData}
-                                                processing={processing || readonly}
-                                            />
-
                                             <ImageSlot
                                                 label="Imagem principal"
                                                 currentUrl={page?.main_image_url}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Category;
 use App\Models\Config;
 use App\Models\NewsletterArea;
 use App\Services\MenuService;
@@ -35,6 +36,8 @@ class HandleInertiaRequests extends Middleware
             ],
             'siteConfig' => Cache::remember('configs.all', 3600, fn () => Config::pluck('value', 'key')->toArray()),
             'menuItems' => $isAdmin ? [] : app(MenuService::class)->getPublicTree(),
+            'footerCategories' => $isAdmin ? [] : Cache::remember('categories.active.footer', 3600, fn () => Category::active()->orderBy('name')->get(['name', 'slug'])->toArray()
+            ),
             'newsletterAreas' => $isAdmin ? [] : Cache::remember('newsletter_areas.active', 3600, function () {
                 return NewsletterArea::active()->ordered()->get()->toArray();
             }),

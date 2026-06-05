@@ -35,25 +35,25 @@ class ImageDeleteControllerTest extends TestCase
         $this->assertNull($post->fresh()->banner_image);
     }
 
-    public function test_remove_banner_de_page(): void
+    public function test_remove_main_image_de_page(): void
     {
         Storage::fake('public');
         $user = $this->adminUser(['pages.edit']);
 
-        $path = 'pages/banner.jpg';
+        $path = 'pages/main.jpg';
         Storage::disk('public')->put($path, 'imagem');
-        $page = Page::create(['title' => 'Sobre', 'banner_image' => $path, 'is_active' => true]);
+        $page = Page::create(['title' => 'Sobre', 'main_image' => $path, 'is_active' => true]);
 
         $this->actingAs($user)
             ->delete(route('admin.image.destroy'), [
                 'model' => 'page',
                 'id' => $page->id,
-                'field' => 'banner_image',
+                'field' => 'main_image',
             ])
             ->assertRedirect();
 
         Storage::disk('public')->assertMissing($path);
-        $this->assertNull($page->fresh()->banner_image);
+        $this->assertNull($page->fresh()->main_image);
     }
 
     public function test_remove_icon_de_technology(): void
