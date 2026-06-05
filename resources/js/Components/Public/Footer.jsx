@@ -54,9 +54,9 @@ export default function Footer() {
                                 { href: linkedin,  label: 'LinkedIn',  icon: LI_ICON              },
                                 { href: youtube,   label: 'YouTube',   icon: <FaYoutube size={20} /> },
                                 { href: instagram, label: 'Instagram', icon: <FaInstagram size={19} /> },
-                            ].map(({ href, label, icon }) => (
-                                <a key={label} href={href || '#'}
-                                    {...(href ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                            ].filter(({ href }) => href).map(({ href, label, icon }) => (
+                                <a key={label} href={href}
+                                    target="_blank" rel="noopener noreferrer"
                                     aria-label={label}
                                     className="hover:text-[var(--accent)] transition-colors"
                                     style={{ color: 'var(--text-muted)' }}>

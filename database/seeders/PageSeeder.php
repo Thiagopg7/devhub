@@ -56,20 +56,21 @@ class PageSeeder extends Seeder
 
     private function seedPoliticaPrivacidade(): void
     {
-        Page::firstOrCreate(
-            ['slug' => 'politica-privacidade'],
-            [
-                'title' => 'Política de Privacidade',
-                'subtitle' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).',
-                'eyebrow' => 'Transparência & confiança',
-                'slug' => 'politica-privacidade',
-                'content' => $this->privacidadeContent(),
-                'is_active' => true,
-                'is_searchable' => true,
-                'meta_title' => 'Política de Privacidade',
-                'meta_description' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a LGPD.',
-            ]
-        );
+        Page::withTrashed()
+            ->whereIn('slug', ['politica-privacidade', 'politica-de-privacidade'])
+            ->each(fn ($p) => $p->forceDelete());
+
+        Page::create([
+            'title' => 'Política de Privacidade',
+            'subtitle' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).',
+            'eyebrow' => 'Transparência & confiança',
+            'slug' => 'politica-privacidade',
+            'content' => $this->privacidadeContent(),
+            'is_active' => true,
+            'is_searchable' => true,
+            'meta_title' => 'Política de Privacidade',
+            'meta_description' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a LGPD.',
+        ]);
     }
 
     private function downloadImage(string $url, string $storagePath): bool

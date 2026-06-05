@@ -73,7 +73,7 @@ class Event extends Model
 
     public function getIsPastAttribute(): bool
     {
-        return $this->date->startOfDay()->lt(now()->startOfDay());
+        return $this->date->lt(today());
     }
 
     public function scopeActive($query)
