@@ -14,10 +14,10 @@ class EventController extends Controller
 {
     public function index(Request $request): Response
     {
-        $search      = $request->input('q');
-        $type        = $request->input('type');
+        $search = $request->input('q');
+        $type = $request->input('type');
         $eventStatus = $request->input('event_status');
-        $period      = $request->input('period', 'upcoming');
+        $period = $request->input('period', 'upcoming');
 
         $events = Event::query()
             ->when($period === 'upcoming', fn ($q) => $q

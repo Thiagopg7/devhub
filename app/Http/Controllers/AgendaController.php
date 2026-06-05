@@ -12,8 +12,8 @@ class AgendaController extends Controller
     {
         $today = now()->startOfDay();
 
-        $upcoming = Event::active()->whereDate('date', '>=', $today)->orderBy('date')->get();
-        $past     = Event::active()->whereDate('date', '<',  $today)->orderByDesc('date')->get();
+        $upcoming = Event::active()->whereDate('date', '>=', $today)->orderBy('order')->orderBy('date')->get();
+        $past = Event::active()->whereDate('date', '<', $today)->orderByDesc('date')->get();
 
         return Inertia::render('Agenda', ['events' => $upcoming->concat($past)]);
     }

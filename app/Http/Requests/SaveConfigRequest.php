@@ -50,7 +50,7 @@ class SaveConfigRequest extends FormRequest
     {
         return [
             'config.contact_email.email' => 'Informe um e-mail válido.',
-            'config.footer_github.url'   => 'Informe uma URL válida para o GitHub.',
+            'config.footer_github.url' => 'Informe uma URL válida para o GitHub.',
             'config.footer_linkedin.url' => 'Informe uma URL válida para o LinkedIn.',
             'config.footer_facebook.url' => 'Informe uma URL válida para o Facebook.',
             'config.footer_instagram.url' => 'Informe uma URL válida para o Instagram.',

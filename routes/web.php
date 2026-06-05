@@ -36,4 +36,3 @@ Route::middleware('auth')->group(function () {
 Route::get('/api/docs', fn () => view('api-docs'))->name('api.docs');
 
 require __DIR__.'/auth.php';
-
