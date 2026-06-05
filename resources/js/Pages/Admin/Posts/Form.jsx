@@ -18,6 +18,14 @@ import { CircleHelp } from "lucide-react";
 import { useCan } from "@/hooks/useCan";
 import { useConfirmModal } from "@/hooks/useConfirmModal";
 
+// Converte um ISO 8601 para o formato aceito pelo input datetime-local (hora local).
+function toDateTimeLocal(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
 export default function Form({ post = {}, categories = [] }) {
     const can = useCan();
     const isEditing = !!post?.id;
@@ -33,6 +41,8 @@ export default function Form({ post = {}, categories = [] }) {
         meta_description: post?.meta_description  ?? "",
         banner_image:     null,
         is_active:        post?.is_active         ?? true,
+        is_featured:      post?.is_featured        ?? false,
+        published_at:     toDateTimeLocal(post?.published_at),
     });
 
     const submit = (e) => {
@@ -177,12 +187,39 @@ export default function Form({ post = {}, categories = [] }) {
                                     </div>
 
                                     <div>
+                                        <Label htmlFor="published_at" value="Data de publicação" />
+                                        <Input
+                                            id="published_at"
+                                            type="datetime-local"
+                                            value={data.published_at}
+                                            className="mt-1 block w-full sm:w-64"
+                                            onChange={(e) => setData("published_at", e.target.value)}
+                                            disabled={processing || readonly}
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            Em branco publica agora. Uma data futura agenda o post — ele só aparece no site a partir dela.
+                                        </p>
+                                    </div>
+
+                                    <div>
                                         <Label value="Ativo" />
                                         <ToggleButton
                                             checked={data.is_active}
                                             onChange={(e) => setData("is_active", e.target.checked)}
                                             disabled={readonly}
                                         />
+                                    </div>
+
+                                    <div>
+                                        <Label value="Destaque na home" />
+                                        <ToggleButton
+                                            checked={data.is_featured}
+                                            onChange={(e) => setData("is_featured", e.target.checked)}
+                                            disabled={readonly}
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            Aparece no bloco "Leitura obrigatória". Só um post fica em destaque por vez — ao marcar este, o anterior é desmarcado.
+                                        </p>
                                     </div>
 
                                     <div className="flex items-center justify-end pt-2 border-t border-gray-200 dark:border-gray-700">

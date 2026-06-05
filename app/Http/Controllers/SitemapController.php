@@ -11,7 +11,7 @@ class SitemapController extends Controller
 {
     public function index(): Response
     {
-        $posts = Post::active()->orderByDesc('updated_at')->get(['slug', 'updated_at']);
+        $posts = Post::published()->orderByDesc('updated_at')->get(['slug', 'updated_at']);
         $categories = Category::active()->get(['slug', 'updated_at']);
         $pages = Page::active()->searchable()->get(['slug', 'updated_at']);
 

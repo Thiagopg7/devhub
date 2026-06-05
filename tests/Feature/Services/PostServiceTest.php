@@ -224,4 +224,93 @@ class PostServiceTest extends TestCase
         $this->assertNull($result['category']);
         $this->assertNull($result['posts']);
     }
+
+    public function test_metodos_publicos_ignoram_posts_agendados(): void
+    {
+        $author = $this->author();
+        Post::factory()->create(['user_id' => $author->id, 'title' => 'Publicado']);
+        $agendado = Post::factory()->scheduled()->create(['user_id' => $author->id, 'title' => 'Agendado']);
+        $service = $this->makeService();
+
+        $this->assertSame(1, $service->getAllActive(20)->total());
+        $this->assertCount(1, $service->getLatest(10));
+        $this->assertNull($service->findBySlug($agendado->slug));
+    }
+
+    public function test_create_sem_data_publica_imediatamente(): void
+    {
+        $author = $this->author();
+        $service = $this->makeService();
+
+        $post = $service->create(['title' => 'Imediato', 'user_id' => $author->id]);
+
+        $this->assertNotNull($post->published_at);
+        $this->assertTrue($post->published_at->lessThanOrEqualTo(now()));
+    }
+
+    public function test_get_featured_retorna_post_marcado(): void
+    {
+        $author = $this->author();
+        Post::factory()->create(['user_id' => $author->id, 'title' => 'Comum']);
+        $featured = Post::factory()->featured()->create(['user_id' => $author->id, 'title' => 'Destaque']);
+        $service = $this->makeService();
+
+        $this->assertSame($featured->id, $service->getFeatured()->id);
+    }
+
+    public function test_get_featured_cai_para_mais_recente_quando_nenhum_marcado(): void
+    {
+        $author = $this->author();
+        Post::factory()->create(['user_id' => $author->id, 'published_at' => now()->subDays(2)]);
+        $recente = Post::factory()->create(['user_id' => $author->id, 'published_at' => now()->subDay()]);
+        $service = $this->makeService();
+
+        $this->assertSame($recente->id, $service->getFeatured()->id);
+    }
+
+    public function test_get_featured_ignora_destaque_ainda_nao_publicado(): void
+    {
+        $author = $this->author();
+        $publicado = Post::factory()->create(['user_id' => $author->id, 'published_at' => now()->subDay()]);
+        Post::factory()->featured()->scheduled()->create(['user_id' => $author->id]);
+        $service = $this->makeService();
+
+        $this->assertSame($publicado->id, $service->getFeatured()->id);
+    }
+
+    public function test_create_com_destaque_desmarca_destaque_anterior(): void
+    {
+        $author = $this->author();
+        $antigo = Post::factory()->featured()->create(['user_id' => $author->id]);
+        $service = $this->makeService();
+
+        $novo = $service->create(['title' => 'Novo destaque', 'user_id' => $author->id, 'is_featured' => true]);
+
+        $this->assertTrue($novo->fresh()->is_featured);
+        $this->assertFalse($antigo->fresh()->is_featured);
+    }
+
+    public function test_update_com_data_em_branco_publica_imediatamente(): void
+    {
+        $author = $this->author();
+        $post = Post::factory()->scheduled()->create(['user_id' => $author->id]);
+        $service = $this->makeService();
+
+        $service->update($post, ['title' => $post->title, 'published_at' => null]);
+
+        $this->assertTrue($post->fresh()->published_at->lessThanOrEqualTo(now()));
+    }
+
+    public function test_update_marcar_destaque_desmarca_outros(): void
+    {
+        $author = $this->author();
+        $antigo = Post::factory()->featured()->create(['user_id' => $author->id]);
+        $outro = Post::factory()->create(['user_id' => $author->id]);
+        $service = $this->makeService();
+
+        $service->update($outro, ['title' => $outro->title, 'is_featured' => true]);
+
+        $this->assertTrue($outro->fresh()->is_featured);
+        $this->assertFalse($antigo->fresh()->is_featured);
+    }
 }

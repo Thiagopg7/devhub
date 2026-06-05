@@ -23,7 +23,8 @@ class PostResource extends JsonResource
             ] : null),
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
-            'published_at' => $this->created_at->toIso8601String(),
+            'is_featured' => (bool) $this->is_featured,
+            'published_at' => $this->published_at?->toIso8601String(),
         ];
     }
 }

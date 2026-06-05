@@ -63,7 +63,7 @@ export default function ArticleHeader({ post, readTime, pageUrl }) {
                 <span className="w-px h-8 shrink-0" style={{ background: 'var(--border-2)' }} />
                 <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: 'var(--text-muted)' }}>
                     <Calendar size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />
-                    {formatDate(post.created_at)}
+                    {formatDate(post.published_at)}
                 </span>
                 <span className="inline-flex items-center gap-2 text-sm font-mono" style={{ color: 'var(--text-muted)' }}>
                     <Clock size={13} style={{ color: 'var(--accent)', flexShrink: 0 }} />

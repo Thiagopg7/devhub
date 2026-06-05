@@ -87,10 +87,13 @@ class PostSeeder extends Seeder
             ],
         ];
 
-        foreach ($posts as $data) {
+        foreach ($posts as $i => $data) {
             $post = Post::firstOrCreate(
                 ['title' => $data['title']],
-                array_merge($data, ['user_id' => $user->id])
+                array_merge($data, [
+                    'user_id' => $user->id,
+                    'published_at' => now()->subDays($i),
+                ])
             );
 
             if (! $post->banner_image) {

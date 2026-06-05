@@ -54,6 +54,26 @@ class PostApiTest extends TestCase
             ]);
     }
 
+    public function test_nao_retorna_posts_agendados(): void
+    {
+        Post::factory()->count(2)->create(['is_active' => true]);
+        Post::factory()->scheduled()->create(['is_active' => true]);
+
+        $this->autenticado()->getJson('/api/posts')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+    }
+
+    public function test_expoe_campos_destaque_e_publicacao(): void
+    {
+        Post::factory()->featured()->create(['is_active' => true]);
+
+        $this->autenticado()->getJson('/api/posts')
+            ->assertOk()
+            ->assertJsonStructure(['data' => [['is_featured', 'published_at']]])
+            ->assertJsonPath('data.0.is_featured', true);
+    }
+
     // --- GET /api/posts/{slug} ---
 
     public function test_retorna_post_pelo_slug(): void
@@ -76,6 +96,14 @@ class PostApiTest extends TestCase
         Post::factory()->create(['is_active' => false, 'slug' => 'post-inativo']);
 
         $this->autenticado()->getJson('/api/posts/post-inativo')
+            ->assertNotFound();
+    }
+
+    public function test_retorna_404_para_post_agendado(): void
+    {
+        Post::factory()->scheduled()->create(['is_active' => true, 'slug' => 'post-agendado']);
+
+        $this->autenticado()->getJson('/api/posts/post-agendado')
             ->assertNotFound();
     }
 

@@ -28,6 +28,18 @@ class PostFactory extends Factory
             'meta_title' => null,
             'meta_description' => null,
             'is_active' => true,
+            'is_featured' => false,
+            'published_at' => now(),
         ];
+    }
+
+    public function featured(): static
+    {
+        return $this->state(['is_featured' => true]);
+    }
+
+    public function scheduled(): static
+    {
+        return $this->state(['published_at' => now()->addWeek()]);
     }
 }

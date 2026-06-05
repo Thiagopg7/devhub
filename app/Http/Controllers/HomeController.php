@@ -17,6 +17,7 @@ class HomeController extends Controller
     {
         return Inertia::render('Home', [
             'featuredPosts' => $this->postService->getLatest(3),
+            'featuredPost' => $this->postService->getFeatured(),
             'technologies' => Technology::active()->ordered()->limit(8)->get(),
             'upcomingEvents' => Event::active()
                 ->where('date', '>=', now())
