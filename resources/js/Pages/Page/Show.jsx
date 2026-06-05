@@ -9,7 +9,7 @@ import Breadcrumb from "@/Components/Public/Breadcrumb";
 import Reveal from "@/Components/Public/Reveal";
 import { Calendar } from "lucide-react";
 
-const PROSE = `prose prose-invert max-w-none
+const PROSE = `page-content prose prose-invert max-w-none
     prose-headings:font-display prose-headings:font-semibold prose-headings:text-white
     prose-h2:text-[22px] prose-h2:border-b prose-h2:border-[var(--border)] prose-h2:pb-2.5 prose-h2:mt-10 prose-h2:mb-4
     prose-h3:text-lg prose-h3:mt-8
@@ -19,7 +19,6 @@ const PROSE = `prose prose-invert max-w-none
     prose-li:text-[var(--text-body)] prose-li:leading-relaxed
     prose-ul:my-4 prose-ol:my-4
     marker:text-[var(--accent)]
-    prose-blockquote:border-l-2 prose-blockquote:border-l-[var(--accent)] prose-blockquote:text-[var(--text-muted)] prose-blockquote:not-italic
     prose-code:text-[var(--accent)] prose-code:bg-[var(--surface-2)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
     prose-pre:bg-[var(--surface-2)] prose-pre:border prose-pre:border-[var(--border)]
     prose-img:rounded-2xl prose-img:border prose-img:border-[var(--border)]`;
@@ -122,7 +121,7 @@ export default function PageShow({ page }) {
             </PageHero>
 
             <div style={{ background: "var(--base)" }}>
-                <Reveal className="max-w-[820px] mx-auto px-4 sm:px-6 py-14 pb-20">
+                <Reveal className="max-w-[900px] mx-auto px-4 sm:px-6 py-14 pb-20">
                     {page.main_image_url && (
                         <div className="mb-10 rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
                             <img src={page.main_image_url} alt={page.title} className="w-full object-cover" />

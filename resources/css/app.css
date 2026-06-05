@@ -210,6 +210,35 @@ body { font-family: 'Manrope', system-ui, sans-serif; }
     background: var(--accent);
 }
 
+/* ── Conteúdo de páginas (CMS) ──────────────────────────────── */
+/* Blockquote do editor vira "callout" (caixa de destaque com ícone),
+   equivalente ao componente Callout das páginas estáticas. */
+.page-content blockquote {
+    position: relative;
+    margin: 1.25rem 0;
+    padding: 1.15rem 1.25rem 1.15rem 3.4rem;
+    border: 1px solid rgba(60, 189, 248, 0.2);
+    border-radius: 0.75rem;
+    background: rgba(60, 189, 248, 0.06);
+    color: var(--text-body);
+    font-style: normal;
+    font-weight: 400;
+    quotes: none;
+}
+.page-content blockquote::before {
+    content: "";
+    position: absolute;
+    left: 1.2rem;
+    top: 1.25rem;
+    width: 20px;
+    height: 20px;
+    background-color: var(--accent);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='16' x2='12' y2='12'/%3E%3Cline x1='12' y1='8' x2='12.01' y2='8'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.page-content blockquote p { margin: 0; }
+.page-content blockquote p + p { margin-top: 0.5rem; }
+
 /* ── Stack marquee ──────────────────────────────────────────── */
 @keyframes marquee { to { transform: translateX(-50%); } }
 .marquee-track { animation: marquee 34s linear infinite; }
