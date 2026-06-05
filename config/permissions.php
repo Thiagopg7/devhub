@@ -17,6 +17,7 @@ return [
         'technologies' => 'Tecnologias',
         'events' => 'Eventos',
         'testimonials' => 'Depoimentos',
+        'stack' => 'Stack (tecnologias)',
         'configs' => 'Configurações',
         'newsletter_areas' => 'Áreas de newsletter',
         'newsletter_subscribers' => 'Inscritos da newsletter',

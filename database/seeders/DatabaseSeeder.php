@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             MenuSeeder::class,
             EventSeeder::class,
             TestimonialSeeder::class,
+            StackItemSeeder::class,
         ]);
     }
 }
