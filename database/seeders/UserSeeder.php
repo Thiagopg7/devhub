@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('Senha@123'),
                 'is_super_admin' => true,
                 'email_verified_at' => now(),
+                'bio' => 'Desenvolvedor full-stack apaixonado por PHP, Laravel e React. Escreve sobre arquitetura, boas práticas e as ferramentas que usa no dia a dia para construir produtos de verdade.',
             ]
         );
         $admin->assignRole('Administrador');

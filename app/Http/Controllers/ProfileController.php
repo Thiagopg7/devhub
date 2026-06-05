@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\FileUploadService;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,15 +28,45 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(ProfileUpdateRequest $request, FileUploadService $uploadService): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $data = $request->validated();
+        $oldAvatar = $user->avatar_image;
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($request->hasFile('avatar_image')) {
+            $data['avatar_image'] = $uploadService->upload($request->file('avatar_image'), 'avatars');
+        } else {
+            unset($data['avatar_image']);
         }
 
-        $request->user()->save();
+        $user->fill($data);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        if (isset($data['avatar_image']) && $oldAvatar) {
+            $uploadService->delete($oldAvatar);
+        }
+
+        return Redirect::route('profile.edit')
+            ->with('toast', ['title' => 'Sucesso!', 'message' => 'Perfil atualizado com sucesso.', 'type' => 'success']);
+    }
+
+    /**
+     * Remove the user's avatar.
+     */
+    public function destroyAvatar(Request $request, FileUploadService $uploadService): RedirectResponse
+    {
+        $user = $request->user();
+
+        if ($user->avatar_image) {
+            $uploadService->delete($user->avatar_image);
+            $user->update(['avatar_image' => null]);
+        }
 
         return Redirect::route('profile.edit');
     }

@@ -65,7 +65,7 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
                                 />
                             )}
 
-                            <AuthorBox />
+                            <AuthorBox author={post.user} />
                             <PostNav prevPost={prevPost} nextPost={nextPost} />
                         </article>
 
