@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\MenuItem;
 use App\Models\NewsletterArea;
+use App\Models\StackItem;
 use App\Models\Technology;
 use App\Models\Testimonial;
 use App\Support\ApiCache;
@@ -20,6 +21,7 @@ class ReorderController extends Controller
         'event' => ['class' => Event::class,           'module' => 'events',           'tags' => [], 'keys' => []],
         'technology' => ['class' => Technology::class,     'module' => 'technologies',     'tags' => [ApiCache::TECHNOLOGIES], 'keys' => []],
         'testimonial' => ['class' => Testimonial::class,   'module' => 'testimonials',     'tags' => [], 'keys' => []],
+        'stack' => ['class' => StackItem::class,      'module' => 'stack',            'tags' => [], 'keys' => []],
         'menu_item' => ['class' => MenuItem::class,       'module' => 'menu',             'tags' => [ApiCache::MENU],         'keys' => ['menu.shared']],
         'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas', 'tags' => [],                       'keys' => ['newsletter_areas.active']],
     ];

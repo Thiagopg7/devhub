@@ -10,6 +10,7 @@ use App\Models\MenuItem;
 use App\Models\NewsletterArea;
 use App\Models\Page;
 use App\Models\Post;
+use App\Models\StackItem;
 use App\Models\Technology;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class ToggleController extends Controller
         'event' => ['class' => Event::class,           'module' => 'events'],
         'technology' => ['class' => Technology::class,     'module' => 'technologies'],
         'testimonial' => ['class' => Testimonial::class,   'module' => 'testimonials'],
+        'stack' => ['class' => StackItem::class,      'module' => 'stack'],
         'page' => ['class' => Page::class,           'module' => 'pages'],
         'newsletter_area' => ['class' => NewsletterArea::class, 'module' => 'newsletter_areas'],
     ];

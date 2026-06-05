@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ReorderController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\StackItemController;
 use App\Http\Controllers\Admin\TechnologyController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\ToggleController;
@@ -46,6 +47,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'v
     Route::resource('/testimonials', TestimonialController::class)
         ->except(['show'])
         ->middleware('resource.permission:testimonials');
+
+    Route::resource('/stack', StackItemController::class)
+        ->except(['show'])
+        ->middleware('resource.permission:stack');
 
     Route::get('/pages/trashed', [PageController::class, 'trashed'])->name('pages.trashed')->middleware('can:pages.delete');
     Route::post('/pages/{id}/restore', [PageController::class, 'restore'])->name('pages.restore')->middleware('can:pages.delete');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\StackItem;
 use App\Models\Technology;
 use App\Models\Testimonial;
 use App\Services\PostService;
@@ -23,6 +24,7 @@ class HomeController extends Controller
                 ->limit(3)
                 ->get(),
             'testimonials' => Testimonial::active()->ordered()->get(),
+            'stackItems' => StackItem::active()->ordered()->get(['name', 'icon']),
         ]);
     }
 }
