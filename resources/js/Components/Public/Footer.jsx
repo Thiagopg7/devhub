@@ -1,6 +1,6 @@
 import { Link, usePage } from "@inertiajs/react";
 import { Mail, MapPin } from "lucide-react";
-import { FaYoutube, FaInstagram } from "react-icons/fa";
+import { FaYoutube, FaInstagram, FaFacebook } from "react-icons/fa";
 import Logo from "./Logo";
 
 function FooterLink({ href, openInNewTab, className, children }) {
@@ -30,6 +30,7 @@ export default function Footer() {
     const footerMsg   = siteConfig.footer_message || `© ${year} DevHub. Todos os direitos reservados.`;
     const github      = siteConfig.footer_github    || null;
     const linkedin    = siteConfig.footer_linkedin   || null;
+    const facebook    = siteConfig.footer_facebook   || null;
     const youtube     = siteConfig.footer_youtube    || null;
     const instagram   = siteConfig.footer_instagram  || null;
     const email       = siteConfig.contact_email    || null;
@@ -52,6 +53,7 @@ export default function Footer() {
                             {[
                                 { href: github,    label: 'GitHub',    icon: GH_ICON              },
                                 { href: linkedin,  label: 'LinkedIn',  icon: LI_ICON              },
+                                { href: facebook,  label: 'Facebook',  icon: <FaFacebook size={20} /> },
                                 { href: youtube,   label: 'YouTube',   icon: <FaYoutube size={20} /> },
                                 { href: instagram, label: 'Instagram', icon: <FaInstagram size={19} /> },
                             ].filter(({ href }) => href).map(({ href, label, icon }) => (

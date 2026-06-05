@@ -15,6 +15,8 @@ class ConfigController extends Controller
     private const KEY_GROUPS = [
         'site_name' => 'general',
         'site_tagline' => 'general',
+        'footer_github' => 'footer',
+        'footer_linkedin' => 'footer',
         'footer_facebook' => 'footer',
         'footer_instagram' => 'footer',
         'footer_youtube' => 'footer',
