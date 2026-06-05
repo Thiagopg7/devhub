@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -58,7 +59,13 @@ class Category extends Model
             $category->saveQuietly();
         });
 
-        static::saved(fn () => ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS));
-        static::deleted(fn () => ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS));
+        static::saved(function () {
+            ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS);
+            Cache::forget('categories.active.footer');
+        });
+        static::deleted(function () {
+            ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS);
+            Cache::forget('categories.active.footer');
+        });
     }
 }

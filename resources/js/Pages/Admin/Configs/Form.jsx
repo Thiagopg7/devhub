@@ -39,6 +39,8 @@ export default function Form({ values = {} }) {
         config: {
             site_name:            values.site_name             ?? "",
             site_tagline:         values.site_tagline          ?? "",
+            footer_github:        values.footer_github        ?? "",
+            footer_linkedin:      values.footer_linkedin      ?? "",
             footer_facebook:      values.footer_facebook      ?? "",
             footer_instagram:     values.footer_instagram     ?? "",
             footer_youtube:       values.footer_youtube        ?? "",
@@ -107,6 +109,26 @@ export default function Form({ values = {} }) {
 
                             {/* Rodapé */}
                             <Section title="Rodapé">
+                                <Field label="GitHub">
+                                    <Input
+                                        type="url"
+                                        value={data.config.footer_github}
+                                        onChange={set("footer_github")}
+                                        placeholder="https://github.com/usuario"
+                                        className="mt-1 block w-full"
+                                        disabled={processing || readonly}
+                                    />
+                                </Field>
+                                <Field label="LinkedIn">
+                                    <Input
+                                        type="url"
+                                        value={data.config.footer_linkedin}
+                                        onChange={set("footer_linkedin")}
+                                        placeholder="https://linkedin.com/in/usuario"
+                                        className="mt-1 block w-full"
+                                        disabled={processing || readonly}
+                                    />
+                                </Field>
                                 <Field label="Facebook">
                                     <Input
                                         type="url"

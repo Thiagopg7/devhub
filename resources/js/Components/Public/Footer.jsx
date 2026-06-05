@@ -21,11 +21,9 @@ const LI_ICON = (
     </svg>
 );
 
-const TRACKS = ['Backend', 'Frontend', 'IA & Dados', 'Banco de Dados', 'Carreira'];
-
 export default function Footer() {
     const year = new Date().getFullYear();
-    const { siteConfig = {}, menuItems = [] } = usePage().props;
+    const { siteConfig = {}, menuItems = [], footerCategories = [] } = usePage().props;
 
     const siteName    = siteConfig.site_name    || "DevHub";
     const tagline     = siteConfig.site_tagline || "Blog e portfólio de desenvolvimento web. Conteúdo técnico para quem constrói o futuro, uma linha de código por vez.";
@@ -83,25 +81,28 @@ export default function Footer() {
                                         </li>
                                     ))}
                                 <li>
-                                    <Link href="/politica-privacidade" className={linkCls} style={{ color: 'var(--text-muted)' }}
-                                        target="_blank" rel="noopener noreferrer">
+                                    <FooterLink href="/politica-de-privacidade" className={linkCls} style={{ color: 'var(--text-muted)' }}>
                                         Política de Privacidade
-                                    </Link>
+                                    </FooterLink>
                                 </li>
                             </ul>
                         </div>
                     )}
 
-                    <div>
-                        <h5 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">Trilhas</h5>
-                        <ul className="space-y-2">
-                            {TRACKS.map((t) => (
-                                <li key={t}>
-                                    <Link href="/blog" className={linkCls} style={{ color: 'var(--text-muted)' }}>{t}</Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    {footerCategories.length > 0 && (
+                        <div>
+                            <h5 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">Trilhas</h5>
+                            <ul className="space-y-2">
+                                {footerCategories.map((cat) => (
+                                    <li key={cat.slug}>
+                                        <Link href={route('blog.category', cat.slug)} className={linkCls} style={{ color: 'var(--text-muted)' }}>
+                                            {cat.name}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     {hasContact && (
                         <div>
