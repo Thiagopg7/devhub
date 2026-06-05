@@ -17,7 +17,6 @@ Route::get('/blog/categoria/{slug}', [BlogController::class, 'byCategory'])->nam
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/tecnologias', [TechnologyController::class, 'index'])->name('technologies.index');
 Route::get('/sobre', fn () => Inertia::render('Sobre'))->name('sobre');
-Route::get('/politica-privacidade', fn () => Inertia::render('Privacidade'))->name('privacidade');
 Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
