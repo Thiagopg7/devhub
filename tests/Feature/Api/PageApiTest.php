@@ -29,7 +29,7 @@ class PageApiTest extends TestCase
         $this->withToken($this->token())->getJson('/api/pages/sobre-nos')
             ->assertOk()
             ->assertJsonStructure([
-                'data' => ['title', 'slug', 'content', 'banner_image', 'meta_title', 'meta_description'],
+                'data' => ['title', 'slug', 'content', 'eyebrow', 'main_image', 'meta_title', 'meta_description'],
             ])
             ->assertJsonFragment(['title' => 'Sobre Nós']);
     }

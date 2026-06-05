@@ -13,8 +13,8 @@ class PageResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'subtitle' => $this->subtitle,
+            'eyebrow' => $this->eyebrow,
             'content' => $this->content,
-            'banner_image' => $this->banner_image_url,
             'main_image' => $this->main_image_url,
             'gallery' => $this->whenLoaded('galleryImages', fn () => $this->galleryImages->map(fn ($img) => $img->image_url)->values()
             ),

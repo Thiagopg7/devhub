@@ -22,35 +22,29 @@ class PageFileCleanupTest extends TestCase
     public function test_soft_delete_preserva_arquivos(): void
     {
         Storage::fake('public');
-        Storage::disk('public')->put('pages/banner.jpg', 'fake');
         Storage::disk('public')->put('pages/main.jpg', 'fake');
 
         $page = $this->makePage([
-            'banner_image' => 'pages/banner.jpg',
             'main_image' => 'pages/main.jpg',
         ]);
 
         $page->delete();
 
-        Storage::disk('public')->assertExists('pages/banner.jpg');
         Storage::disk('public')->assertExists('pages/main.jpg');
         $this->assertSoftDeleted($page);
     }
 
-    public function test_force_delete_apaga_banner_e_main(): void
+    public function test_force_delete_apaga_main_image(): void
     {
         Storage::fake('public');
-        Storage::disk('public')->put('pages/banner.jpg', 'fake');
         Storage::disk('public')->put('pages/main.jpg', 'fake');
 
         $page = $this->makePage([
-            'banner_image' => 'pages/banner.jpg',
             'main_image' => 'pages/main.jpg',
         ]);
 
         $page->forceDelete();
 
-        Storage::disk('public')->assertMissing('pages/banner.jpg');
         Storage::disk('public')->assertMissing('pages/main.jpg');
     }
 

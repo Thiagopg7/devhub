@@ -4,6 +4,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TechnologyController;
@@ -37,3 +38,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/api/docs', fn () => view('api-docs'))->name('api.docs');
 
 require __DIR__.'/auth.php';
+
+// Catch-all: páginas do CMS por slug na raiz (ex.: /termos, /politica-privacidade).
+// DEVE ser a última rota registrada — rotas específicas acima têm precedência.
+Route::get('/{slug}', [PageController::class, 'show'])->name('pages.show');
