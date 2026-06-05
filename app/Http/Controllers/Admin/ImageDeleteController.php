@@ -15,7 +15,7 @@ class ImageDeleteController extends Controller
 {
     private const ALLOWED = [
         'post' => ['fields' => ['banner_image'],                          'class' => Post::class,        'module' => 'posts'],
-        'page' => ['fields' => ['banner_image', 'main_image'],            'class' => Page::class,        'module' => 'pages'],
+        'page' => ['fields' => ['main_image'],                            'class' => Page::class,        'module' => 'pages'],
         'technology' => ['fields' => ['icon_image', 'screenshot_image'], 'class' => Technology::class,  'module' => 'technologies'],
         'testimonial' => ['fields' => ['avatar_image'],                   'class' => Testimonial::class, 'module' => 'testimonials'],
     ];

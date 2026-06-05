@@ -19,8 +19,8 @@ class Page extends Model
     protected $fillable = [
         'title',
         'subtitle',
+        'eyebrow',
         'slug',
-        'banner_image',
         'main_image',
         'content',
         'is_active',
@@ -35,9 +35,9 @@ class Page extends Model
         'is_searchable' => 'boolean',
     ];
 
-    protected $appends = ['banner_image_url', 'main_image_url'];
+    protected $appends = ['main_image_url'];
 
-    protected $hidden = ['deleted_at', 'updated_at'];
+    protected $hidden = ['deleted_at'];
 
     public function sluggable(): array
     {
@@ -47,13 +47,6 @@ class Page extends Model
                 'onUpdate' => true,
             ],
         ];
-    }
-
-    protected function bannerImageUrl(): Attribute
-    {
-        return Attribute::get(
-            fn () => $this->banner_image ? asset('storage/'.$this->banner_image) : null
-        );
     }
 
     protected function mainImageUrl(): Attribute
@@ -91,10 +84,8 @@ class Page extends Model
         });
 
         static::forceDeleted(function (self $page) {
-            foreach (['banner_image', 'main_image'] as $field) {
-                if ($page->{$field} && Storage::disk('public')->exists($page->{$field})) {
-                    Storage::disk('public')->delete($page->{$field});
-                }
+            if ($page->main_image && Storage::disk('public')->exists($page->main_image)) {
+                Storage::disk('public')->delete($page->main_image);
             }
 
             // Gallery images não têm soft delete; dispara o evento `deleted`

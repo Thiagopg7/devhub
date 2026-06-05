@@ -1,25 +1,35 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import DOMPurify from "dompurify";
-import PublicLayout from "@/Layouts/PublicLayout";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import PublicLayout from "@/Layouts/PublicLayout";
+import PageHero from "@/Components/Public/PageHero";
+import Breadcrumb from "@/Components/Public/Breadcrumb";
+import Reveal from "@/Components/Public/Reveal";
+import { Calendar } from "lucide-react";
 
-function DefaultBanner() {
-    return (
-        <div className="relative overflow-hidden bg-slate-900 h-56 md:h-72">
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950" />
-            <div
-                className="absolute inset-0 opacity-[0.15]"
-                style={{
-                    backgroundImage: `radial-gradient(circle, #38BDF8 1px, transparent 1px)`,
-                    backgroundSize: "40px 40px",
-                }}
-            />
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-sky-400/8 rounded-full blur-3xl" />
-        </div>
-    );
+const PROSE = `page-content prose prose-invert max-w-none
+    prose-headings:font-display prose-headings:font-semibold prose-headings:text-white
+    prose-h2:text-[22px] prose-h2:border-b prose-h2:border-[var(--border)] prose-h2:pb-2.5 prose-h2:mt-10 prose-h2:mb-4
+    prose-h3:text-lg prose-h3:mt-8
+    prose-p:text-[var(--text-body)] prose-p:leading-relaxed
+    prose-a:text-[var(--accent)] prose-a:no-underline hover:prose-a:underline
+    prose-strong:text-white
+    prose-li:text-[var(--text-body)] prose-li:leading-relaxed
+    prose-ul:my-4 prose-ol:my-4
+    marker:text-[var(--accent)]
+    prose-code:text-[var(--accent)] prose-code:bg-[var(--surface-2)] prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+    prose-pre:bg-[var(--surface-2)] prose-pre:border prose-pre:border-[var(--border)]
+    prose-img:rounded-2xl prose-img:border prose-img:border-[var(--border)]`;
+
+function formatLongDate(value) {
+    if (!value) return null;
+    return new Date(value).toLocaleDateString("pt-BR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
 }
 
 function Gallery({ images }) {
@@ -32,17 +42,22 @@ function Gallery({ images }) {
 
     return (
         <section className="mt-16">
-            <h2 className="text-xl font-bold text-white mb-5">Galeria</h2>
+            <h2 className="font-display font-semibold text-white mb-5"
+                style={{ fontSize: "clamp(18px,2.2vw,22px)" }}>
+                Galeria
+            </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {images.map((img, i) => (
                     <button
                         key={img.id}
                         onClick={() => { setIndex(i); setOpen(true); }}
-                        className="aspect-square overflow-hidden rounded-lg bg-slate-800 cursor-zoom-in group focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
+                        className="aspect-square overflow-hidden rounded-lg cursor-zoom-in group focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                        style={{ background: "var(--surface-2)" }}
                     >
                         <img
                             src={img.image_url}
                             alt=""
+                            loading="lazy"
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                     </button>
@@ -66,8 +81,7 @@ export default function PageShow({ page }) {
     const siteName = siteConfig.site_name || "DevHub";
 
     const metaTitle = page.meta_title || page.title;
-
-    const ogImage = page.banner_image_url || page.main_image_url;
+    const updatedAt = formatLongDate(page.updated_at);
 
     return (
         <PublicLayout>
@@ -77,64 +91,52 @@ export default function PageShow({ page }) {
                 <meta property="og:site_name" content={siteName} />
                 <meta property="og:title" content={metaTitle} />
                 {page.meta_description && <meta property="og:description" content={page.meta_description} />}
-                <meta property="og:url" content={route('pages.show', page.slug)} />
-                {ogImage && <meta property="og:image" content={ogImage} />}
+                <meta property="og:url" content={route("pages.show", page.slug)} />
+                {page.main_image_url && <meta property="og:image" content={page.main_image_url} />}
             </Head>
 
-            {/* Banner */}
-            {page.banner_image_url ? (
-                <div className="w-full h-56 md:h-72 overflow-hidden bg-slate-800">
-                    <img
-                        src={page.banner_image_url}
-                        alt={page.title}
-                        className="w-full h-full object-cover"
-                    />
-                </div>
-            ) : (
-                <DefaultBanner />
-            )}
+            <PageHero py="py-14">
+                <Breadcrumb items={[{ label: "Home", href: "/" }, { label: page.title }]} />
 
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                {/* Title */}
-                <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+                {page.eyebrow && <span className="eyebrow">{page.eyebrow}</span>}
+
+                <h1 className="font-display font-semibold text-white leading-tight tracking-tight mt-3 mb-4"
+                    style={{ fontSize: "clamp(34px,5vw,56px)" }}>
                     {page.title}
                 </h1>
 
                 {page.subtitle && (
-                    <p className="mt-3 text-slate-400 text-lg leading-relaxed border-l-2 border-sky-400 pl-4">
+                    <p className="max-w-[60ch] mb-5" style={{ color: "var(--text-body)", fontSize: 16 }}>
                         {page.subtitle}
                     </p>
                 )}
 
-                {/* Main image */}
-                {page.main_image_url && (
-                    <div className="mt-8 rounded-xl overflow-hidden border border-slate-700">
-                        <img
-                            src={page.main_image_url}
-                            alt={page.title}
-                            className="w-full object-cover"
+                {updatedAt && (
+                    <span className="inline-flex items-center gap-2 font-mono text-xs px-3.5 py-2 rounded-full"
+                        style={{ background: "var(--surface)", border: "1px solid var(--border-2)", color: "var(--text-muted)" }}>
+                        <Calendar size={13} style={{ color: "var(--accent)" }} />
+                        Última atualização: {updatedAt}
+                    </span>
+                )}
+            </PageHero>
+
+            <div style={{ background: "var(--base)" }}>
+                <Reveal className="max-w-[900px] mx-auto px-4 sm:px-6 py-14 pb-20">
+                    {page.main_image_url && (
+                        <div className="mb-10 rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+                            <img src={page.main_image_url} alt={page.title} className="w-full object-cover" />
+                        </div>
+                    )}
+
+                    {page.content && (
+                        <div
+                            className={PROSE}
+                            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(page.content) }}
                         />
-                    </div>
-                )}
+                    )}
 
-                {/* Content */}
-                {page.content && (
-                    <div
-                        className="mt-10 prose prose-invert prose-sky max-w-none
-                            prose-headings:text-slate-100
-                            prose-p:text-slate-300 prose-p:leading-relaxed
-                            prose-a:text-sky-400 prose-a:no-underline hover:prose-a:underline
-                            prose-strong:text-slate-100
-                            prose-code:text-sky-300 prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded
-                            prose-pre:bg-slate-800 prose-pre:border prose-pre:border-slate-700
-                            prose-blockquote:border-l-sky-400 prose-blockquote:text-slate-400
-                            prose-img:rounded-xl"
-                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(page.content) }}
-                    />
-                )}
-
-                {/* Gallery */}
-                <Gallery images={page.gallery_images} />
+                    <Gallery images={page.gallery_images} />
+                </Reveal>
             </div>
         </PublicLayout>
     );

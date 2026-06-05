@@ -25,12 +25,8 @@ class PageService
         return $query->paginate($perPage)->withQueryString();
     }
 
-    public function create(array $data, ?UploadedFile $banner, ?UploadedFile $mainImage): Page
+    public function create(array $data, ?UploadedFile $mainImage): Page
     {
-        if ($banner?->isValid()) {
-            $data['banner_image'] = $this->uploadService->upload($banner, 'pages');
-        }
-
         if ($mainImage?->isValid()) {
             $data['main_image'] = $this->uploadService->upload($mainImage, 'pages');
         }
@@ -38,16 +34,9 @@ class PageService
         return Page::create($data);
     }
 
-    public function update(Page $page, array $data, ?UploadedFile $banner, ?UploadedFile $mainImage): Page
+    public function update(Page $page, array $data, ?UploadedFile $mainImage): Page
     {
-        $oldBanner = $page->banner_image;
         $oldMain = $page->main_image;
-
-        if ($banner?->isValid()) {
-            $data['banner_image'] = $this->uploadService->upload($banner, 'pages');
-        } else {
-            unset($data['banner_image']);
-        }
 
         if ($mainImage?->isValid()) {
             $data['main_image'] = $this->uploadService->upload($mainImage, 'pages');
@@ -57,21 +46,11 @@ class PageService
 
         $page->update($data);
 
-        if (isset($data['banner_image']) && $oldBanner) {
-            $this->uploadService->delete($oldBanner);
-        }
-
         if (isset($data['main_image']) && $oldMain) {
             $this->uploadService->delete($oldMain);
         }
 
         return $page;
-    }
-
-    public function deleteBanner(Page $page): void
-    {
-        $this->uploadService->delete($page->banner_image);
-        $page->update(['banner_image' => null]);
     }
 
     public function deleteMainImage(Page $page): void
@@ -87,7 +66,6 @@ class PageService
 
     public function purge(Page $page): void
     {
-        $this->uploadService->delete($page->banner_image);
         $this->uploadService->delete($page->main_image);
         $page->forceDelete();
     }

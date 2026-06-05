@@ -10,9 +10,12 @@ const TYPE_STYLES = {
 export default function EventCard({ event }) {
     const typeStyle = TYPE_STYLES[event.type] || TYPE_STYLES.conf;
     const isPrimary = event.cta_style === 'primary';
+    const isFull    = event.status === 'full';
+    const isPast    = event.is_past;
 
     return (
-        <article className="event-card card group"
+        <article
+            className="event-card card group"
             style={{
                 display: 'grid',
                 gridTemplateColumns: '92px 1fr auto',
@@ -22,24 +25,29 @@ export default function EventCard({ event }) {
                 padding: '22px 26px',
                 position: 'relative',
                 overflow: 'hidden',
+                opacity: isPast ? 0.5 : 1,
+                transition: 'opacity .2s',
             }}>
 
             <div className="event-accent-bar" style={{
                 position: 'absolute', left: 0, top: 0, bottom: 0, width: 3,
-                background: 'var(--accent)', transform: 'scaleY(0)',
+                background: isPast ? 'var(--border-s)' : 'var(--accent)',
+                transform: 'scaleY(0)',
                 transformOrigin: 'top', transition: 'transform .3s ease',
             }} />
 
+            {/* Data */}
             <div style={{
                 display: 'flex', flexDirection: 'column', alignItems: 'center',
                 justifyContent: 'center', textAlign: 'center',
-                background: 'rgba(60,189,248,0.08)', border: '1px solid rgba(60,189,248,0.2)',
+                background: isPast ? 'rgba(150,178,208,0.06)' : 'rgba(60,189,248,0.08)',
+                border: `1px solid ${isPast ? 'rgba(150,178,208,0.15)' : 'rgba(60,189,248,0.2)'}`,
                 borderRadius: 10, padding: '12px 6px',
             }}>
-                <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 28, lineHeight: 1, color: '#fff' }}>
+                <span style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, fontSize: 28, lineHeight: 1, color: isPast ? 'var(--text-muted)' : '#fff' }}>
                     {event.day}
                 </span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--accent)', marginTop: 4 }}>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: '.12em', textTransform: 'uppercase', color: isPast ? 'var(--text-muted)' : 'var(--accent)', marginTop: 4 }}>
                     {event.month}
                 </span>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, color: 'var(--text-muted)', marginTop: 2 }}>
@@ -47,8 +55,9 @@ export default function EventCard({ event }) {
                 </span>
             </div>
 
+            {/* Informações */}
             <div style={{ minWidth: 0 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
                     <span style={{
                         fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase',
@@ -57,6 +66,19 @@ export default function EventCard({ event }) {
                     }}>
                         {event.type_label}
                     </span>
+
+                    {isFull && (
+                        <span style={{
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: 10.5, letterSpacing: '.08em', textTransform: 'uppercase',
+                            fontWeight: 500, padding: '4px 10px', borderRadius: 999,
+                            color: '#ff8080', background: 'rgba(255,80,80,0.12)',
+                            border: '1px solid rgba(255,80,80,0.2)',
+                        }}>
+                            Lotado
+                        </span>
+                    )}
+
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: 12, color: 'var(--text-body)' }}>
                         <span style={{
                             width: 7, height: 7, borderRadius: '50%',
@@ -68,7 +90,8 @@ export default function EventCard({ event }) {
                         {event.is_online ? 'Online' : 'Presencial'}
                     </span>
                 </div>
-                <h4 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 19, letterSpacing: '-0.01em', lineHeight: 1.25, color: '#fff', margin: 0 }}>
+
+                <h4 style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 600, fontSize: 19, letterSpacing: '-0.01em', lineHeight: 1.25, color: isPast ? 'var(--text-body)' : '#fff', margin: 0 }}>
                     {event.title}
                 </h4>
                 <p style={{ color: 'var(--text-muted)', fontSize: 13.5, marginTop: 4 }}>
@@ -93,28 +116,46 @@ export default function EventCard({ event }) {
                 </div>
             </div>
 
+            {/* CTA */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 10 }}>
-                {event.cta_url ? (
-                    <a href={event.cta_url}
-                        className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5"
-                        style={isPrimary ? {
-                            background: 'linear-gradient(180deg,var(--accent),var(--accent-2))',
-                            color: 'var(--accent-ink)',
-                            padding: '11px 18px',
-                            borderRadius: 12,
-                            boxShadow: '0 8px 24px -8px rgba(60,189,248,0.35)',
-                        } : {
-                            background: 'transparent',
-                            color: 'var(--text-body)',
-                            padding: '10px 18px',
-                            borderRadius: 12,
-                            border: '1px solid var(--border-s)',
-                        }}>
-                        {event.cta_label}
-                        <ArrowRight size={14} />
-                    </a>
-                ) : null}
-                {event.seats && (
+                {event.cta_url && event.cta_label && (
+                    isPast ? (
+                        <span
+                            style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 8,
+                                fontWeight: 600, fontSize: 14,
+                                padding: '10px 18px', borderRadius: 12,
+                                background: 'var(--surface-2)',
+                                color: 'var(--text-muted)',
+                                border: '1px solid var(--border)',
+                                cursor: 'not-allowed',
+                                userSelect: 'none',
+                            }}>
+                            {event.cta_label}
+                            <ArrowRight size={14} />
+                        </span>
+                    ) : (
+                        <a href={event.cta_url}
+                            className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5"
+                            style={isPrimary ? {
+                                background: 'linear-gradient(180deg,var(--accent),var(--accent-2))',
+                                color: 'var(--accent-ink)',
+                                padding: '11px 18px',
+                                borderRadius: 12,
+                                boxShadow: '0 8px 24px -8px rgba(60,189,248,0.35)',
+                            } : {
+                                background: 'transparent',
+                                color: 'var(--text-body)',
+                                padding: '10px 18px',
+                                borderRadius: 12,
+                                border: '1px solid var(--border-s)',
+                            }}>
+                            {event.cta_label}
+                            <ArrowRight size={14} />
+                        </a>
+                    )
+                )}
+                {event.seats && !isPast && (
                     <span style={{
                         fontFamily: "'JetBrains Mono', monospace",
                         fontSize: 11,

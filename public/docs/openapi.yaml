@@ -137,10 +137,10 @@ components:
         subtitle:
           type: string
           nullable: true
-        content:
+        eyebrow:
           type: string
           nullable: true
-        banner_image:
+        content:
           type: string
           nullable: true
         main_image:

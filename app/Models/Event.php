@@ -36,7 +36,7 @@ class Event extends Model
         'date' => 'date',
     ];
 
-    protected $appends = ['day', 'month', 'year', 'type_label'];
+    protected $appends = ['day', 'month', 'year', 'type_label', 'is_past'];
 
     private const TYPE_LABELS = [
         'conf' => 'Conferência',
@@ -69,6 +69,11 @@ class Event extends Model
     public function getTypeLabelAttribute(): string
     {
         return self::TYPE_LABELS[$this->type] ?? $this->type;
+    }
+
+    public function getIsPastAttribute(): bool
+    {
+        return $this->date->lt(today());
     }
 
     public function scopeActive($query)
