@@ -25,9 +25,17 @@ class Post extends Model
         'banner_image',
         'content',
         'is_active',
+        'is_featured',
+        'published_at',
         'meta_title',
         'meta_description',
         'deleted_by',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+        'published_at' => 'datetime',
     ];
 
     public function user(): BelongsTo
@@ -72,6 +80,16 @@ class Post extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * Escopo público: ativas e já publicadas (data de publicação no passado).
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('is_active', true)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     protected static function booted(): void

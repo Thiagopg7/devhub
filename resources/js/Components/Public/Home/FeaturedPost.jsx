@@ -40,7 +40,7 @@ export default function FeaturedPost({ post }) {
                             <span aria-hidden="true">•</span>
                             <span className="inline-flex items-center gap-1.5">
                                 <Calendar size={12} style={{ display: 'block', flexShrink: 0 }} />
-                                {formatDate(post.created_at)}
+                                {formatDate(post.published_at)}
                             </span>
                             <span aria-hidden="true">•</span>
                             <span className="inline-flex items-center gap-1.5">

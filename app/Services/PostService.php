@@ -7,6 +7,7 @@ use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class PostService
 {
@@ -14,22 +15,33 @@ class PostService
 
     public function getAllActive(int $perPage = 15, ?string $search = null, ?string $category = null): LengthAwarePaginator
     {
-        return Post::active()
+        return Post::published()
             ->with('category')
             ->when($search, fn ($q) => $q->where('title', 'like', "%{$search}%"))
             ->when($category, fn ($q) => $q->whereHas('category', fn ($q) => $q->where('slug', $category)))
-            ->orderByDesc('created_at')
+            ->orderByDesc('published_at')
             ->paginate($perPage)
             ->withQueryString();
     }
 
     public function getLatest(int $count = 3): Collection
     {
-        return Post::active()
+        return Post::published()
             ->with(['category', 'user:id,name,bio,avatar_image'])
-            ->orderByDesc('created_at')
+            ->orderByDesc('published_at')
             ->limit($count)
             ->get();
+    }
+
+    /**
+     * Post em destaque na home. Cai para o mais recente quando nenhum está marcado.
+     */
+    public function getFeatured(): ?Post
+    {
+        $with = ['category', 'user:id,name,bio,avatar_image'];
+
+        return Post::published()->with($with)->where('is_featured', true)->first()
+            ?? Post::published()->with($with)->orderByDesc('published_at')->first();
     }
 
     public function getPaginated(int $perPage = 20, ?string $search = null, ?int $categoryId = null, ?string $status = null): LengthAwarePaginator
@@ -56,12 +68,12 @@ class PostService
 
     public function findBySlug(string $slug): ?Post
     {
-        return Post::active()->with('category')->where('slug', $slug)->first();
+        return Post::published()->with('category')->where('slug', $slug)->first();
     }
 
     public function findBySlugWithRelated(string $slug): ?array
     {
-        $post = Post::active()
+        $post = Post::published()
             ->with(['category', 'user:id,name,bio,avatar_image'])
             ->where('slug', $slug)
             ->first();
@@ -70,32 +82,32 @@ class PostService
             return null;
         }
 
-        $prev = Post::active()
-            ->where('created_at', '<', $post->created_at)
-            ->orderByDesc('created_at')
+        $prev = Post::published()
+            ->where('published_at', '<', $post->published_at)
+            ->orderByDesc('published_at')
             ->select(['id', 'title', 'slug'])
             ->first();
 
-        $next = Post::active()
-            ->where('created_at', '>', $post->created_at)
-            ->orderBy('created_at')
+        $next = Post::published()
+            ->where('published_at', '>', $post->published_at)
+            ->orderBy('published_at')
             ->select(['id', 'title', 'slug'])
             ->first();
 
-        $related = Post::active()
+        $related = Post::published()
             ->with('category')
             ->where('id', '!=', $post->id)
             ->when($post->category_id, fn ($q) => $q->where('category_id', $post->category_id))
-            ->orderByDesc('created_at')
+            ->orderByDesc('published_at')
             ->limit(3)
             ->get();
 
         if ($related->count() < 3) {
             $excluded = $related->pluck('id')->push($post->id);
-            $filler = Post::active()
+            $filler = Post::published()
                 ->with('category')
                 ->whereNotIn('id', $excluded)
-                ->orderByDesc('created_at')
+                ->orderByDesc('published_at')
                 ->limit(3 - $related->count())
                 ->get();
             $related = $related->merge($filler);
@@ -117,10 +129,10 @@ class PostService
             return ['category' => null, 'posts' => null];
         }
 
-        $posts = Post::active()
+        $posts = Post::published()
             ->with('category')
             ->where('category_id', $category->id)
-            ->orderByDesc('created_at')
+            ->orderByDesc('published_at')
             ->paginate($perPage);
 
         return ['category' => $category, 'posts' => $posts];
@@ -132,7 +144,15 @@ class PostService
             $data['banner_image'] = $this->uploadService->upload($banner, 'posts');
         }
 
-        return Post::create($data);
+        // Sem data informada, publica imediatamente.
+        $data['published_at'] ??= now();
+
+        return DB::transaction(function () use ($data) {
+            $post = Post::create($data);
+            $this->ensureSingleFeatured($post);
+
+            return $post;
+        });
     }
 
     public function update(Post $post, array $data, ?UploadedFile $banner = null): Post
@@ -145,7 +165,15 @@ class PostService
             unset($data['banner_image']);
         }
 
-        $post->update($data);
+        // Em branco publica agora (mesmo comportamento do create).
+        if (array_key_exists('published_at', $data)) {
+            $data['published_at'] ??= now();
+        }
+
+        DB::transaction(function () use ($post, $data) {
+            $post->update($data);
+            $this->ensureSingleFeatured($post);
+        });
 
         // Só deleta o arquivo antigo após o update persistir com sucesso
         if (isset($data['banner_image']) && $oldBanner) {
@@ -153,6 +181,21 @@ class PostService
         }
 
         return $post;
+    }
+
+    /**
+     * Garante que só exista um post em destaque por vez: ao marcar um,
+     * desmarca os demais.
+     */
+    private function ensureSingleFeatured(Post $post): void
+    {
+        if (! $post->is_featured) {
+            return;
+        }
+
+        Post::where('id', '!=', $post->id)
+            ->where('is_featured', true)
+            ->update(['is_featured' => false]);
     }
 
     public function delete(Post $post): void
