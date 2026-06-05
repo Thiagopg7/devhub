@@ -17,7 +17,6 @@ class PageSeeder extends Seeder
 
     private function seedSobreNos(): void
     {
-        $this->downloadImage('https://picsum.photos/seed/devhub-banner/1200/630', 'pages/sobre-nos-banner.jpg');
         $this->downloadImage('https://picsum.photos/seed/devhub-main/800/600', 'pages/sobre-nos-main.jpg');
 
         $page = Page::firstOrCreate(
@@ -26,7 +25,6 @@ class PageSeeder extends Seeder
                 'title' => 'Sobre Nós',
                 'subtitle' => 'Conheça um pouco mais sobre este projeto',
                 'slug' => 'sobre-nos',
-                'banner_image' => Storage::disk('public')->exists('pages/sobre-nos-banner.jpg') ? 'pages/sobre-nos-banner.jpg' : null,
                 'main_image' => Storage::disk('public')->exists('pages/sobre-nos-main.jpg') ? 'pages/sobre-nos-main.jpg' : null,
                 'content' => $this->sobreNosContent(),
                 'is_active' => true,
@@ -59,15 +57,17 @@ class PageSeeder extends Seeder
     private function seedPoliticaPrivacidade(): void
     {
         Page::firstOrCreate(
-            ['slug' => 'politica-de-privacidade'],
+            ['slug' => 'politica-privacidade'],
             [
                 'title' => 'Política de Privacidade',
-                'slug' => 'politica-de-privacidade',
+                'subtitle' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).',
+                'eyebrow' => 'Transparência & confiança',
+                'slug' => 'politica-privacidade',
                 'content' => $this->privacidadeContent(),
                 'is_active' => true,
                 'is_searchable' => true,
-                'meta_title' => 'Política de Privacidade — DevHub',
-                'meta_description' => 'Entenda como coletamos, usamos e protegemos suas informações no DevHub.',
+                'meta_title' => 'Política de Privacidade',
+                'meta_description' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a LGPD.',
             ]
         );
     }
@@ -127,43 +127,51 @@ HTML;
     private function privacidadeContent(): string
     {
         return <<<'HTML'
-<h2>Política de Privacidade</h2>
-<p><em>Última atualização: janeiro de 2026</em></p>
-<p>Esta Política de Privacidade descreve como o <strong>DevHub</strong> coleta, usa e protege as informações fornecidas pelos visitantes deste site.</p>
+<p>O DevHub valoriza a sua privacidade. Esta política explica, de forma direta, quais dados coletamos quando você usa nosso site, por que coletamos e quais são os seus direitos sobre eles. Ao usar o DevHub, você concorda com as práticas descritas aqui.</p>
 
-<h3>1. Informações coletadas</h3>
-<p>Podemos coletar as seguintes informações:</p>
+<h2>1. Dados que coletamos</h2>
+<p>Coletamos apenas o necessário para oferecer e melhorar nosso conteúdo:</p>
 <ul>
-    <li>Nome e endereço de e-mail fornecidos voluntariamente ao assinar a newsletter</li>
-    <li>Dados de navegação coletados automaticamente (páginas visitadas, tempo de acesso, endereço IP)</li>
-    <li>Informações técnicas do dispositivo (tipo de navegador, sistema operacional)</li>
+<li><strong>Dados que você nos fornece</strong> — nome, e-mail e área de atuação, quando você assina nossa newsletter ou preenche um formulário.</li>
+<li><strong>Dados de uso</strong> — páginas visitadas, tempo de leitura e cliques, coletados de forma anônima e agregada para entender o que é útil.</li>
+<li><strong>Dados técnicos</strong> — tipo de navegador, dispositivo e endereço IP aproximado, usados para segurança e estatísticas.</li>
 </ul>
 
-<h3>2. Uso das informações</h3>
-<p>As informações coletadas são utilizadas para:</p>
+<h2>2. Como usamos seus dados</h2>
+<p>Os dados coletados servem exclusivamente para:</p>
 <ul>
-    <li>Enviar a newsletter com novos artigos e atualizações (somente se você optou por recebê-la)</li>
-    <li>Analisar o desempenho e melhorar o conteúdo do site</li>
-    <li>Garantir a segurança e o funcionamento adequado da plataforma</li>
+<li>Enviar a newsletter e comunicações que você solicitou;</li>
+<li>Personalizar e recomendar conteúdo relevante para o seu perfil;</li>
+<li>Entender quais artigos e trilhas geram mais valor;</li>
+<li>Garantir a segurança e o bom funcionamento da plataforma.</li>
 </ul>
+<p>Nunca vendemos seus dados pessoais a terceiros. Ponto.</p>
 
-<h3>3. Compartilhamento de dados</h3>
-<p>Não vendemos, trocamos nem transferimos suas informações pessoais para terceiros, exceto quando necessário para operar o site (como provedores de hospedagem) ou quando exigido por lei.</p>
+<h2>3. Cookies</h2>
+<p>Usamos cookies para lembrar suas preferências e medir o desempenho do site. Você pode desativá-los a qualquer momento nas configurações do seu navegador — algumas funcionalidades podem deixar de funcionar como esperado.</p>
+<blockquote><strong>Cookies essenciais</strong> mantêm o site funcionando (preferências, sessão). <strong>Cookies analíticos</strong> nos ajudam a melhorar — e são sempre anônimos.</blockquote>
 
-<h3>4. Cookies</h3>
-<p>Este site pode utilizar cookies para melhorar a experiência de navegação. Você pode configurar seu navegador para recusar cookies, mas algumas funcionalidades podem não funcionar corretamente.</p>
+<h2>4. Compartilhamento</h2>
+<p>Compartilhamos dados apenas com prestadores de serviço que nos ajudam a operar — como plataformas de envio de e-mail e ferramentas de análise. Todos seguem padrões rigorosos de proteção de dados e só acessam o estritamente necessário.</p>
 
-<h3>5. Cancelamento da newsletter</h3>
-<p>Se você assinou nossa newsletter e deseja cancelar, entre em contato pelo e-mail indicado na seção de contato. Processaremos sua solicitação em até 5 dias úteis.</p>
+<h2>5. Seus direitos (LGPD)</h2>
+<p>De acordo com a LGPD, você tem o direito de:</p>
+<ol>
+<li>Confirmar a existência de tratamento dos seus dados;</li>
+<li>Acessar, corrigir ou atualizar seus dados a qualquer momento;</li>
+<li>Solicitar a exclusão dos seus dados pessoais;</li>
+<li>Revogar o consentimento e cancelar a newsletter em um clique.</li>
+</ol>
+<p>Para exercer qualquer um desses direitos, basta entrar em contato pelo e-mail no fim desta página.</p>
 
-<h3>6. Segurança</h3>
-<p>Adotamos medidas técnicas e organizacionais para proteger seus dados contra acesso não autorizado, alteração, divulgação ou destruição.</p>
+<h2>6. Segurança</h2>
+<p>Adotamos medidas técnicas e organizacionais para proteger seus dados contra acesso não autorizado, perda ou alteração. Ainda assim, nenhum sistema é 100% infalível — por isso só coletamos o mínimo necessário e tratamos cada dado com responsabilidade.</p>
 
-<h3>7. Alterações nesta política</h3>
-<p>Esta política pode ser atualizada periodicamente. Recomendamos que você revise esta página ocasionalmente para se manter informado sobre eventuais mudanças.</p>
+<h2>7. Alterações nesta política</h2>
+<p>Podemos atualizar esta política periodicamente para refletir mudanças na lei ou em nossas práticas. Quando isso acontecer, atualizamos a data no topo da página. Mudanças significativas serão comunicadas por e-mail aos assinantes.</p>
 
-<h3>8. Contato</h3>
-<p>Em caso de dúvidas sobre esta Política de Privacidade, entre em contato pelo e-mail disponível na página de contato.</p>
+<h2>8. Fale com a gente</h2>
+<p>Tem alguma dúvida sobre como tratamos seus dados? Estamos à disposição. Entre em contato com o <strong>Encarregado de Dados</strong> do DevHub pelo e-mail <a href="mailto:contato@devhub.com.br">contato@devhub.com.br</a>.</p>
 HTML;
     }
 }
