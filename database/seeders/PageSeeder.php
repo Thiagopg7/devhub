@@ -171,7 +171,13 @@ HTML;
 <p>Podemos atualizar esta política periodicamente para refletir mudanças na lei ou em nossas práticas. Quando isso acontecer, atualizamos a data no topo da página. Mudanças significativas serão comunicadas por e-mail aos assinantes.</p>
 
 <h2>8. Fale com a gente</h2>
-<p>Tem alguma dúvida sobre como tratamos seus dados? Estamos à disposição. Entre em contato com o <strong>Encarregado de Dados</strong> do DevHub pelo e-mail <a href="mailto:contato@devhub.com.br">contato@devhub.com.br</a>.</p>
+<p>Tem alguma dúvida sobre como tratamos seus dados? Estamos à disposição.</p>
+<div class="contact-card">
+<div>
+<div class="contact-card-title">Encarregado de Dados — DevHub</div>
+<a href="mailto:contato@devhub.com.br">contato@devhub.com.br</a>
+</div>
+</div>
 HTML;
     }
 }
