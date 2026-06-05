@@ -26,7 +26,7 @@ class PostService
     public function getLatest(int $count = 3): Collection
     {
         return Post::active()
-            ->with('category')
+            ->with(['category', 'user:id,name,bio,avatar_image'])
             ->orderByDesc('created_at')
             ->limit($count)
             ->get();
@@ -61,7 +61,10 @@ class PostService
 
     public function findBySlugWithRelated(string $slug): ?array
     {
-        $post = Post::active()->with('category')->where('slug', $slug)->first();
+        $post = Post::active()
+            ->with(['category', 'user:id,name,bio,avatar_image'])
+            ->where('slug', $slug)
+            ->first();
 
         if (! $post) {
             return null;

@@ -2,9 +2,9 @@ import InputError from '@/Components/Admin/InputError';
 import InputLabel from '@/Components/Admin/InputLabel';
 import PrimaryButton from '@/Components/Admin/PrimaryButton';
 import TextInput from '@/Components/Admin/TextInput';
-import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { useRef } from 'react';
+import { toast } from 'react-hot-toast';
 
 export default function UpdatePasswordForm({ className = '' }) {
     const passwordInput = useRef();
@@ -17,7 +17,6 @@ export default function UpdatePasswordForm({ className = '' }) {
         put,
         reset,
         processing,
-        recentlySuccessful,
     } = useForm({
         current_password: '',
         password: '',
@@ -40,6 +39,8 @@ export default function UpdatePasswordForm({ className = '' }) {
                     reset('current_password');
                     currentPasswordInput.current.focus();
                 }
+
+                toast.error('Erro ao atualizar a senha.');
             },
         });
     };
@@ -47,13 +48,12 @@ export default function UpdatePasswordForm({ className = '' }) {
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
-                    Update Password
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Atualizar Senha
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    Use uma senha longa e aleatória para manter sua conta segura.
                 </p>
             </header>
 
@@ -61,7 +61,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 <div>
                     <InputLabel
                         htmlFor="current_password"
-                        value="Current Password"
+                        value="Senha Atual"
                     />
 
                     <TextInput
@@ -83,7 +83,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    <InputLabel htmlFor="password" value="Nova Senha" />
 
                     <TextInput
                         id="password"
@@ -101,7 +101,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
+                        value="Confirmar Senha"
                     />
 
                     <TextInput
@@ -122,19 +122,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
-
-                    <Transition
-                        show={recentlySuccessful}
-                        enter="transition ease-in-out"
-                        enterFrom="opacity-0"
-                        leave="transition ease-in-out"
-                        leaveTo="opacity-0"
-                    >
-                        <p className="text-sm text-gray-600">
-                            Saved.
-                        </p>
-                    </Transition>
+                    <PrimaryButton disabled={processing}>Salvar</PrimaryButton>
                 </div>
             </form>
         </section>
