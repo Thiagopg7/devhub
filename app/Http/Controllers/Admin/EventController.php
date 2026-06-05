@@ -14,24 +14,30 @@ class EventController extends Controller
 {
     public function index(Request $request): Response
     {
-        $search = $request->input('q');
-
-        $type = $request->input('type');
+        $search      = $request->input('q');
+        $type        = $request->input('type');
         $eventStatus = $request->input('event_status');
+        $period      = $request->input('period', 'upcoming');
 
-        $events = Event::ordered()
+        $events = Event::query()
+            ->when($period === 'upcoming', fn ($q) => $q
+                ->where('is_active', true)
+                ->whereDate('date', '>=', now()->startOfDay()))
+            ->when($period === 'past', fn ($q) => $q
+                ->whereDate('date', '<', now()->startOfDay()))
             ->when($search, fn ($q) => $q->where(fn ($qq) => $qq
                 ->where('title', 'like', "%{$search}%")
                 ->orWhere('org', 'like', "%{$search}%")
             ))
             ->when($type, fn ($q) => $q->where('type', $type))
             ->when($eventStatus, fn ($q) => $q->where('status', $eventStatus))
+            ->ordered()
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Admin/Events/Index', [
             'events' => $events,
-            'filter' => $request->only('q', 'type', 'event_status'),
+            'filter' => $request->only('q', 'type', 'event_status', 'period'),
         ]);
     }
 

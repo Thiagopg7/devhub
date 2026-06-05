@@ -26,7 +26,7 @@ const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 bor
 
 export default function Index({ events, filter }) {
     const can = useCan();
-    const { data, setData, get } = useForm({ q: filter?.q || "", type: filter?.type || "", event_status: filter?.event_status || "" });
+    const { data, setData, get } = useForm({ q: filter?.q || "", type: filter?.type || "", event_status: filter?.event_status || "", period: filter?.period || "upcoming" });
     const [items, setItems] = useState(events.data);
     const { confirm, modalProps } = useConfirmModal();
 
@@ -103,6 +103,11 @@ export default function Index({ events, filter }) {
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700">
 
                                 <AdminSearchForm value={data.q} onChange={(v) => setData("q", v)} onSubmit={submit} placeholder="Título ou organização...">
+                                    <select value={data.period} onChange={(e) => setData("period", e.target.value)} className={selectCls}>
+                                        <option value="upcoming">Próximos (ativos)</option>
+                                        <option value="past">Passados</option>
+                                        <option value="all">Todos</option>
+                                    </select>
                                     <select value={data.type} onChange={(e) => setData("type", e.target.value)} className={selectCls}>
                                         <option value="">Todos os tipos</option>
                                         <option value="conf">Conferência</option>

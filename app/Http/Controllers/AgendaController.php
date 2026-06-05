@@ -10,8 +10,11 @@ class AgendaController extends Controller
 {
     public function index(): Response
     {
-        $events = Event::active()->ordered()->get();
+        $today = now()->startOfDay();
 
-        return Inertia::render('Agenda', ['events' => $events]);
+        $upcoming = Event::active()->whereDate('date', '>=', $today)->orderBy('date')->get();
+        $past     = Event::active()->whereDate('date', '<',  $today)->orderByDesc('date')->get();
+
+        return Inertia::render('Agenda', ['events' => $upcoming->concat($past)]);
     }
 }
