@@ -18,8 +18,8 @@ class BlogController extends Controller
         $category = $request->input('categoria');
 
         $categories = Category::active()
-            ->whereHas('posts', fn ($q) => $q->active())
-            ->withCount(['posts' => fn ($q) => $q->active()])
+            ->whereHas('posts', fn ($q) => $q->published())
+            ->withCount(['posts' => fn ($q) => $q->published()])
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'color']);
 
@@ -27,7 +27,7 @@ class BlogController extends Controller
             'posts' => $this->postService->getAllActive(12, $search, $category),
             'filters' => ['busca' => $search, 'categoria' => $category],
             'categories' => $categories,
-            'totalPosts' => Post::active()->count(),
+            'totalPosts' => Post::published()->count(),
         ]);
     }
 

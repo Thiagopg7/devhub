@@ -97,9 +97,16 @@ components:
         meta_description:
           type: string
           nullable: true
+        is_featured:
+          type: boolean
+          description: Indica se o post é o destaque atual da home (só um por vez).
+          example: false
         published_at:
           type: string
           format: date-time
+          description: >-
+            Data de publicação do post. Posts com data futura ficam agendados e
+            não são retornados pela API até a data chegar.
           example: "2026-05-01T00:00:00+00:00"
 
     PostDetail:

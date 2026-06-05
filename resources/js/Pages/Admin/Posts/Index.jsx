@@ -7,11 +7,16 @@ import ActionButton from "@/Components/Admin/ActionButton";
 import Pagination from "@/Components/Admin/Pagination";
 import ToggleActive from "@/Components/Admin/ToggleActive";
 import ConfirmModal from "@/Components/Admin/ConfirmModal";
-import { FaPen, FaTrash, FaEye } from "react-icons/fa";
+import { FaPen, FaTrash, FaEye, FaStar } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCan } from "@/hooks/useCan";
 
 const selectCls = "py-2 px-3 text-sm rounded-md bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition";
+
+const formatPublishedAt = (value) =>
+    value ? new Date(value).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+
+const isScheduled = (value) => value && new Date(value) > new Date();
 
 export default function Index({ posts, filter, trashedCount = 0, categories = [] }) {
     const can = useCan();
@@ -97,6 +102,12 @@ export default function Index({ posts, filter, trashedCount = 0, categories = []
                                                         Ativo
                                                     </th>
                                                     <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                        Destaque
+                                                    </th>
+                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                                        Publicação
+                                                    </th>
+                                                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                                         Ações
                                                     </th>
                                                 </tr>
@@ -131,6 +142,20 @@ export default function Index({ posts, filter, trashedCount = 0, categories = []
                                                                         post.is_active
                                                                     }
                                                                 />
+                                                            </td>
+                                                            <td className="py-4 px-6 text-center">
+                                                                <FaStar
+                                                                    className={`inline-block ${post.is_featured ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}`}
+                                                                    title={post.is_featured ? "Em destaque na home" : "Sem destaque"}
+                                                                />
+                                                            </td>
+                                                            <td className="py-4 px-6 text-center text-sm">
+                                                                <span className="dark:text-gray-300">{formatPublishedAt(post.published_at)}</span>
+                                                                {isScheduled(post.published_at) && (
+                                                                    <span className="ml-2 inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                                                        Agendado
+                                                                    </span>
+                                                                )}
                                                             </td>
                                                             <td className="py-4 px-6 align-middle"><div className="flex gap-3 justify-center items-center">
                                                                 {!can('posts.edit') && can('posts.view') && (

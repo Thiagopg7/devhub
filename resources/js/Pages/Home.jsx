@@ -9,7 +9,7 @@ import PostsExplorer from '@/Components/Public/Home/PostsExplorer';
 import EventsPreview from '@/Components/Public/Home/EventsPreview';
 import Testimonials from '@/Components/Public/Home/Testimonials';
 
-export default function Home({ featuredPosts = [], technologies = [], upcomingEvents = [], testimonials = [], stackItems = [] }) {
+export default function Home({ featuredPosts = [], featuredPost = null, technologies = [], upcomingEvents = [], testimonials = [], stackItems = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName  = siteConfig.site_name || 'DevHub';
     const homeTitle = `${siteName} — Hub de Inovação e Tecnologia`;
@@ -27,7 +27,7 @@ export default function Home({ featuredPosts = [], technologies = [], upcomingEv
 
             <HeroBanner />
 
-            <FeaturedPost post={featuredPosts[0] ?? null} />
+            <FeaturedPost post={featuredPost} />
 
             <PostsExplorer posts={featuredPosts} />
 

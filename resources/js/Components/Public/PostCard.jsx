@@ -68,7 +68,7 @@ export default function PostCard({ post }) {
                     )}
                     <span className="inline-flex items-center gap-1 leading-none">
                         <Calendar size={11} style={{ display: 'block', flexShrink: 0 }} />
-                        <time dateTime={post.created_at}>{formatDate(post.created_at)}</time>
+                        <time dateTime={post.published_at}>{formatDate(post.published_at)}</time>
                     </span>
                 </div>
 
