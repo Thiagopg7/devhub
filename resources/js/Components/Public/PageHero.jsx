@@ -14,7 +14,7 @@ export default function PageHero({ children, center = false, py = 'py-16', glowS
         <section className="relative overflow-hidden" style={{ background: 'var(--base)', borderBottom: '1px solid var(--border)' }}>
             <div className="dotgrid" />
             <div className="absolute pointer-events-none" style={glowStyle} />
-            <div className={`relative z-10 ${inner} mx-auto px-4 sm:px-6 lg:px-8 ${py}${center ? ' text-center' : ''}`}>
+            <div className={`relative z-10 ${inner} mx-auto px-5 sm:px-6 lg:px-8 ${py}${center ? ' text-center' : ''}`}>
                 {children}
             </div>
         </section>
