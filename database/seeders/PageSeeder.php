@@ -39,13 +39,20 @@ class PageSeeder extends Seeder
             $page->restore();
         }
 
-        if ($page->galleryImages()->doesntExist()) {
-            $palette = ['#3CBDF8', '#7B86FF', '#2FD9C2', '#F0B65A', '#E5359F', '#8AF0E2'];
+        $palette = ['#3CBDF8', '#7B86FF', '#2FD9C2', '#F0B65A', '#E5359F', '#8AF0E2'];
 
+        // Os arquivos SVG são sempre regenerados se faltarem (storage efêmero), mesmo que
+        // os registros da galeria já existam no banco (que persiste entre deploys).
+        foreach ($palette as $order => $color) {
+            $this->ensureSvg('gallery/sobre-nos-'.($order + 1).'.svg', SvgImage::wide('DevHub', 'Galeria', $color, 800, 600));
+        }
+
+        if ($page->galleryImages()->doesntExist()) {
             foreach ($palette as $order => $color) {
-                $path = 'gallery/sobre-nos-'.($order + 1).'.svg';
-                $this->ensureSvg($path, SvgImage::wide('DevHub', 'Galeria', $color, 800, 600));
-                $page->galleryImages()->create(['image' => $path, 'order' => $order]);
+                $page->galleryImages()->create([
+                    'image' => 'gallery/sobre-nos-'.($order + 1).'.svg',
+                    'order' => $order,
+                ]);
             }
         }
     }
