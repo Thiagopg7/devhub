@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from '@inertiajs/react';
 import { ArrowRight } from 'lucide-react';
+import useCountUp from '@/hooks/useCountUp';
 
 function useParticleNet(canvasRef) {
     useEffect(() => {
@@ -81,9 +82,17 @@ const CHIPS = [
       icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{width:16,height:16}}><path d="M12 2l8.5 4.9v9.8L12 21.6l-8.5-4.9V6.9L12 2z"/><path d="M9 10v4M9 10c0-1.1.9-2 2-2h1a2 2 0 010 4h-1M15 8v8"/></svg> },
 ];
 
-export default function HeroBanner() {
+export default function HeroBanner({ stats = {} }) {
     const canvasRef = useRef(null);
     useParticleNet(canvasRef);
+
+    const publishedPosts = stats.publishedPosts ?? 0;
+    const categories = stats.categories ?? 0;
+
+    // Arredonda os artigos pra baixo na dezena (ex.: 28 → 20) para exibir "+20"
+    const postsTarget = publishedPosts >= 10 ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
+    const postsCount = useCountUp(postsTarget);
+    const categoriesCount = useCountUp(categories);
 
     return (
         <section className="relative overflow-hidden pt-[70px] pb-24" style={{ background: 'var(--base)' }}>
@@ -131,13 +140,13 @@ export default function HeroBanner() {
                         <div className="flex items-center flex-wrap gap-7 mt-10">
                             <div>
                                 <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">
-                                    +<span style={{ color: 'var(--accent)' }}>120</span>
+                                    +<span style={{ color: 'var(--accent)' }}>{postsCount}</span>
                                 </div>
                                 <div className="text-[12.5px] mt-1" style={{ color: 'var(--text-muted)' }}>artigos publicados</div>
                             </div>
                             <div className="w-px h-9" style={{ background: 'var(--border)' }} />
                             <div>
-                                <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">6</div>
+                                <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">{categoriesCount}</div>
                                 <div className="text-[12.5px] mt-1" style={{ color: 'var(--text-muted)' }}>trilhas de conteúdo</div>
                             </div>
                             <div className="w-px h-9" style={{ background: 'var(--border)' }} />

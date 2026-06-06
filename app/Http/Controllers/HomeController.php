@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Event;
+use App\Models\Post;
 use App\Models\StackItem;
 use App\Models\Technology;
 use App\Models\Testimonial;
@@ -26,6 +28,10 @@ class HomeController extends Controller
                 ->get(),
             'testimonials' => Testimonial::active()->ordered()->get(),
             'stackItems' => StackItem::active()->ordered()->get(['name', 'icon']),
+            'stats' => [
+                'publishedPosts' => Post::published()->count(),
+                'categories' => Category::active()->count(),
+            ],
         ]);
     }
 }
