@@ -16,7 +16,7 @@ export default function FeaturedPost({ post }) {
                 <Reveal delay={150} as="article" className="grid md:grid-cols-[1.15fr_1fr] rounded-[22px] overflow-hidden"
                     style={{ background: 'linear-gradient(135deg,var(--surface),var(--surface-2))', border: '1px solid var(--border)', boxShadow: '0 18px 40px -22px rgba(0,0,0,0.7)' }}>
 
-                    <div className="relative min-h-[320px] overflow-hidden">
+                    <div className="relative aspect-[1200/630] md:aspect-auto md:min-h-[320px] overflow-hidden">
                         {post.banner_image_url ? (
                             <img src={post.banner_image_url} alt={post.title} className="absolute inset-0 w-full h-full object-cover" />
                         ) : (

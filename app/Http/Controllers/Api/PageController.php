@@ -10,6 +10,17 @@ use Illuminate\Http\JsonResponse;
 
 class PageController extends Controller
 {
+    public function index(): JsonResponse
+    {
+        $payload = ApiCache::remember(ApiCache::PAGES, 'index', function () {
+            return PageResource::collection(
+                Page::active()->searchable()->orderBy('title')->get()
+            )->response()->getData(true);
+        });
+
+        return response()->json($payload);
+    }
+
     public function show(string $slug): JsonResponse
     {
         $result = ApiCache::remember(ApiCache::PAGES, "show.{$slug}", function () use ($slug) {

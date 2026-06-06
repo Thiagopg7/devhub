@@ -44,12 +44,12 @@ export default function Footer() {
     return (
         <footer style={{ background: 'var(--panel)', borderTop: '1px solid var(--border)' }}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-center sm:text-left">
 
-                    <div className="space-y-4 lg:col-span-1">
+                    <div className="flex flex-col items-center sm:items-start space-y-4 lg:col-span-1">
                         <Logo name={siteName} />
                         <p className="text-sm leading-relaxed max-w-xs" style={{ color: 'var(--text-muted)' }}>{tagline}</p>
-                        <div className="flex items-center gap-4 pt-1">
+                        <div className="flex items-center justify-center sm:justify-start gap-4 pt-1">
                             {[
                                 { href: github,    label: 'GitHub',    icon: GH_ICON              },
                                 { href: linkedin,  label: 'LinkedIn',  icon: LI_ICON              },
@@ -111,13 +111,13 @@ export default function Footer() {
                             <h5 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">Contato</h5>
                             <ul className="space-y-3">
                                 {email && (
-                                    <li className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                                    <li className="flex items-start justify-center sm:justify-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                                         <Mail size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--accent)' }} />
                                         <a href={`mailto:${email}`} className="hover:text-[var(--accent)] transition-colors">{email}</a>
                                     </li>
                                 )}
                                 {address && (
-                                    <li className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                                    <li className="flex items-start justify-center sm:justify-start gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
                                         <MapPin size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--accent)' }} />
                                         {addressLink ? (
                                             <a href={addressLink} target="_blank" rel="noopener noreferrer"
