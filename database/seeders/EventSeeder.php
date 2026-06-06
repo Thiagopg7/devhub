@@ -9,8 +9,6 @@ class EventSeeder extends Seeder
 {
     public function run(): void
     {
-        Event::truncate();
-
         $events = [
             // ── Passados ──────────────────────────────────────────────────────
             [
@@ -468,10 +466,13 @@ class EventSeeder extends Seeder
         ];
 
         foreach ($events as $order => $data) {
-            Event::create(array_merge($data, [
-                'is_active' => true,
-                'order' => $order + 1,
-            ]));
+            Event::firstOrCreate(
+                ['title' => $data['title']],
+                array_merge($data, [
+                    'is_active' => true,
+                    'order' => $order + 1,
+                ])
+            );
         }
     }
 }
