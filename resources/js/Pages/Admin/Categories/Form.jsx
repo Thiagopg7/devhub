@@ -117,6 +117,8 @@ export default function Form({ category = {} }) {
                                                         key={key}
                                                         type="button"
                                                         title={key}
+                                                        aria-label={`Ícone ${key}`}
+                                                        aria-pressed={selected}
                                                         disabled={processing || readonly}
                                                         onClick={() => setData("icon", selected ? "" : key)}
                                                         className={`aspect-square grid place-items-center rounded-lg border transition-colors disabled:opacity-50 ${

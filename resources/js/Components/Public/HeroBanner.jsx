@@ -89,8 +89,9 @@ export default function HeroBanner({ stats = {} }) {
     const publishedPosts = stats.publishedPosts ?? 0;
     const categories = stats.categories ?? 0;
 
-    // Arredonda os artigos pra baixo na dezena (ex.: 28 → 20) para exibir "+20"
-    const postsTarget = publishedPosts >= 10 ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
+    // Arredonda os artigos pra baixo na dezena (ex.: 28 → "+20"); abaixo de 10 mostra o valor exato sem "+"
+    const postsHasPlus = publishedPosts >= 10;
+    const postsTarget = postsHasPlus ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
     const postsCount = useCountUp(postsTarget);
     const categoriesCount = useCountUp(categories);
 
@@ -140,7 +141,7 @@ export default function HeroBanner({ stats = {} }) {
                         <div className="flex items-center flex-wrap gap-7 mt-10">
                             <div>
                                 <div className="font-display font-semibold text-[26px] leading-none tracking-tight text-white">
-                                    +<span style={{ color: 'var(--accent)' }}>{postsCount}</span>
+                                    {postsHasPlus && '+'}<span style={{ color: 'var(--accent)' }}>{postsCount}</span>
                                 </div>
                                 <div className="text-[12.5px] mt-1" style={{ color: 'var(--text-muted)' }}>artigos publicados</div>
                             </div>

@@ -12,11 +12,12 @@ export default function StatsStrip({ stats = {} }) {
     const publishedPosts = stats.publishedPosts ?? 0;
     const categories = stats.categories ?? 0;
 
-    // Arredonda os artigos pra baixo na dezena (ex.: 28 → 20) para exibir "+20"
-    const postsTarget = publishedPosts >= 10 ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
+    // Arredonda os artigos pra baixo na dezena (ex.: 28 → "+20"); abaixo de 10 mostra o valor exato sem "+"
+    const postsHasPlus = publishedPosts >= 10;
+    const postsTarget = postsHasPlus ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
 
     const STATS = [
-        { value: <AnimatedValue prefix="+" count={postsTarget} />,    label: 'artigos publicados' },
+        { value: <AnimatedValue prefix={postsHasPlus ? '+' : ''} count={postsTarget} />, label: 'artigos publicados' },
         { value: <AnimatedValue count={categories} />,               label: 'trilhas de conteúdo' },
         { value: <AnimatedValue prefix="+" count={40} suffix="k" />, label: 'leitores por mês' },
         { value: <AnimatedValue count={100} suffix="%" />,           label: 'conteúdo em português' },

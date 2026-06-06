@@ -14,7 +14,7 @@ const FILTERS = [
     { key: 'full', label: 'Lotado',              icon: <Minus size={16} /> },
 ];
 
-export default function Agenda({ events, counts = {}, filters = {} }) {
+export default function Agenda({ events = { data: [], current_page: 1, last_page: 1, total: 0 }, counts = {}, filters = {} }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
 
