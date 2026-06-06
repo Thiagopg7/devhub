@@ -58,6 +58,74 @@ class CategoryControllerTest extends TestCase
         $this->assertDatabaseHas('categories', ['id' => $category->id, 'name' => 'Python 3']);
     }
 
+    public function test_store_persiste_icone_valido(): void
+    {
+        $user = $this->adminUser(['categories.create']);
+
+        $this->actingAs($user)
+            ->post(route('admin.categories.store'), [
+                'name' => 'Banco de Dados',
+                'color' => '#8B5CF6',
+                'icon' => 'Database',
+                'is_active' => true,
+            ])
+            ->assertRedirect(route('admin.categories.index'))
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertDatabaseHas('categories', ['name' => 'Banco de Dados', 'icon' => 'Database']);
+    }
+
+    public function test_store_rejeita_icone_fora_do_conjunto(): void
+    {
+        $user = $this->adminUser(['categories.create']);
+
+        $this->actingAs($user)
+            ->post(route('admin.categories.store'), [
+                'name' => 'Inválida',
+                'color' => '#000000',
+                'icon' => 'NaoExiste',
+                'is_active' => true,
+            ])
+            ->assertSessionHasErrors('icon');
+
+        $this->assertDatabaseMissing('categories', ['name' => 'Inválida']);
+    }
+
+    public function test_store_normaliza_icone_vazio_para_null(): void
+    {
+        $user = $this->adminUser(['categories.create']);
+
+        $this->actingAs($user)
+            ->post(route('admin.categories.store'), [
+                'name' => 'Sem Ícone',
+                'color' => '#000000',
+                'icon' => '',
+                'is_active' => true,
+            ])
+            ->assertRedirect(route('admin.categories.index'))
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertDatabaseHas('categories', ['name' => 'Sem Ícone', 'icon' => null]);
+    }
+
+    public function test_update_atualiza_icone(): void
+    {
+        $user = $this->adminUser(['categories.edit']);
+        $category = Category::create(['name' => 'Frontend', 'color' => '#3B82F6', 'icon' => 'Code', 'is_active' => true]);
+
+        $this->actingAs($user)
+            ->put(route('admin.categories.update', $category), [
+                'name' => 'Frontend',
+                'color' => '#3B82F6',
+                'icon' => 'Monitor',
+                'is_active' => true,
+            ])
+            ->assertRedirect(route('admin.categories.index'))
+            ->assertSessionHas('toast.type', 'success');
+
+        $this->assertDatabaseHas('categories', ['id' => $category->id, 'icon' => 'Monitor']);
+    }
+
     public function test_destroy_remove_categoria(): void
     {
         $user = $this->adminUser(['categories.delete']);

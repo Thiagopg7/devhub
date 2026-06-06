@@ -6,16 +6,16 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\SobreController;
 use App\Http\Controllers\TechnologyController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/categoria/{slug}', [BlogController::class, 'byCategory'])->name('blog.category');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/tecnologias', [TechnologyController::class, 'index'])->name('technologies.index');
-Route::get('/sobre', fn () => Inertia::render('Sobre'))->name('sobre');
+Route::get('/sobre', [SobreController::class, 'index'])->name('sobre');
 Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
