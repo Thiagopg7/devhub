@@ -6,6 +6,7 @@ node_modules
 /storage/*.key
 /vendor
 .phpunit.result.cache
+/bootstrap/cache/*.php
 Dockerfile*
 docker-compose*
 .dockerignore
