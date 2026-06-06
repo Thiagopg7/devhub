@@ -72,7 +72,20 @@ export default function Header() {
         return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
+    // Drawer mobile: trava o scroll do body e fecha no Escape.
+    useEffect(() => {
+        if (!mobileOpen) return;
+        const onKey = (e) => e.key === 'Escape' && setMobileOpen(false);
+        document.addEventListener('keydown', onKey);
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.removeEventListener('keydown', onKey);
+            document.body.style.overflow = '';
+        };
+    }, [mobileOpen]);
+
     return (
+        <>
         <header
             className={`sticky top-0 z-50 transition-colors duration-300 ${
                 scrolled
@@ -105,51 +118,77 @@ export default function Header() {
                     </div>
 
                     <button
-                        onClick={() => setMobileOpen(!mobileOpen)}
+                        onClick={() => setMobileOpen(true)}
+                        aria-label="Abrir menu"
                         className="md:hidden w-10 h-10 flex items-center justify-center rounded-lg border border-[var(--border-s)] text-[var(--text-body)] hover:text-white transition-colors"
                     >
-                        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                        <Menu size={20} />
+                    </button>
+                </div>
+            </nav>
+        </header>
+
+            {/* Backdrop do drawer mobile */}
+            <div
+                onClick={() => setMobileOpen(false)}
+                aria-hidden="true"
+                className={`md:hidden fixed inset-0 z-[60] bg-black/60 transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            />
+
+            {/* Drawer lateral mobile */}
+            <aside
+                aria-hidden={!mobileOpen}
+                className={`md:hidden fixed top-0 right-0 z-[70] h-screen w-[82%] max-w-xs flex flex-col transform transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+                style={{ background: 'var(--panel)', borderLeft: '1px solid var(--border)' }}
+            >
+                <div className="flex items-center justify-between h-[72px] px-5 border-b border-[var(--border)] shrink-0">
+                    <Logo name={siteName} />
+                    <button
+                        onClick={() => setMobileOpen(false)}
+                        aria-label="Fechar menu"
+                        className="w-10 h-10 flex items-center justify-center rounded-lg border border-[var(--border-s)] text-[var(--text-body)] hover:text-white transition-colors"
+                    >
+                        <X size={20} />
                     </button>
                 </div>
 
-                {mobileOpen && (
-                    <div className="md:hidden pb-4 space-y-1 border-t border-[var(--border)] pt-4">
-                        {menuItems.map((item) => (
-                            <div key={item.id}>
-                                <MenuLink
-                                    href={item.url}
-                                    openInNewTab={item.open_in_new_tab}
-                                    onClick={() => setMobileOpen(false)}
-                                    className="block px-3 py-2 text-[var(--text-body)] hover:text-white text-sm font-medium transition-colors rounded-lg hover:bg-white/5"
-                                >
-                                    {item.label}
-                                </MenuLink>
-                                {item.children?.map((child) => (
-                                    <MenuLink
-                                        key={child.id}
-                                        href={child.url}
-                                        openInNewTab={child.open_in_new_tab}
-                                        onClick={() => setMobileOpen(false)}
-                                        className="block pl-7 pr-3 py-2 text-[var(--text-muted)] hover:text-[var(--accent)] text-sm transition-colors"
-                                    >
-                                        {child.label}
-                                    </MenuLink>
-                                ))}
-                            </div>
-                        ))}
-                        <div className="pt-2">
-                            <Link
-                                href="/blog"
+                <div className="flex-1 overflow-y-auto px-4 py-5 space-y-1">
+                    {menuItems.map((item) => (
+                        <div key={item.id}>
+                            <MenuLink
+                                href={item.url}
+                                openInNewTab={item.open_in_new_tab}
                                 onClick={() => setMobileOpen(false)}
-                                className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm w-full justify-center"
-                                style={{ background: 'linear-gradient(180deg,var(--accent),var(--accent-2))', color: 'var(--accent-ink)' }}
+                                className="block px-3 py-2.5 text-[var(--text-body)] hover:text-white text-sm font-medium transition-colors rounded-lg hover:bg-white/5"
                             >
-                                Explorar Posts <ArrowRight size={14} />
-                            </Link>
+                                {item.label}
+                            </MenuLink>
+                            {item.children?.map((child) => (
+                                <MenuLink
+                                    key={child.id}
+                                    href={child.url}
+                                    openInNewTab={child.open_in_new_tab}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="block pl-7 pr-3 py-2 text-[var(--text-muted)] hover:text-[var(--accent)] text-sm transition-colors"
+                                >
+                                    {child.label}
+                                </MenuLink>
+                            ))}
                         </div>
-                    </div>
-                )}
-            </nav>
-        </header>
+                    ))}
+                </div>
+
+                <div className="p-4 border-t border-[var(--border)] shrink-0">
+                    <Link
+                        href="/blog"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm w-full"
+                        style={{ background: 'linear-gradient(180deg,var(--accent),var(--accent-2))', color: 'var(--accent-ink)' }}
+                    >
+                        Explorar Posts <ArrowRight size={14} />
+                    </Link>
+                </div>
+            </aside>
+        </>
     );
 }

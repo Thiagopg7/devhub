@@ -41,7 +41,7 @@ export default function BlogShow({ post, prevPost = null, nextPost = null, relat
             <ArticleHeader post={post} readTime={readTime} pageUrl={pageUrl} />
 
             <div style={{ background: 'var(--base)' }}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
                     <div className="flex gap-14 items-start pt-16 pb-10">
 
                         <article className="min-w-0 flex-1">

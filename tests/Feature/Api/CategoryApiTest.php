@@ -86,6 +86,26 @@ class CategoryApiTest extends TestCase
         $this->withToken($token)->getJson('/api/categories')->assertJsonCount(2, 'data');
     }
 
+    public function test_show_retorna_categoria_com_seus_posts_publicados(): void
+    {
+        $category = Category::create(['name' => 'DevOps', 'color' => '#000', 'is_active' => true]);
+        $user = User::factory()->create();
+        Post::factory()->for($user)->create(['category_id' => $category->id, 'title' => 'Publicado']);
+        Post::factory()->for($user)->scheduled()->create(['category_id' => $category->id, 'title' => 'Agendado']);
+
+        $this->withToken($this->token())->getJson("/api/categories/{$category->slug}")
+            ->assertOk()
+            ->assertJsonPath('data.slug', $category->slug)
+            ->assertJsonCount(1, 'data.posts')
+            ->assertJsonPath('data.posts.0.title', 'Publicado');
+    }
+
+    public function test_show_retorna_404_para_categoria_inexistente(): void
+    {
+        $this->withToken($this->token())->getJson('/api/categories/nao-existe')
+            ->assertNotFound();
+    }
+
     public function test_cache_invalidado_ao_mudar_contagem_de_posts(): void
     {
         $token = $this->token();

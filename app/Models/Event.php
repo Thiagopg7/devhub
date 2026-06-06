@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use App\Traits\HasActivityLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -93,5 +94,8 @@ class Event extends Model
                 $model->order = (static::max('order') ?? 0) + 1;
             }
         });
+
+        static::saved(fn () => ApiCache::flush(ApiCache::EVENTS));
+        static::deleted(fn () => ApiCache::flush(ApiCache::EVENTS));
     }
 }

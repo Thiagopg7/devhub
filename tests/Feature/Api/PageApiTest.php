@@ -34,6 +34,23 @@ class PageApiTest extends TestCase
             ->assertJsonFragment(['title' => 'Sobre Nós']);
     }
 
+    public function test_index_lista_apenas_paginas_pesquisaveis(): void
+    {
+        Page::create(['title' => 'Visivel', 'slug' => 'visivel', 'is_active' => true, 'is_searchable' => true]);
+        Page::create(['title' => 'Nao Pesquisavel', 'slug' => 'nao-pesquisavel', 'is_active' => true, 'is_searchable' => false]);
+        Page::create(['title' => 'Inativa', 'slug' => 'inativa', 'is_active' => false, 'is_searchable' => true]);
+
+        $this->withToken($this->token())->getJson('/api/pages')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.slug', 'visivel');
+    }
+
+    public function test_index_requer_autenticacao(): void
+    {
+        $this->getJson('/api/pages')->assertUnauthorized();
+    }
+
     public function test_retorna_404_para_slug_inexistente(): void
     {
         $this->withToken($this->token())->getJson('/api/pages/nao-existe')

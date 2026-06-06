@@ -19,6 +19,14 @@ class ApiCache
 
     public const PAGES = 'api.pages';
 
+    public const EVENTS = 'api.events';
+
+    public const TESTIMONIALS = 'api.testimonials';
+
+    public const STACK = 'api.stack';
+
+    public const CONFIG = 'api.config';
+
     public static function remember(string|array $tags, string $key, Closure $callback): mixed
     {
         return Cache::tags((array) $tags)->remember($key, self::TTL, $callback);
