@@ -34,11 +34,4 @@ class HomeController extends Controller
             ],
         ]);
     }
-
-    // TEMP DIAGNÓSTICO: renderiza o componente Home sem dados, para isolar se o
-    // 502 do edge vem do conteúdo das props. REMOVER após o teste.
-    public function diagMin()
-    {
-        return Inertia::render('Home', ['ok' => true]);
-    }
 }
