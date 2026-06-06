@@ -20,6 +20,7 @@ class Category extends Model
         'name',
         'slug',
         'color',
+        'icon',
         'description',
         'is_active',
         'deleted_by',
