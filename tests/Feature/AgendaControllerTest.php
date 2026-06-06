@@ -18,8 +18,8 @@ class AgendaControllerTest extends TestCase
         $this->get(route('agenda'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Agenda')
-                ->has('events', 1)
-                ->where('events.0.title', 'Evento Visível')
+                ->has('events.data', 1)
+                ->where('events.data.0.title', 'Evento Visível')
             );
     }
 
@@ -34,10 +34,10 @@ class AgendaControllerTest extends TestCase
         $this->get(route('agenda'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Agenda')
-                ->where('events.0.day', '15')
-                ->where('events.0.month', 'Ago')
-                ->where('events.0.year', '2026')
-                ->where('events.0.type_label', 'Conferência')
+                ->where('events.data.0.day', '15')
+                ->where('events.data.0.month', 'Ago')
+                ->where('events.data.0.year', '2026')
+                ->where('events.data.0.type_label', 'Conferência')
             );
     }
 
@@ -49,8 +49,77 @@ class AgendaControllerTest extends TestCase
         $this->get(route('agenda'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Agenda')
-                ->where('events.0.title', 'A')
-                ->where('events.1.title', 'B')
+                ->where('events.data.0.title', 'A')
+                ->where('events.data.1.title', 'B')
+            );
+    }
+
+    public function test_index_pagina_em_lotes(): void
+    {
+        Event::factory()->count(7)->create(['is_active' => true]);
+
+        $this->get(route('agenda'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Agenda')
+                ->has('events.data', 6)          // primeiro lote
+                ->where('events.total', 7)
+                ->where('events.current_page', 1)
+                ->where('events.last_page', 2)
+            );
+    }
+
+    public function test_index_segunda_pagina_traz_o_restante(): void
+    {
+        Event::factory()->count(7)->create(['is_active' => true]);
+
+        $this->get(route('agenda', ['page' => 2]))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Agenda')
+                ->has('events.data', 1)
+                ->where('events.current_page', 2)
+            );
+    }
+
+    public function test_index_filtra_por_status(): void
+    {
+        Event::factory()->count(2)->create(['status' => 'open', 'is_active' => true]);
+        Event::factory()->create(['status' => 'full', 'is_active' => true]);
+
+        $this->get(route('agenda', ['status' => 'full']))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Agenda')
+                ->where('events.total', 1)
+                ->where('events.data.0.status', 'full')
+                ->where('filters.status', 'full')
+            );
+    }
+
+    public function test_index_ignora_status_invalido(): void
+    {
+        Event::factory()->count(3)->create(['is_active' => true]);
+
+        $this->get(route('agenda', ['status' => 'inexistente']))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Agenda')
+                ->where('events.total', 3)
+                ->where('filters.status', null)
+            );
+    }
+
+    public function test_index_retorna_contadores_por_status(): void
+    {
+        Event::factory()->count(2)->create(['status' => 'open', 'is_active' => true]);
+        Event::factory()->create(['status' => 'full', 'is_active' => true]);
+        Event::factory()->create(['status' => 'soon', 'is_active' => true]);
+        Event::factory()->create(['status' => 'open', 'is_active' => false]); // inativo não conta
+
+        $this->get(route('agenda'))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->component('Agenda')
+                ->where('counts.all', 4)
+                ->where('counts.open', 2)
+                ->where('counts.full', 1)
+                ->where('counts.soon', 1)
             );
     }
 }

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import PublicLayout from '@/Layouts/PublicLayout';
 import Newsletter from '@/Components/Public/Newsletter';
 import PageHero from '@/Components/Public/PageHero';
 import Breadcrumb from '@/Components/Public/Breadcrumb';
 import EventCard from '@/Components/Public/Agenda/EventCard';
-import { Calendar, CheckCircle, Clock, Minus } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, Minus, Loader2 } from 'lucide-react';
 
 const FILTERS = [
     { key: 'all',  label: 'Todos',               icon: <Calendar size={16} /> },
@@ -14,11 +14,16 @@ const FILTERS = [
     { key: 'full', label: 'Lotado',              icon: <Minus size={16} /> },
 ];
 
-export default function Agenda({ events = [] }) {
+export default function Agenda({ events, counts = {}, filters = {} }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
-    const [activeFilter, setActiveFilter] = useState('all');
+
+    const [activeFilter, setActiveFilter] = useState(filters.status || 'all');
+    const [items, setItems] = useState(events.data);
+    const [loading, setLoading] = useState(false);
     const gridRef = useRef(null);
+
+    const hasMore = events.current_page < events.last_page;
 
     useEffect(() => {
         const el = gridRef.current;
@@ -28,16 +33,30 @@ export default function Agenda({ events = [] }) {
         el.classList.add('is-filtering');
     }, [activeFilter]);
 
-    const counts = {
-        all: events.length,
-        open: events.filter(e => e.status === 'open').length,
-        soon: events.filter(e => e.status === 'soon').length,
-        full: events.filter(e => e.status === 'full').length,
+    const changeFilter = (key) => {
+        if (key === activeFilter) return;
+        setActiveFilter(key);
+        router.get(route('agenda'), key === 'all' ? {} : { status: key }, {
+            only: ['events', 'counts', 'filters'],
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+            onSuccess: (page) => setItems(page.props.events.data),
+        });
     };
 
-    const visible = activeFilter === 'all'
-        ? events
-        : events.filter(e => e.status === activeFilter);
+    const loadMore = () => {
+        if (loading || !hasMore) return;
+        setLoading(true);
+        router.reload({
+            data: { page: events.current_page + 1 },
+            only: ['events'],
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => setItems((prev) => [...prev, ...page.props.events.data]),
+            onFinish: () => setLoading(false),
+        });
+    };
 
     return (
         <PublicLayout>
@@ -65,7 +84,7 @@ export default function Agenda({ events = [] }) {
                         const isActive = activeFilter === f.key;
                         return (
                             <button key={f.key}
-                                onClick={() => setActiveFilter(f.key)}
+                                onClick={() => changeFilter(f.key)}
                                 className="inline-flex items-center gap-2.5 font-semibold text-sm transition-all hover:-translate-y-0.5"
                                 style={{
                                     padding: '12px 18px 12px 13px',
@@ -90,7 +109,7 @@ export default function Agenda({ events = [] }) {
                                 {f.label}
                                 <span className="font-mono text-xs"
                                     style={{ color: isActive ? 'rgba(3,18,29,0.7)' : 'var(--text-muted)' }}>
-                                    {counts[f.key]}
+                                    {counts[f.key] ?? 0}
                                 </span>
                             </button>
                         );
@@ -100,14 +119,49 @@ export default function Agenda({ events = [] }) {
 
             <section style={{ background: 'var(--base)', paddingTop: 64, paddingBottom: 80 }}>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {visible.length > 0 ? (
-                        <div ref={gridRef} className="posts flex flex-col gap-4">
-                            {visible.map(event => (
-                                <div key={event.id} className="post">
-                                    <EventCard event={event} />
+                    {items.length > 0 ? (
+                        <>
+                            <div ref={gridRef} className="posts flex flex-col gap-4">
+                                {items.map(event => (
+                                    <div key={event.id} className="post">
+                                        <EventCard event={event} />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {hasMore && (
+                                <div className="mt-10 flex justify-center">
+                                    <button
+                                        onClick={loadMore}
+                                        disabled={loading}
+                                        className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-wait"
+                                        style={{
+                                            padding: '12px 22px',
+                                            borderRadius: 12,
+                                            background: 'var(--surface)',
+                                            color: 'var(--text-body)',
+                                            border: '1px solid var(--border-s)',
+                                        }}
+                                        onMouseEnter={e => { if (!loading) { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'rgba(60,189,248,0.07)'; } }}
+                                        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-s)'; e.currentTarget.style.background = 'var(--surface)'; }}
+                                    >
+                                        {loading ? (
+                                            <>
+                                                <Loader2 size={15} className="animate-spin" />
+                                                Carregando…
+                                            </>
+                                        ) : (
+                                            <>
+                                                Carregar mais
+                                                <span className="font-mono text-xs" style={{ color: 'var(--text-muted)' }}>
+                                                    {events.total - items.length} restantes
+                                                </span>
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
-                            ))}
-                        </div>
+                            )}
+                        </>
                     ) : (
                         <p className="text-center py-16 font-mono text-sm" style={{ color: 'var(--text-muted)' }}>
                             Nenhum evento encontrado nesta categoria.
