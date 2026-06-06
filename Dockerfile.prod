@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     curl \
     nginx \
+    supervisor \
     gettext-base \
     && rm -rf /var/lib/apt/lists/*
 
@@ -38,6 +39,11 @@ RUN pecl channel-update pecl.php.net \
 # Configs do PHP
 COPY docker/php/opcache.prod.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php/production.ini   /usr/local/etc/php/conf.d/production.ini
+# php-fpm em Unix socket (restart resiliente) — carrega após o www.conf
+COPY docker/php/zz-unixsocket.conf /usr/local/etc/php-fpm.d/zz-unixsocket.conf
+# Wrapper que limpa workers órfãos antes de (re)subir o php-fpm
+COPY docker/php/start-fpm.sh /usr/local/bin/start-fpm.sh
+RUN chmod +x /usr/local/bin/start-fpm.sh
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -64,6 +70,9 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache \
 
 # Template do Nginx (PORT é substituído em runtime pelo start.sh)
 COPY docker/nginx/railway.conf /etc/nginx/templates/default.conf.template
+
+# Supervisão de processos (php-fpm + nginx + queue)
+COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Script de inicialização
 COPY docker/start.sh /start.sh

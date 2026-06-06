@@ -20,7 +20,12 @@ echo "Banco disponível. Rodando migrations..."
 php artisan migrate --force
 
 echo "Ajustando permissões do storage..."
-mkdir -p /var/www/storage/app/public
+# Recria a estrutura do storage caso um volume vazio tenha sido montado por cima
+mkdir -p /var/www/storage/app/public \
+         /var/www/storage/framework/cache \
+         /var/www/storage/framework/sessions \
+         /var/www/storage/framework/views \
+         /var/www/storage/logs
 chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
@@ -28,7 +33,8 @@ echo "Criando link do storage..."
 php artisan storage:link --force 2>/dev/null || true
 
 echo "Consolidando conteúdo (seeders idempotentes)..."
-php artisan db:seed --force
+# A falha do seed não pode derrubar o boot do servidor — apenas avisa.
+php artisan db:seed --force || echo "AVISO: db:seed falhou — seguindo o boot do servidor"
 
 echo "Limpando cache da aplicação..."
 php artisan cache:clear
@@ -36,11 +42,7 @@ php artisan cache:clear
 echo "Cacheando configurações, rotas e views..."
 php artisan optimize
 
-echo "Iniciando PHP-FPM..."
-php-fpm -D
-
-echo "Iniciando queue worker..."
-php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &
-
-echo "Iniciando Nginx na porta ${PORT}..."
-exec nginx -g 'daemon off;'
+# Entrega o controle ao supervisor: ele mantém php-fpm, nginx e a fila vivos
+# e reinicia qualquer um que cair (evita o 502 permanente por php-fpm morto).
+echo "Iniciando supervisor (php-fpm + nginx + queue) na porta ${PORT}..."
+exec /usr/bin/supervisord -c /etc/supervisord.conf
