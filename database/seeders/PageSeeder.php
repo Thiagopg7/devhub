@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Page;
+use Database\Seeders\Support\SvgImage;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 class PageSeeder extends Seeder
@@ -17,15 +17,16 @@ class PageSeeder extends Seeder
 
     private function seedSobreNos(): void
     {
-        $this->downloadImage('https://picsum.photos/seed/devhub-main/800/600', 'pages/sobre-nos-main.jpg');
+        $this->ensureSvg('pages/sobre-nos-main.svg', SvgImage::wide('DevHub', 'Sobre Nós', '#3CBDF8'));
 
-        $page = Page::firstOrCreate(
+        // withTrashed: se a página foi soft-deletada, restaura em vez de colidir no índice unique do slug
+        $page = Page::withTrashed()->firstOrCreate(
             ['slug' => 'sobre-nos'],
             [
                 'title' => 'Sobre Nós',
                 'subtitle' => 'Conheça um pouco mais sobre este projeto',
                 'slug' => 'sobre-nos',
-                'main_image' => Storage::disk('public')->exists('pages/sobre-nos-main.jpg') ? 'pages/sobre-nos-main.jpg' : null,
+                'main_image' => 'pages/sobre-nos-main.svg',
                 'content' => $this->sobreNosContent(),
                 'is_active' => true,
                 'is_searchable' => true,
@@ -34,64 +35,52 @@ class PageSeeder extends Seeder
             ]
         );
 
+        if ($page->trashed()) {
+            $page->restore();
+        }
+
         if ($page->galleryImages()->doesntExist()) {
-            $gallery = [
-                ['url' => 'https://picsum.photos/seed/devhub-g1/800/600', 'path' => 'gallery/sobre-nos-1.jpg'],
-                ['url' => 'https://picsum.photos/seed/devhub-g2/800/600', 'path' => 'gallery/sobre-nos-2.jpg'],
-                ['url' => 'https://picsum.photos/seed/devhub-g3/800/600', 'path' => 'gallery/sobre-nos-3.jpg'],
-                ['url' => 'https://picsum.photos/seed/devhub-g4/800/600', 'path' => 'gallery/sobre-nos-4.jpg'],
-                ['url' => 'https://picsum.photos/seed/devhub-g5/800/600', 'path' => 'gallery/sobre-nos-5.jpg'],
-                ['url' => 'https://picsum.photos/seed/devhub-g6/800/600', 'path' => 'gallery/sobre-nos-6.jpg'],
-            ];
+            $palette = ['#3CBDF8', '#7B86FF', '#2FD9C2', '#F0B65A', '#E5359F', '#8AF0E2'];
 
-            foreach ($gallery as $order => $item) {
-                $ok = $this->downloadImage($item['url'], $item['path']);
-
-                if ($ok) {
-                    $page->galleryImages()->create(['image' => $item['path'], 'order' => $order]);
-                }
+            foreach ($palette as $order => $color) {
+                $path = 'gallery/sobre-nos-'.($order + 1).'.svg';
+                $this->ensureSvg($path, SvgImage::wide('DevHub', 'Galeria', $color, 800, 600));
+                $page->galleryImages()->create(['image' => $path, 'order' => $order]);
             }
         }
     }
 
     private function seedPoliticaPrivacidade(): void
     {
-        Page::withTrashed()
-            ->whereIn('slug', ['politica-privacidade', 'politica-de-privacidade'])
-            ->each(fn ($p) => $p->forceDelete());
+        // Remove a variante antiga de slug, se existir (não destrói a página atual)
+        Page::withTrashed()->where('slug', 'politica-de-privacidade')->each(fn ($p) => $p->forceDelete());
 
-        Page::create([
-            'title' => 'Política de Privacidade',
-            'subtitle' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).',
-            'eyebrow' => 'Transparência & confiança',
-            'slug' => 'politica-privacidade',
-            'content' => $this->privacidadeContent(),
-            'is_active' => true,
-            'is_searchable' => true,
-            'meta_title' => 'Política de Privacidade',
-            'meta_description' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a LGPD.',
-        ]);
+        $page = Page::withTrashed()->firstOrCreate(
+            ['slug' => 'politica-privacidade'],
+            [
+                'title' => 'Política de Privacidade',
+                'subtitle' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a Lei Geral de Proteção de Dados (LGPD).',
+                'eyebrow' => 'Transparência & confiança',
+                'slug' => 'politica-privacidade',
+                'content' => $this->privacidadeContent(),
+                'is_active' => true,
+                'is_searchable' => true,
+                'meta_title' => 'Política de Privacidade',
+                'meta_description' => 'Como o DevHub coleta, usa e protege seus dados. Em conformidade com a LGPD.',
+            ]
+        );
+
+        if ($page->trashed()) {
+            $page->restore();
+        }
     }
 
-    private function downloadImage(string $url, string $storagePath): bool
+    /** Grava o SVG no storage público apenas se ainda não existir (idempotente / storage efêmero). */
+    private function ensureSvg(string $path, string $svg): void
     {
-        if (Storage::disk('public')->exists($storagePath)) {
-            return true;
+        if (! Storage::disk('public')->exists($path)) {
+            Storage::disk('public')->put($path, $svg);
         }
-
-        try {
-            $response = Http::timeout(15)->get($url);
-
-            if ($response->successful()) {
-                Storage::disk('public')->put($storagePath, $response->body());
-
-                return true;
-            }
-        } catch (\Exception) {
-            // ignora falhas de rede
-        }
-
-        return false;
     }
 
     private function sobreNosContent(): string
