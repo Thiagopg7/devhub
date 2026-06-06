@@ -11,6 +11,10 @@ use App\Http\Controllers\TechnologyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+// TEMP DIAGNÓSTICO do 502 do edge — remover depois:
+// /diag-min  = componente Home sem dados | /diag-full = home completa em outra rota
+Route::get('/diag-min', [HomeController::class, 'diagMin']);
+Route::get('/diag-full', [HomeController::class, 'index']);
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/categoria/{slug}', [BlogController::class, 'byCategory'])->name('blog.category');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');

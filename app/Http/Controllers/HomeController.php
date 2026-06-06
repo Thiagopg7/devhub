@@ -17,12 +17,6 @@ class HomeController extends Controller
 
     public function index()
     {
-        // TEMP DIAGNÓSTICO: renderiza a Home sem dados para isolar se o 502 do
-        // edge vem do conteúdo das props. REVERTER depois do teste.
-        return Inertia::render('Home', [
-            'ok' => true,
-        ]);
-
         return Inertia::render('Home', [
             'featuredPosts' => $this->postService->getLatest(3),
             'featuredPost' => $this->postService->getFeatured(),
@@ -39,5 +33,12 @@ class HomeController extends Controller
                 'categories' => Category::active()->count(),
             ],
         ]);
+    }
+
+    // TEMP DIAGNÓSTICO: renderiza o componente Home sem dados, para isolar se o
+    // 502 do edge vem do conteúdo das props. REMOVER após o teste.
+    public function diagMin()
+    {
+        return Inertia::render('Home', ['ok' => true]);
     }
 }
