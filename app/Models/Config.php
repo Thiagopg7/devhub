@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ApiCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -35,7 +36,13 @@ class Config extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => Cache::forget('configs.all'));
-        static::deleted(fn () => Cache::forget('configs.all'));
+        static::saved(function () {
+            Cache::forget('configs.all');
+            ApiCache::flush(ApiCache::CONFIG);
+        });
+        static::deleted(function () {
+            Cache::forget('configs.all');
+            ApiCache::flush(ApiCache::CONFIG);
+        });
     }
 }
