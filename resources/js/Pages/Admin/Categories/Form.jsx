@@ -11,6 +11,7 @@ import NavButton from "@/Components/Admin/NavButton";
 import ToggleButton from "@/Components/Admin/ToggleButton";
 import TextareaAutosize from "react-textarea-autosize";
 import { useCan } from "@/hooks/useCan";
+import { CATEGORY_ICONS, CATEGORY_ICON_KEYS } from "@/lib/categoryIcons";
 
 export default function Form({ category = {} }) {
     const can = useCan();
@@ -28,6 +29,7 @@ export default function Form({ category = {} }) {
         id:          category?.id ?? "",
         name:        category?.name ?? "",
         color:       category?.color ?? "#3B82F6",
+        icon:        category?.icon ?? "",
         description: category?.description ?? "",
         is_active:   category?.is_active ?? true,
     });
@@ -102,6 +104,35 @@ export default function Form({ category = {} }) {
                                                 maxLength={7}
                                             />
                                         </div>
+                                    </div>
+
+                                    <div>
+                                        <Label value="Ícone" />
+                                        <div className="mt-1 grid grid-cols-6 sm:grid-cols-10 gap-2">
+                                            {CATEGORY_ICON_KEYS.map((key) => {
+                                                const Icon = CATEGORY_ICONS[key];
+                                                const selected = data.icon === key;
+                                                return (
+                                                    <button
+                                                        key={key}
+                                                        type="button"
+                                                        title={key}
+                                                        aria-label={`Ícone ${key}`}
+                                                        aria-pressed={selected}
+                                                        disabled={processing || readonly}
+                                                        onClick={() => setData("icon", selected ? "" : key)}
+                                                        className={`aspect-square grid place-items-center rounded-lg border transition-colors disabled:opacity-50 ${
+                                                            selected
+                                                                ? "border-red-600 text-red-600 bg-red-50 dark:bg-red-600/10"
+                                                                : "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:border-red-400 hover:text-red-500"
+                                                        }`}
+                                                    >
+                                                        <Icon size={18} />
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <p className="mt-1 text-xs text-gray-400">Clique para selecionar (clique de novo para remover).</p>
                                     </div>
 
                                     <div>

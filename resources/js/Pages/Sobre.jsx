@@ -13,7 +13,7 @@ const HERO_GLOW = {
     background: 'radial-gradient(circle,rgba(60,189,248,0.09) 0%,transparent 60%)',
 };
 
-export default function Sobre() {
+export default function Sobre({ stats = {}, tracks = [] }) {
     const { siteConfig = {} } = usePage().props;
     const siteName = siteConfig.site_name || 'DevHub';
 
@@ -46,9 +46,9 @@ export default function Sobre() {
                 </p>
             </PageHero>
 
-            <StatsStrip />
+            <StatsStrip stats={stats} />
             <ValuesGrid />
-            <TracksGrid />
+            <TracksGrid tracks={tracks} />
             <BuiltWithCta siteName={siteName} />
 
             <Newsletter />

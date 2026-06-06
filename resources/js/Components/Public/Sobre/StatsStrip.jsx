@@ -1,14 +1,26 @@
 import Reveal from '@/Components/Public/Reveal';
+import useCountUp from '@/hooks/useCountUp';
 
-const STATS = [
-    { value: '+120', label: 'artigos publicados' },
-    { value: '6',    label: 'trilhas de conteúdo' },
-    { value: '+40k', label: 'leitores por mês' },
-    { value: '100%', label: 'conteúdo em português' },
-];
+function AnimatedValue({ prefix = '', count, suffix = '' }) {
+    const value = useCountUp(count);
+    return <>{prefix}{value}{suffix}</>;
+}
 
 /** Faixa de métricas da página Sobre. */
-export default function StatsStrip() {
+export default function StatsStrip({ stats = {} }) {
+    const publishedPosts = stats.publishedPosts ?? 0;
+    const categories = stats.categories ?? 0;
+
+    const postsHasPlus = publishedPosts >= 10;
+    const postsTarget = postsHasPlus ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
+
+    const STATS = [
+        { value: <AnimatedValue prefix={postsHasPlus ? '+' : ''} count={postsTarget} />, label: 'artigos publicados' },
+        { value: <AnimatedValue count={categories} />,               label: 'trilhas de conteúdo' },
+        { value: <AnimatedValue prefix="+" count={40} suffix="k" />, label: 'leitores por mês' },
+        { value: <AnimatedValue count={100} suffix="%" />,           label: 'conteúdo em português' },
+    ];
+
     return (
         <section style={{ background: 'var(--panel)', borderBottom: '1px solid var(--border)' }}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
