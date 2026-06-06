@@ -1,7 +1,6 @@
 import Reveal from '@/Components/Public/Reveal';
 import useCountUp from '@/hooks/useCountUp';
 
-/** Valor numérico com animação de contagem (prefixo/sufixo opcionais, ex.: "+", "k", "%"). */
 function AnimatedValue({ prefix = '', count, suffix = '' }) {
     const value = useCountUp(count);
     return <>{prefix}{value}{suffix}</>;
@@ -12,7 +11,6 @@ export default function StatsStrip({ stats = {} }) {
     const publishedPosts = stats.publishedPosts ?? 0;
     const categories = stats.categories ?? 0;
 
-    // Arredonda os artigos pra baixo na dezena (ex.: 28 → "+20"); abaixo de 10 mostra o valor exato sem "+"
     const postsHasPlus = publishedPosts >= 10;
     const postsTarget = postsHasPlus ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
 

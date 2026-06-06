@@ -37,7 +37,7 @@ class SobreControllerTest extends TestCase
         $this->get(route('sobre'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Sobre')
-                ->where('tracks.0.name', 'Muitos') // mais posts primeiro
+                ->where('tracks.0.name', 'Muitos')
                 ->where('tracks.0.icon', null)
                 ->where('tracks.1.name', 'Poucos')
                 ->where('tracks.1.icon', 'Code')

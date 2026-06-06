@@ -22,7 +22,6 @@ class AgendaController extends Controller
 
         $events = Event::active()
             ->when($status, fn ($q) => $q->where('status', $status))
-            // Futuros primeiro (por order/data asc), passados depois (data desc)
             ->orderByRaw('(date >= ?) desc', [$today])
             ->orderByRaw('case when date >= ? then `order` end asc', [$today])
             ->orderByRaw('case when date >= ? then date end asc', [$today])
@@ -32,13 +31,11 @@ class AgendaController extends Controller
 
         return Inertia::render('Agenda', [
             'events' => $events,
-            // Lazy: não recalcula no "carregar mais" (partial reload só de `events`)
             'counts' => fn () => $this->counts(),
             'filters' => ['status' => $status],
         ]);
     }
 
-    /** Contadores por status (sobre o total ativo) para os chips de filtro. */
     private function counts(): array
     {
         $byStatus = Event::active()

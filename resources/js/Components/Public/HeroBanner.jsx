@@ -89,7 +89,6 @@ export default function HeroBanner({ stats = {} }) {
     const publishedPosts = stats.publishedPosts ?? 0;
     const categories = stats.categories ?? 0;
 
-    // Arredonda os artigos pra baixo na dezena (ex.: 28 → "+20"); abaixo de 10 mostra o valor exato sem "+"
     const postsHasPlus = publishedPosts >= 10;
     const postsTarget = postsHasPlus ? Math.floor(publishedPosts / 10) * 10 : publishedPosts;
     const postsCount = useCountUp(postsTarget);

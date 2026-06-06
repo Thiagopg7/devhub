@@ -61,7 +61,7 @@ class AgendaControllerTest extends TestCase
         $this->get(route('agenda'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Agenda')
-                ->has('events.data', 6)          // primeiro lote
+                ->has('events.data', 6)
                 ->where('events.total', 7)
                 ->where('events.current_page', 1)
                 ->where('events.last_page', 2)
@@ -111,7 +111,7 @@ class AgendaControllerTest extends TestCase
         Event::factory()->count(2)->create(['status' => 'open', 'is_active' => true]);
         Event::factory()->create(['status' => 'full', 'is_active' => true]);
         Event::factory()->create(['status' => 'soon', 'is_active' => true]);
-        Event::factory()->create(['status' => 'open', 'is_active' => false]); // inativo não conta
+        Event::factory()->create(['status' => 'open', 'is_active' => false]);
 
         $this->get(route('agenda'))
             ->assertOk()

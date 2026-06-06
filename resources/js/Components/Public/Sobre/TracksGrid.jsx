@@ -6,7 +6,6 @@ const NUM_WORDS = ['Nenhuma', 'Uma', 'Duas', 'Três', 'Quatro', 'Cinco', 'Seis',
 
 const numberWord = (n) => NUM_WORDS[n] ?? n;
 
-/** Trilhas de conteúdo cobertas pelo DevHub — uma por categoria (página Sobre). */
 export default function TracksGrid({ tracks = [] }) {
     if (tracks.length === 0) return null;
 
