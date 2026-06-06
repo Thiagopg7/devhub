@@ -38,6 +38,16 @@ tags:
     description: Tecnologias do portfólio
   - name: System
     description: Saúde e status da API
+  - name: Events
+    description: Eventos da agenda
+  - name: Testimonials
+    description: Depoimentos
+  - name: Stack
+    description: Stack de tecnologias do projeto
+  - name: Config
+    description: Configurações públicas do site
+  - name: Newsletter
+    description: Inscrição na newsletter
 
 components:
   securitySchemes:
@@ -210,6 +220,130 @@ components:
         order:
           type: integer
           example: 1
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: PHP Conference Brasil 2026
+        type:
+          type: string
+          enum: [conf, meetup, workshop, hack]
+          example: conf
+        type_label:
+          type: string
+          example: Conferência
+        org:
+          type: string
+          nullable: true
+          example: PHP Conference Brasil
+        date:
+          type: string
+          format: date
+          example: "2026-04-18"
+        day:
+          type: string
+          example: "18"
+        month:
+          type: string
+          example: Abr
+        year:
+          type: string
+          example: "2026"
+        time:
+          type: string
+          nullable: true
+          example: "09h00 – 18h00"
+        location:
+          type: string
+          nullable: true
+          example: São Paulo, SP
+        is_online:
+          type: boolean
+          example: false
+        status:
+          type: string
+          example: open
+        is_past:
+          type: boolean
+          example: false
+        cta_label:
+          type: string
+          nullable: true
+        cta_style:
+          type: string
+          nullable: true
+        cta_url:
+          type: string
+          nullable: true
+        seats:
+          type: string
+          nullable: true
+        seats_low:
+          type: boolean
+          example: false
+
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Mariana Lopes
+        role:
+          type: string
+          nullable: true
+          example: Desenvolvedora Full-Stack
+        company:
+          type: string
+          nullable: true
+          example: Finova
+        content:
+          type: string
+          example: Os artigos do DevHub viraram leitura obrigatória.
+        avatar_image:
+          type: string
+          nullable: true
+
+    StackItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Laravel
+        icon:
+          type: string
+          description: SVG inline do ícone.
+          example: "<svg viewBox=\"0 0 24 24\">...</svg>"
+
+    ConfigData:
+      type: object
+      description: Configurações públicas agrupadas (scripts/analytics não são expostos).
+      properties:
+        general:
+          type: object
+          additionalProperties:
+            type: string
+          example: { site_name: DevHub, site_tagline: "Blog e portfólio de desenvolvimento web" }
+        contact:
+          type: object
+          additionalProperties:
+            type: string
+          example: { contact_email: contato@devhub.com.br }
+        footer:
+          type: object
+          additionalProperties:
+            type: string
+          example: { footer_github: "https://github.com/thiagopg7" }
 
     Pagination:
       type: object
@@ -455,6 +589,64 @@ paths:
         "401":
           description: Não autenticado
 
+  /categories/{slug}:
+    get:
+      tags: [Categories]
+      summary: Detalhe de uma categoria
+      description: Retorna a categoria e seus posts publicados.
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: desenvolvimento-web
+      responses:
+        "200":
+          description: Categoria encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/Category'
+                      - type: object
+                        properties:
+                          posts:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/PostSummary'
+        "404":
+          description: Categoria não encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Não autenticado
+
+  /pages:
+    get:
+      tags: [Pages]
+      summary: Listar páginas
+      description: Retorna as páginas ativas e pesquisáveis.
+      responses:
+        "200":
+          description: Lista de páginas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Page'
+        "401":
+          description: Não autenticado
+
   /pages/{slug}:
     get:
       tags: [Pages]
@@ -524,6 +716,156 @@ paths:
                       $ref: '#/components/schemas/Technology'
         "401":
           description: Não autenticado
+
+  /events:
+    get:
+      tags: [Events]
+      summary: Listar eventos
+      description: Retorna eventos ativos ordenados por data. Filtrável por período e tipo.
+      parameters:
+        - name: when
+          in: query
+          required: false
+          description: Filtra por período.
+          schema:
+            type: string
+            enum: [all, upcoming, past]
+            default: all
+        - name: type
+          in: query
+          required: false
+          description: Filtra por tipo de evento.
+          schema:
+            type: string
+            enum: [conf, meetup, workshop, hack]
+      responses:
+        "200":
+          description: Lista de eventos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Event'
+        "401":
+          description: Não autenticado
+
+  /testimonials:
+    get:
+      tags: [Testimonials]
+      summary: Listar depoimentos
+      description: Retorna os depoimentos ativos ordenados.
+      responses:
+        "200":
+          description: Lista de depoimentos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Testimonial'
+        "401":
+          description: Não autenticado
+
+  /stack:
+    get:
+      tags: [Stack]
+      summary: Listar itens do stack
+      description: Retorna o stack de tecnologias do projeto, ativo e ordenado.
+      responses:
+        "200":
+          description: Lista do stack
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StackItem'
+        "401":
+          description: Não autenticado
+
+  /config:
+    get:
+      tags: [Config]
+      summary: Configurações públicas
+      description: Retorna as configurações públicas do site (geral, contato, rodapé).
+      responses:
+        "200":
+          description: Configurações
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConfigData'
+        "401":
+          description: Não autenticado
+
+  /newsletter:
+    post:
+      tags: [Newsletter]
+      summary: Inscrever na newsletter
+      description: >-
+        Endpoint público de escrita. Protegido por rate limit agressivo
+        (5 req/min por IP), honeypot, e-mail único e sanitização anti-injeção.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, newsletter_area_id, lgpd_consent]
+              properties:
+                name:
+                  type: string
+                  maxLength: 100
+                  example: Maria Silva
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                  example: maria@example.com
+                newsletter_area_id:
+                  type: integer
+                  example: 1
+                lgpd_consent:
+                  type: boolean
+                  description: Consentimento LGPD (obrigatório).
+                  example: true
+                website:
+                  type: string
+                  nullable: true
+                  description: Honeypot — deve ficar vazio (bots preenchem).
+      responses:
+        "201":
+          description: Inscrição realizada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Inscrição realizada com sucesso!
+        "422":
+          description: Dados inválidos (e-mail já inscrito, consentimento ausente etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "429":
+          description: "Muitas tentativas (limite: 5 por minuto por IP)"
 
   /health:
     get:
