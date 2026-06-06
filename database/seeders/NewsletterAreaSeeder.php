@@ -21,11 +21,13 @@ class NewsletterAreaSeeder extends Seeder
         ];
 
         foreach ($areas as $index => $name) {
-            NewsletterArea::create([
-                'name' => $name,
-                'order' => $index + 1,
-                'is_active' => true,
-            ]);
+            NewsletterArea::firstOrCreate(
+                ['name' => $name],
+                [
+                    'order' => $index + 1,
+                    'is_active' => true,
+                ]
+            );
         }
     }
 }

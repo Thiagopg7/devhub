@@ -57,11 +57,14 @@ class StackItemSeeder extends Seeder
         ];
 
         foreach ($items as $order => $data) {
-            StackItem::create([
-                ...$data,
-                'order' => $order + 1,
-                'is_active' => true,
-            ]);
+            StackItem::firstOrCreate(
+                ['name' => $data['name']],
+                [
+                    ...$data,
+                    'order' => $order + 1,
+                    'is_active' => true,
+                ]
+            );
         }
     }
 }
