@@ -58,6 +58,15 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             if ($request->is('api/*')) {
+                // Preserva o status de HttpExceptions (429 rate limit, 404, 403…)
+                // para o cliente reagir corretamente; só mascara erros inesperados.
+                if ($e instanceof HttpException) {
+                    return response()->json([
+                        'status' => 'error',
+                        'message' => $e->getMessage() ?: 'Erro na requisição.',
+                    ], $e->getStatusCode());
+                }
+
                 Log::error('Erro na API', [
                     'exception' => $e,
                     'url' => $request->fullUrl(),
