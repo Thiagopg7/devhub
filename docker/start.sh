@@ -3,8 +3,9 @@ set -e
 
 cd /var/www
 
-# Railway define $PORT dinamicamente; 8080 é o padrão de fallback
-PORT=${PORT:-8080}
+# Railway define $PORT dinamicamente; 8080 é o padrão de fallback.
+# export é essencial: o envsubst (processo filho) só enxerga variáveis de ambiente.
+export PORT=${PORT:-8080}
 
 # Gera o nginx.conf com a porta correta
 envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf
