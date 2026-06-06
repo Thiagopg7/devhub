@@ -136,6 +136,8 @@ export default function EventCard({ event }) {
                         </span>
                     ) : (
                         <a href={event.cta_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5"
                             style={isPrimary ? {
                                 background: 'linear-gradient(180deg,var(--accent),var(--accent-2))',
