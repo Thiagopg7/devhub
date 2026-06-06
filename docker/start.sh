@@ -27,6 +27,9 @@ chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 echo "Criando link do storage..."
 php artisan storage:link --force 2>/dev/null || true
 
+echo "Consolidando conteúdo (seeders idempotentes)..."
+php artisan db:seed --force
+
 echo "Limpando cache da aplicação..."
 php artisan cache:clear
 

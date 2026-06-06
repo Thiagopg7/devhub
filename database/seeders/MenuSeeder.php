@@ -21,15 +21,21 @@ class MenuSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $this->firstOrCreateItem(['url' => '/sobre-nos'], [
-            'label' => 'Sobre Nós',
+        $this->firstOrCreateItem(['url' => '/sobre'], [
+            'label' => 'Sobre',
             'order' => 3,
             'is_active' => true,
         ]);
 
-        $this->firstOrCreateItem(['url' => '/politica-de-privacidade'], [
-            'label' => 'Privacidade',
+        $this->firstOrCreateItem(['url' => '/agenda'], [
+            'label' => 'Agenda',
             'order' => 4,
+            'is_active' => true,
+        ]);
+
+        $this->firstOrCreateItem(['url' => '/tecnologias'], [
+            'label' => 'Tecnologias',
+            'order' => 5,
             'is_active' => true,
         ]);
     }
