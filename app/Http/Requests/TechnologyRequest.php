@@ -17,8 +17,8 @@ class TechnologyRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string', 'max:1000'],
             'url' => ['required', 'url', 'max:500'],
-            'icon_image' => ['nullable', 'image', 'max:2048'],
-            'screenshot_image' => ['nullable', 'image', 'max:4096'],
+            'icon_image' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
+            'screenshot_image' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp', 'max:4096'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];

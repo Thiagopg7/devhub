@@ -18,7 +18,7 @@ class PageRequest extends FormRequest
             'subtitle' => ['nullable', 'string', 'max:255'],
             'eyebrow' => ['nullable', 'string', 'max:100'],
             'content' => ['nullable', 'string'],
-            'main_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120'],
+            'main_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'is_active' => ['boolean'],
             'is_searchable' => ['boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
