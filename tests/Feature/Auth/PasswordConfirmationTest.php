@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class PasswordConfirmationTest extends TestCase
@@ -40,5 +41,21 @@ class PasswordConfirmationTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors();
+    }
+
+    public function test_confirm_password_throttle_bloqueia_apos_5_tentativas(): void
+    {
+        Cache::flush();
+        $user = User::factory()->create();
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->actingAs($user)->post('/confirm-password', [
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        $this->actingAs($user)
+            ->post('/confirm-password', ['password' => 'wrong-password'])
+            ->assertStatus(429);
     }
 }

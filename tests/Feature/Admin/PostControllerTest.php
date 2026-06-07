@@ -176,6 +176,23 @@ class PostControllerTest extends TestCase
         $this->assertSoftDeleted('posts', ['id' => $post->id]);
     }
 
+    public function test_store_rejeita_upload_de_arquivo_php(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser(['posts.create']);
+        $evil = UploadedFile::fake()->create('evil.php', 10, 'application/x-php');
+
+        $this->actingAs($user)
+            ->post(route('admin.posts.store'), [
+                'title' => 'Post malicioso',
+                'banner_image' => $evil,
+                'is_active' => true,
+            ])
+            ->assertSessionHasErrors('banner_image');
+
+        $this->assertEmpty(Storage::disk('public')->allFiles());
+    }
+
     public function test_acesso_sem_autenticacao_redireciona(): void
     {
         $this->get(route('admin.posts.index'))

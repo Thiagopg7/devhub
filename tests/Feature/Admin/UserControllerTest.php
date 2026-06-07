@@ -78,7 +78,7 @@ class UserControllerTest extends TestCase
         $this->assertDatabaseHas('users', ['id' => $user->id]);
     }
 
-    public function test_usuario_nao_pode_editar_proprios_privilegios(): void
+    public function test_usuario_nao_pode_editar_proprio_perfil_pelo_painel(): void
     {
         $role = Role::firstOrCreate(['name' => 'Editor', 'guard_name' => 'web']);
         $user = $this->adminUser(['users.edit']);
@@ -90,7 +90,7 @@ class UserControllerTest extends TestCase
                 'is_super_admin' => true,
                 'role_id' => $role->id,
             ])
-            ->assertRedirect(route('admin.users.index'));
+            ->assertRedirect('/');
 
         $this->assertFalse($user->fresh()->is_super_admin);
     }
