@@ -28,7 +28,7 @@ export default function UpdatePasswordForm({ className = '' }) {
 
         put(route('password.update'), {
             preserveScroll: true,
-            onSuccess: () => reset(),
+            onSuccess: () => { toast.success('Senha atualizada com sucesso.'); reset(); },
             onError: (errors) => {
                 if (errors.password) {
                     reset('password', 'password_confirmation');

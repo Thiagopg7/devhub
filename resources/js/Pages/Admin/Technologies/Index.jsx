@@ -75,7 +75,7 @@ export default function Index({ technologies, filter }) {
         });
     };
 
-    const isFiltering = !!data.q;
+    const isFiltering = !!data.q || !!data.status;
 
     return (
         <>

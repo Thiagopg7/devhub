@@ -75,7 +75,7 @@ export default function Index({ stack, filter }) {
         });
     };
 
-    const isFiltering = !!data.q;
+    const isFiltering = !!data.q || !!data.status;
 
     return (
         <>

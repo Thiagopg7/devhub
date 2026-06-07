@@ -110,18 +110,12 @@ class CategoryApiTest extends TestCase
     {
         $token = $this->token();
         $category = Category::create(['name' => 'A', 'color' => '#000', 'is_active' => true]);
-        $user = User::factory()->create();
 
         $this->withToken($token)->getJson('/api/categories')
             ->assertJsonPath('data.0.posts_count', 0);
 
         // Novo post na categoria deve invalidar o cache (posts_count vai a 1).
-        Post::create([
-            'user_id' => $user->id,
-            'category_id' => $category->id,
-            'title' => 'Post',
-            'is_active' => true,
-        ]);
+        Post::factory()->create(['category_id' => $category->id, 'is_active' => true]);
 
         $this->withToken($token)->getJson('/api/categories')
             ->assertJsonPath('data.0.posts_count', 1);

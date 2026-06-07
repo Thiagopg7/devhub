@@ -4,6 +4,7 @@ use App\Http\Controllers\AgendaController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\SobreController;
@@ -17,6 +18,7 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 Route::get('/tecnologias', [TechnologyController::class, 'index'])->name('technologies.index');
 Route::get('/sobre', [SobreController::class, 'index'])->name('sobre');
 Route::get('/agenda', [AgendaController::class, 'index'])->name('agenda');
+Route::get('/pages/{slug}', [PageController::class, 'show'])->name('pages.show');
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'store'])

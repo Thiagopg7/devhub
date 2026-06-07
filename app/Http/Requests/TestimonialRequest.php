@@ -18,7 +18,7 @@ class TestimonialRequest extends FormRequest
             'role' => ['required', 'string', 'max:150'],
             'company' => ['nullable', 'string', 'max:150'],
             'content' => ['required', 'string', 'max:1000'],
-            'avatar_image' => ['nullable', 'image', 'max:2048'],
+            'avatar_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,gif,webp', 'max:2048'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],
         ];

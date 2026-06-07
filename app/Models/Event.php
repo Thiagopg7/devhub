@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use App\Support\ApiCache;
+use App\Traits\FlushesApiCache;
 use App\Traits\HasActivityLog;
+use App\Traits\Orderable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Event extends Model
 {
-    use HasActivityLog, HasFactory;
+    use FlushesApiCache, HasActivityLog, HasFactory, Orderable;
 
     protected $fillable = [
         'title',
@@ -87,15 +89,8 @@ class Event extends Model
         return $query->orderBy('order')->orderBy('date');
     }
 
-    protected static function booted(): void
+    protected static function apiCacheTags(): array
     {
-        static::creating(function ($model) {
-            if (is_null($model->order)) {
-                $model->order = (static::max('order') ?? 0) + 1;
-            }
-        });
-
-        static::saved(fn () => ApiCache::flush(ApiCache::EVENTS));
-        static::deleted(fn () => ApiCache::flush(ApiCache::EVENTS));
+        return [ApiCache::EVENTS];
     }
 }

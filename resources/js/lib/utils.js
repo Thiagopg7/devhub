@@ -39,6 +39,11 @@ const CATEGORY_ICON_MAP = [
     [['all'],                             LayoutGrid],
 ];
 
+export function sanitizeHref(url) {
+    if (!url) return '#';
+    return /^(https?:\/\/|\/|#|mailto:|tel:)/.test(url) ? url : '#';
+}
+
 export function categoryIcon(nameOrSlug) {
     if (!nameOrSlug) return Code2;
     const key = nameOrSlug.toLowerCase();

@@ -29,6 +29,10 @@ class UserPolicy
      */
     public function update(User $current, User $target): bool
     {
+        if ($current->id === $target->id) {
+            return false;
+        }
+
         if ($target->isPrivileged()) {
             return $current->isSuperAdmin();
         }

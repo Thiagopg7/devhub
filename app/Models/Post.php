@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ApiCache;
+use App\Traits\FlushesApiCache;
 use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
-    use HasActivityLog, HasFactory, Sluggable, SoftDeletes;
+    use FlushesApiCache, HasActivityLog, HasFactory, Sluggable, SoftDeletes;
 
     protected $fillable = [
         'user_id',
@@ -105,7 +106,10 @@ class Post extends Model
             }
         });
 
-        static::saved(fn () => ApiCache::flush(ApiCache::POSTS, ApiCache::CATEGORIES));
-        static::deleted(fn () => ApiCache::flush(ApiCache::POSTS, ApiCache::CATEGORIES));
+    }
+
+    protected static function apiCacheTags(): array
+    {
+        return [ApiCache::POSTS, ApiCache::CATEGORIES];
     }
 }

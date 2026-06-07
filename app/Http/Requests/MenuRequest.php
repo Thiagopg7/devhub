@@ -12,7 +12,7 @@ class MenuRequest extends FormRequest
     {
         return [
             'label' => ['required', 'string', 'max:100'],
-            'url' => ['required', 'string', 'max:500'],
+            'url' => ['required', 'string', 'max:500', 'regex:/^(https?:\/\/|\/|#)/'],
             'parent_id' => ['nullable', 'exists:menu_items,id'],
             'order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['boolean'],

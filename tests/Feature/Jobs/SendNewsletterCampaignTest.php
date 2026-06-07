@@ -91,7 +91,6 @@ class SendNewsletterCampaignTest extends TestCase
 
     public function test_marca_campanha_como_failed_se_algum_envio_falhar(): void
     {
-        Mail::fake();
         Mail::shouldReceive('to')->andThrow(new \RuntimeException('SMTP error'));
 
         $campaign = $this->campaign();

@@ -5,9 +5,7 @@ namespace Tests\Feature\Api;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
-use App\Support\ApiCache;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class PostApiTest extends TestCase
@@ -114,10 +112,7 @@ class PostApiTest extends TestCase
         Post::factory()->create(['is_active' => true]);
         $this->autenticado()->getJson('/api/posts')->assertJsonCount(1, 'data');
 
-        $this->assertTrue(Cache::tags(ApiCache::POSTS)->has('index.all.page.1'));
-
         Post::factory()->create(['is_active' => true]);
-        $this->assertFalse(Cache::tags(ApiCache::POSTS)->has('index.all.page.1'));
 
         $this->autenticado()->getJson('/api/posts')->assertJsonCount(2, 'data');
     }

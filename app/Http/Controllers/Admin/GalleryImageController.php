@@ -17,6 +17,8 @@ class GalleryImageController extends Controller
 
     public function store(Request $request, Page $page): RedirectResponse
     {
+        abort_unless($request->user()?->can('pages.edit'), 403);
+
         $request->validate([
             'images' => ['required', 'array', 'min:1'],
             'images.*' => ['image', 'max:5120'],

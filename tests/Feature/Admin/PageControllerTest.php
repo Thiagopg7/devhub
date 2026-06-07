@@ -120,6 +120,15 @@ class PageControllerTest extends TestCase
             ->assertRedirect(route('login'));
     }
 
+    public function test_sem_permissao_redireciona_para_dashboard(): void
+    {
+        $user = $this->adminUser([]);
+
+        $this->actingAs($user)
+            ->get(route('admin.pages.index'))
+            ->assertRedirect(route('admin.dashboard'));
+    }
+
     public function test_trashed_lista_paginas_excluidas(): void
     {
         $user = $this->adminUser(['pages.delete']);

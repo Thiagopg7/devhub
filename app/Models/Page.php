@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ApiCache;
+use App\Traits\FlushesApiCache;
 use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Page extends Model
 {
-    use HasActivityLog, HasFactory, Sluggable, SoftDeletes;
+    use FlushesApiCache, HasActivityLog, HasFactory, Sluggable, SoftDeletes;
 
     protected $fillable = [
         'title',
@@ -93,7 +94,10 @@ class Page extends Model
             $page->galleryImages()->get()->each->delete();
         });
 
-        static::saved(fn () => ApiCache::flush(ApiCache::PAGES));
-        static::deleted(fn () => ApiCache::flush(ApiCache::PAGES));
+    }
+
+    protected static function apiCacheTags(): array
+    {
+        return [ApiCache::PAGES];
     }
 }

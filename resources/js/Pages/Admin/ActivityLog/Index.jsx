@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import Input from '@/Components/Admin/Input';
@@ -190,7 +190,7 @@ export default function Index({ items, filters, logNames, causers, events, perPa
                                             </thead>
                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                                 {items.data.map((log) => (
-                                                    <>
+                                                    <React.Fragment key={log.id}>
                                                         <tr
                                                             key={log.id}
                                                             className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50"
@@ -233,7 +233,7 @@ export default function Index({ items, filters, logNames, causers, events, perPa
                                                                 </td>
                                                             </tr>
                                                         )}
-                                                    </>
+                                                    </React.Fragment>
                                                 ))}
                                             </tbody>
                                         </table>

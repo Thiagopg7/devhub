@@ -118,15 +118,13 @@ components:
             Data de publicação do post. Posts com data futura ficam agendados e
             não são retornados pela API até a data chegar.
           example: "2026-05-01T00:00:00+00:00"
+        content:
+          type: string
+          nullable: true
+          example: "<p>Conteúdo completo do post em HTML...</p>"
 
     PostDetail:
-      allOf:
-        - $ref: '#/components/schemas/PostSummary'
-        - type: object
-          properties:
-            content:
-              type: string
-              example: "<p>Conteúdo completo do post em HTML...</p>"
+      $ref: '#/components/schemas/PostSummary'
 
     CategoryRef:
       type: object

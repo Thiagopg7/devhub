@@ -12,8 +12,14 @@ envsubst '$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.
 
 # Aguarda o banco de dados ficar disponível
 echo "Aguardando o banco de dados..."
+retries=0
 until php -r "try { new PDO('mysql:host='.getenv('DB_HOST').';port='.getenv('DB_PORT').';dbname='.getenv('DB_DATABASE'), getenv('DB_USERNAME'), getenv('DB_PASSWORD')); } catch(Exception \$e) { exit(1); }" > /dev/null 2>&1; do
-    echo "  banco não disponível ainda, tentando em 3s..."
+    retries=$((retries + 1))
+    if [ "$retries" -ge 30 ]; then
+        echo "ERRO: banco não ficou disponível após 90s. Abortando." >&2
+        exit 1
+    fi
+    echo "  banco não disponível ainda, tentando em 3s... ($retries/30)"
     sleep 3
 done
 
@@ -35,7 +41,7 @@ php artisan storage:link --force 2>/dev/null || true
 
 echo "Consolidando conteúdo (seeders idempotentes)..."
 # A falha do seed não pode derrubar o boot do servidor — apenas avisa.
-php artisan db:seed --force || echo "AVISO: db:seed falhou — seguindo o boot do servidor"
+php artisan db:seed --force || echo "AVISO: db:seed falhou — seguindo o boot do servidor" >&2
 
 echo "Limpando cache da aplicação..."
 php artisan cache:clear

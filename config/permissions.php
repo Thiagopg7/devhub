@@ -28,4 +28,9 @@ return [
     ],
 
     'actions' => ['view', 'create', 'edit', 'delete'],
+
+    // Permissions extras por módulo que não seguem o padrão de actions global
+    'module_extras' => [
+        'newsletter_campaigns' => ['send'],
+    ],
 ];

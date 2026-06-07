@@ -24,7 +24,7 @@ class PostControllerTest extends TestCase
             ->get(route('admin.posts.index'))
             ->assertOk()
             ->assertInertia(fn ($page) => $page->component('Admin/Posts/Index')
-                ->has('posts.data')
+                ->has('posts.data', 1)
             );
     }
 
@@ -174,6 +174,35 @@ class PostControllerTest extends TestCase
             ->assertSessionHas('toast.type', 'success');
 
         $this->assertSoftDeleted('posts', ['id' => $post->id]);
+    }
+
+    public function test_store_rejeita_campos_invalidos(): void
+    {
+        $user = $this->adminUser(['posts.create']);
+
+        $this->actingAs($user)
+            ->post(route('admin.posts.store'), [
+                'title' => '',
+                'is_active' => true,
+            ])
+            ->assertSessionHasErrors('title');
+    }
+
+    public function test_store_rejeita_upload_de_arquivo_php(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser(['posts.create']);
+        $evil = UploadedFile::fake()->create('evil.php', 10, 'application/x-php');
+
+        $this->actingAs($user)
+            ->post(route('admin.posts.store'), [
+                'title' => 'Post malicioso',
+                'banner_image' => $evil,
+                'is_active' => true,
+            ])
+            ->assertSessionHasErrors('banner_image');
+
+        $this->assertEmpty(Storage::disk('public')->allFiles());
     }
 
     public function test_acesso_sem_autenticacao_redireciona(): void

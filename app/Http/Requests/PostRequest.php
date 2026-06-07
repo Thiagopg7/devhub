@@ -18,7 +18,7 @@ class PostRequest extends FormRequest
             'title' => ['required', 'string', 'max:150'],
             'description' => ['nullable', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
-            'banner_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,svg', 'max:5120'],
+            'banner_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'is_active' => ['boolean'],
             'is_featured' => ['boolean'],
             'published_at' => ['nullable', 'date'],

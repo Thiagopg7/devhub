@@ -2,12 +2,14 @@ import { Link, usePage } from "@inertiajs/react";
 import { Mail, MapPin } from "lucide-react";
 import { FaYoutube, FaInstagram, FaFacebook } from "react-icons/fa";
 import Logo from "./Logo";
+import { sanitizeHref } from "@/lib/utils";
 
 function FooterLink({ href, openInNewTab, className, children }) {
-    const isExternal = /^https?:\/\//.test(href);
+    const safeHref = sanitizeHref(href);
+    const isExternal = /^https?:\/\//.test(safeHref);
     const extraProps = openInNewTab || isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {};
-    if (isExternal) return <a href={href} className={className} {...extraProps}>{children}</a>;
-    return <Link href={href} className={className} {...extraProps}>{children}</Link>;
+    if (isExternal) return <a href={safeHref} className={className} {...extraProps}>{children}</a>;
+    return <Link href={safeHref} className={className} {...extraProps}>{children}</Link>;
 }
 
 const GH_ICON = (
@@ -57,7 +59,7 @@ export default function Footer() {
                                 { href: youtube,   label: 'YouTube',   icon: <FaYoutube size={20} /> },
                                 { href: instagram, label: 'Instagram', icon: <FaInstagram size={19} /> },
                             ].filter(({ href }) => href).map(({ href, label, icon }) => (
-                                <a key={label} href={href}
+                                <a key={label} href={sanitizeHref(href)}
                                     target="_blank" rel="noopener noreferrer"
                                     aria-label={label}
                                     className="hover:text-[var(--accent)] transition-colors"

@@ -46,7 +46,7 @@ COPY docker/php/start-fpm.sh /usr/local/bin/start-fpm.sh
 RUN chmod +x /usr/local/bin/start-fpm.sh
 
 # Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 

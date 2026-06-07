@@ -120,4 +120,32 @@ class MenuControllerTest extends TestCase
         $this->get(route('admin.menu.index'))
             ->assertRedirect(route('login'));
     }
+
+    public function test_store_rejeita_url_com_protocolo_javascript(): void
+    {
+        $user = $this->adminUser(['menu.create']);
+
+        $this->actingAs($user)
+            ->post(route('admin.menu.store'), [
+                'label' => 'XSS',
+                'url' => 'javascript:alert(1)',
+                'is_active' => true,
+            ])
+            ->assertSessionHasErrors('url');
+
+        $this->assertDatabaseMissing('menu_items', ['label' => 'XSS']);
+    }
+
+    public function test_store_rejeita_url_sem_esquema_valido(): void
+    {
+        $user = $this->adminUser(['menu.create']);
+
+        $this->actingAs($user)
+            ->post(route('admin.menu.store'), [
+                'label' => 'Inválido',
+                'url' => 'nao-e-uma-url',
+                'is_active' => true,
+            ])
+            ->assertSessionHasErrors('url');
+    }
 }

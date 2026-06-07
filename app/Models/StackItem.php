@@ -3,14 +3,16 @@
 namespace App\Models;
 
 use App\Support\ApiCache;
+use App\Traits\FlushesApiCache;
 use App\Traits\HasActivityLog;
+use App\Traits\Orderable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class StackItem extends Model
 {
-    use HasActivityLog, HasFactory, SoftDeletes;
+    use FlushesApiCache, HasActivityLog, HasFactory, Orderable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -34,15 +36,8 @@ class StackItem extends Model
         return $query->orderBy('order')->orderBy('name');
     }
 
-    protected static function booted(): void
+    protected static function apiCacheTags(): array
     {
-        static::creating(function ($model) {
-            if (is_null($model->order)) {
-                $model->order = (static::max('order') ?? 0) + 1;
-            }
-        });
-
-        static::saved(fn () => ApiCache::flush(ApiCache::STACK));
-        static::deleted(fn () => ApiCache::flush(ApiCache::STACK));
+        return [ApiCache::STACK];
     }
 }

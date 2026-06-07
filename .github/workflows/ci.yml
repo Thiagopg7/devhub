@@ -81,3 +81,23 @@ jobs:
 
       - name: Verificar estilo de código (Pint)
         run: ./vendor/bin/pint --test
+
+  frontend:
+    name: Build Frontend (Vite)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Instalar dependências JS
+        run: npm ci --legacy-peer-deps
+
+      - name: Build de produção
+        run: npm run build

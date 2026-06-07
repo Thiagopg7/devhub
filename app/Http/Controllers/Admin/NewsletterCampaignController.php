@@ -92,8 +92,10 @@ class NewsletterCampaignController extends Controller
         return response($fakeMail->render(), 200, ['Content-Type' => 'text/html']);
     }
 
-    public function send(NewsletterCampaign $newsletterCampaign): RedirectResponse
+    public function send(Request $request, NewsletterCampaign $newsletterCampaign): RedirectResponse
     {
+        abort_unless($request->user()?->can('newsletter_campaigns.send'), 403);
+
         if (! $newsletterCampaign->isDraft() && ! $newsletterCampaign->isScheduled()) {
             return back()->with('toast', ['title' => 'Atenção', 'message' => 'Esta campanha não pode ser enviada.', 'type' => 'error']);
         }

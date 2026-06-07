@@ -27,17 +27,21 @@ class DashboardController extends Controller
             'campaigns' => NewsletterCampaign::count(),
         ];
 
-        $counts = Post::select(
-            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
-            DB::raw('COUNT(*) as total')
-        )
-            ->where('created_at', '>=', now()->startOfMonth()->subMonths(5))
+        $isSqlite = DB::connection()->getDriverName() === 'sqlite';
+        $dateFmt = $isSqlite
+            ? "strftime('%Y-%m', created_at) as month"
+            : 'DATE_FORMAT(created_at, "%Y-%m") as month';
+
+        $startOfMonth = now()->startOfMonth();
+
+        $counts = Post::select(DB::raw($dateFmt), DB::raw('COUNT(*) as total'))
+            ->where('created_at', '>=', (clone $startOfMonth)->subMonths(5))
             ->groupBy('month')
             ->pluck('total', 'month');
 
         $postsPerMonth = collect(range(5, 0))
-            ->map(function (int $i) use ($counts) {
-                $month = now()->startOfMonth()->subMonths($i)->format('Y-m');
+            ->map(function (int $i) use ($counts, $startOfMonth) {
+                $month = (clone $startOfMonth)->subMonths($i)->format('Y-m');
 
                 return ['month' => $month, 'total' => (int) ($counts[$month] ?? 0)];
             })

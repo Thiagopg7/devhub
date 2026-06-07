@@ -130,7 +130,7 @@ class NewsletterCampaignControllerTest extends TestCase
     public function test_send_enfileira_job_para_campanha_rascunho(): void
     {
         Queue::fake();
-        $user = $this->adminUser(['newsletter_campaigns.edit']);
+        $user = $this->adminUser(['newsletter_campaigns.send']);
         $campaign = $this->campaign(['status' => 'draft']);
 
         $this->actingAs($user)
@@ -144,7 +144,7 @@ class NewsletterCampaignControllerTest extends TestCase
     public function test_send_enfileira_job_para_campanha_agendada(): void
     {
         Queue::fake();
-        $user = $this->adminUser(['newsletter_campaigns.edit']);
+        $user = $this->adminUser(['newsletter_campaigns.send']);
         $campaign = $this->campaign(['status' => 'scheduled', 'scheduled_at' => now()->addHour()]);
 
         $this->actingAs($user)
@@ -154,10 +154,38 @@ class NewsletterCampaignControllerTest extends TestCase
         Queue::assertPushed(SendNewsletterCampaign::class);
     }
 
-    public function test_send_bloqueado_para_campanha_ja_enviada(): void
+    public function test_send_bloqueado_sem_permissao_send(): void
     {
         Queue::fake();
         $user = $this->adminUser(['newsletter_campaigns.edit']);
+        $campaign = $this->campaign(['status' => 'draft']);
+
+        $this->actingAs($user)
+            ->post(route('admin.newsletter-campaigns.send', $campaign))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'error');
+
+        Queue::assertNothingPushed();
+    }
+
+    public function test_send_bloqueado_para_usuario_com_permissao_view_apenas(): void
+    {
+        Queue::fake();
+        $user = $this->adminUser(['newsletter_campaigns.view']);
+        $campaign = $this->campaign(['status' => 'draft']);
+
+        $this->actingAs($user)
+            ->post(route('admin.newsletter-campaigns.send', $campaign))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'error');
+
+        Queue::assertNothingPushed();
+    }
+
+    public function test_send_bloqueado_para_campanha_ja_enviada(): void
+    {
+        Queue::fake();
+        $user = $this->adminUser(['newsletter_campaigns.send']);
         $campaign = $this->campaign(['status' => 'sent']);
 
         $this->actingAs($user)

@@ -188,4 +188,22 @@ class TestimonialControllerTest extends TestCase
         $this->get(route('admin.testimonials.index'))
             ->assertRedirect(route('login'));
     }
+
+    public function test_restore_perde_avatar_bug_tt2(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser(['testimonials.delete']);
+        $avatarPath = 'testimonials/avatar.png';
+        Storage::disk('public')->put($avatarPath, 'avatar');
+        $testimonial = Testimonial::factory()->create(['avatar_image' => $avatarPath]);
+
+        $this->actingAs($user)
+            ->delete(route('admin.testimonials.destroy', $testimonial));
+
+        $this->assertSoftDeleted('testimonials', ['id' => $testimonial->id]);
+
+        // Bug TT-2: arquivo é deletado junto com o soft-delete; ao restaurar, a imagem não existe mais
+        $testimonial->restore();
+        Storage::disk('public')->assertMissing($avatarPath);
+    }
 }
