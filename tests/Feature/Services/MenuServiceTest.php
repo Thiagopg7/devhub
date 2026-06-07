@@ -26,7 +26,7 @@ class MenuServiceTest extends TestCase
         ], $attrs));
     }
 
-    public function test_getPublicTree_retorna_apenas_raizes_ativas(): void
+    public function test_get_public_tree_retorna_apenas_raizes_ativas(): void
     {
         $this->makeItem(['label' => 'Ativo', 'is_active' => true]);
         $this->makeItem(['label' => 'Inativo', 'is_active' => false]);
@@ -37,7 +37,7 @@ class MenuServiceTest extends TestCase
         $this->assertSame('Ativo', $tree[0]['label']);
     }
 
-    public function test_getPublicTree_filtra_filhos_inativos(): void
+    public function test_get_public_tree_filtra_filhos_inativos(): void
     {
         $parent = $this->makeItem(['label' => 'Pai']);
         $this->makeItem(['label' => 'Filho Ativo', 'parent_id' => $parent->id, 'is_active' => true]);
@@ -49,7 +49,7 @@ class MenuServiceTest extends TestCase
         $this->assertSame('Filho Ativo', $tree[0]['children'][0]['label']);
     }
 
-    public function test_getPublicTree_usa_cache_na_segunda_chamada(): void
+    public function test_get_public_tree_usa_cache_na_segunda_chamada(): void
     {
         Cache::flush();
         $this->makeItem(['label' => 'Real']);
@@ -97,7 +97,7 @@ class MenuServiceTest extends TestCase
         $this->assertNull(Cache::get('menu.shared'));
     }
 
-    public function test_getAdminList_retorna_raizes_com_filhos_em_ordem(): void
+    public function test_get_admin_list_retorna_raizes_com_filhos_em_ordem(): void
     {
         $parent = $this->makeItem(['label' => 'Pai']);
         $this->makeItem(['label' => 'Filho B', 'parent_id' => $parent->id, 'order' => 2]);
@@ -110,7 +110,7 @@ class MenuServiceTest extends TestCase
         $this->assertSame('Filho B', $list->first()->children[1]->label);
     }
 
-    public function test_getAdminList_filtra_por_busca(): void
+    public function test_get_admin_list_filtra_por_busca(): void
     {
         $this->makeItem(['label' => 'Sobre nós']);
         $this->makeItem(['label' => 'Contato']);

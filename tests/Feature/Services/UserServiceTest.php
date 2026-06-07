@@ -134,7 +134,7 @@ class UserServiceTest extends TestCase
         $this->assertSame($original, $user->fresh()->password);
     }
 
-    public function test_update_nao_altera_privilegios_quando_canEditPrivileges_false(): void
+    public function test_update_nao_altera_privilegios_quando_can_edit_privileges_false(): void
     {
         $role = $this->makeRole('Editor');
         $other = $this->makeRole('Viewer');
@@ -154,7 +154,7 @@ class UserServiceTest extends TestCase
         $this->assertFalse($user->hasRole('Viewer'));
     }
 
-    public function test_update_altera_privilegios_quando_canEditPrivileges_true(): void
+    public function test_update_altera_privilegios_quando_can_edit_privileges_true(): void
     {
         $role = $this->makeRole('Editor');
         $other = $this->makeRole('Reviewer');

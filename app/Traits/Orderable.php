@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 trait Orderable
 {
@@ -21,7 +22,7 @@ trait Orderable
     protected static function orderScope($model): Builder
     {
         // Inclui soft-deleted para evitar colisão de order ao restaurar registros
-        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive(static::class))) {
+        if (in_array(SoftDeletes::class, class_uses_recursive(static::class))) {
             return static::withTrashed();
         }
 

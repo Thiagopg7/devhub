@@ -19,39 +19,39 @@ class ConfigServiceTest extends TestCase
 
     // ── parseValue ────────────────────────────────────────────────────────────
 
-    public function test_parseValue_string_vazia_retorna_null(): void
+    public function test_parse_value_string_vazia_retorna_null(): void
     {
         $this->assertNull($this->makeService()->parseValue(''));
     }
 
-    public function test_parseValue_string_simples_retorna_string_raw(): void
+    public function test_parse_value_string_simples_retorna_string_raw(): void
     {
         $this->assertSame('hello', $this->makeService()->parseValue('hello'));
     }
 
-    public function test_parseValue_json_invalido_retorna_string_raw(): void
+    public function test_parse_value_json_invalido_retorna_string_raw(): void
     {
         $this->assertSame('not{valid}', $this->makeService()->parseValue('not{valid}'));
     }
 
-    public function test_parseValue_json_valido_retorna_array(): void
+    public function test_parse_value_json_valido_retorna_array(): void
     {
         $result = $this->makeService()->parseValue('{"a":1,"b":"dois"}');
 
         $this->assertSame(['a' => 1, 'b' => 'dois'], $result);
     }
 
-    public function test_parseValue_null_como_json_retorna_php_null(): void
+    public function test_parse_value_null_como_json_retorna_php_null(): void
     {
         $this->assertNull($this->makeService()->parseValue('null'));
     }
 
-    public function test_parseValue_numero_como_json_retorna_int(): void
+    public function test_parse_value_numero_como_json_retorna_int(): void
     {
         $this->assertSame(42, $this->makeService()->parseValue('42'));
     }
 
-    public function test_parseValue_booleano_como_json_retorna_bool(): void
+    public function test_parse_value_booleano_como_json_retorna_bool(): void
     {
         $this->assertTrue($this->makeService()->parseValue('true'));
         $this->assertFalse($this->makeService()->parseValue('false'));
@@ -59,29 +59,29 @@ class ConfigServiceTest extends TestCase
 
     // ── formatValue ───────────────────────────────────────────────────────────
 
-    public function test_formatValue_null_retorna_string_vazia(): void
+    public function test_format_value_null_retorna_string_vazia(): void
     {
         $this->assertSame('', $this->makeService()->formatValue(null));
     }
 
-    public function test_formatValue_string_retorna_mesma_string(): void
+    public function test_format_value_string_retorna_mesma_string(): void
     {
         $this->assertSame('hello world', $this->makeService()->formatValue('hello world'));
     }
 
-    public function test_formatValue_array_retorna_json_decodificavel(): void
+    public function test_format_value_array_retorna_json_decodificavel(): void
     {
         $result = $this->makeService()->formatValue(['a' => 1]);
 
         $this->assertSame(['a' => 1], json_decode($result, true));
     }
 
-    public function test_formatValue_int_retorna_representacao_json(): void
+    public function test_format_value_int_retorna_representacao_json(): void
     {
         $this->assertSame('42', $this->makeService()->formatValue(42));
     }
 
-    public function test_formatValue_bool_verdadeiro_retorna_true(): void
+    public function test_format_value_bool_verdadeiro_retorna_true(): void
     {
         $this->assertSame('true', $this->makeService()->formatValue(true));
     }

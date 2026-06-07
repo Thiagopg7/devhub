@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 class Config extends Model
 {
     use FlushesApiCache;
+
     protected $primaryKey = 'key';
 
     public $incrementing = false;
