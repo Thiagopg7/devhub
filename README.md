@@ -5,7 +5,7 @@
 ![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)
 ![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
 
-CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada com Sanctum, sistema de newsletter com conformidade LGPD e frontend público com roteamento dinâmico.
+CMS full-stack construído do zero com Laravel 13 + React 18 — painel administrativo completo, API RESTful autenticada com Sanctum, sistema de newsletter com conformidade LGPD, agenda de eventos, depoimentos e um frontend público dinâmico com tema claro/escuro.
 
 > **Demo ao vivo:** [devhub-production-a6a5.up.railway.app](https://devhub-production-a6a5.up.railway.app) · **Admin:** [/admin](https://devhub-production-a6a5.up.railway.app/admin) (credenciais: `demo@devhub.com` / `Demo@123` — acesso somente leitura)
 
@@ -30,24 +30,33 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 ## Funcionalidades
 
 ### Frontend público
-- Homepage com posts em destaque e listagem paginada
-- Página individual de post com prose rendering
-- Listagem de posts por categoria
+- Homepage modular: hero com estatísticas, post em destaque, explorador de posts, marquee de stack, carrossel de tecnologias, próximos eventos e depoimentos
+- Página individual de post com prose rendering, barra de progresso de leitura, botões de compartilhamento e navegação entre posts
+- Listagem de posts por categoria (roteamento dinâmico por slug)
+- Agenda de eventos (`/agenda`) com filtros por status, datas, CTAs e indicação de vagas
+- Página institucional "Sobre" (`/sobre`) com estatísticas e trilhas por categoria
+- Vitrine pública de tecnologias (`/tecnologias`)
+- Tema claro/escuro alternável, persistido no cliente
 - Menu de navegação dinâmico com suporte a submenus
+- `sitemap.xml` gerado dinamicamente
 - Banner de privacidade (LGPD)
 - Formulário de newsletter com consentimento explícito (LGPD)
 
 ### Painel administrativo
-- **Posts** — CRUD completo com editor rich-text (TipTap), upload de banner, slug automático, toggle ativo/inativo
-- **Páginas** — CRUD de páginas estáticas com banner, imagem principal, galeria de fotos e campos de SEO
-- **Categorias** — CRUD com cor customizável
+- **Posts** — CRUD completo com editor rich-text (TipTap), upload de banner, slug automático, agendamento de publicação, destaque na home e toggle ativo/inativo
+- **Páginas** — CRUD de páginas estáticas com imagem principal, galeria de fotos e campos de SEO
+- **Categorias** — CRUD com cor e ícone customizáveis
 - **Blocos de conteúdo** — trechos de HTML reutilizáveis identificados por slug
 - **Tecnologias** — vitrine de ferramentas com ícone, screenshot e link, reordenáveis
+- **Eventos** — agenda com tipo, data/hora, formato (online/presencial), status, CTA e controle de vagas, com filtros por período/tipo/status
+- **Depoimentos** — testemunhos com avatar, cargo e empresa, reordenáveis
+- **Stack** — itens de tecnologia exibidos no marquee da home, reordenáveis
 - **Menu** — gerenciamento de itens de navegação com suporte a hierarquia pai/filho e reordenação
 - **Configurações** — painel centralizado para nome do site, tagline, redes sociais, contato e scripts de terceiros
 - **Newsletter** — áreas temáticas, inscritos com consentimento LGPD e campanhas de e-mail
 - **Permissões e Papéis** — controle de acesso baseado em papéis (via Spatie Laravel Permission)
 - **Usuários** — gerenciamento de usuários e atribuição de papéis
+- **Lixeira** — soft delete em posts, categorias e páginas, com restauração ou exclusão definitiva e registro de quem excluiu
 - **Log de atividades** — histórico de ações com diff de alterações (via Spatie Activity Log)
 
 ### Sistema de Newsletter
@@ -63,7 +72,7 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 - Autenticação via Bearer token (Laravel Sanctum)
 - Documentação Swagger UI disponível em `/api/docs`
 - Cache Redis em todos os endpoints com invalidação automática por tags (model events)
-- Rate limiting: `60 req/min` nos endpoints autenticados, `10 req/min` no login, `30 req/min` no health check
+- Rate limiting: `60 req/min` nos endpoints autenticados, `10 req/min` no login, `30 req/min` no health check e `5 req/h` na inscrição de newsletter
 
 | Método | Endpoint | Descrição |
 |--------|----------|-----------|
@@ -73,9 +82,16 @@ CMS full-stack construído do zero com Laravel 13 + React 18 — painel administ
 | `GET` | `/api/posts` | Lista posts ativos (paginado) |
 | `GET` | `/api/posts/{slug}` | Retorna um post pelo slug |
 | `GET` | `/api/categories` | Lista categorias |
+| `GET` | `/api/categories/{slug}` | Retorna uma categoria pelo slug |
+| `GET` | `/api/pages` | Lista páginas |
 | `GET` | `/api/pages/{slug}` | Retorna uma página |
 | `GET` | `/api/menu` | Estrutura do menu |
 | `GET` | `/api/technologies` | Lista tecnologias ativas (ordenadas) |
+| `GET` | `/api/events` | Lista eventos |
+| `GET` | `/api/testimonials` | Lista depoimentos |
+| `GET` | `/api/stack` | Lista itens de stack |
+| `GET` | `/api/config` | Configurações públicas do site |
+| `POST` | `/api/newsletter` | Inscrição na newsletter — público, com rate limit |
 | `GET` | `/api/health` | Health check (DB + cache) — público, sem autenticação |
 
 ## Arquitetura
@@ -87,13 +103,14 @@ app/
 │   └── GenerateApiToken.php
 ├── Http/
 │   ├── Controllers/
-│   │   ├── Admin/        # 18 controllers (Posts, Pages, Categories, Blocks,
-│   │   │                 # Technologies, Menu, Configs, Users, Roles,
-│   │   │                 # NewsletterAreas, NewsletterSubscribers,
-│   │   │                 # NewsletterCampaigns, ActivityLog, Gallery…)
-│   │   ├── Api/          # AuthController, PostController, CategoryController,
-│   │   │                 # PageController, MenuController, TechnologyController
-│   │   └── BlogController, HomeController, NewsletterController
+│   │   ├── Admin/        # 21 controllers (Posts, Pages, Categories, Blocks,
+│   │   │                 # Technologies, Events, Testimonials, StackItems,
+│   │   │                 # Menu, Configs, Users, Roles, NewsletterAreas,
+│   │   │                 # NewsletterSubscribers, NewsletterCampaigns,
+│   │   │                 # ActivityLog, Gallery, Reorder, Toggle…)
+│   │   ├── Api/          # Auth, Post, Category, Page, Menu, Technology,
+│   │   │                 # Event, Testimonial, Stack, Config, Health
+│   │   └── Home, Blog, Sobre, Agenda, Newsletter, Sitemap, Technology
 │   ├── Middleware/
 │   │   ├── EnsureAdmin.php
 │   │   └── ResourcePermission.php
@@ -103,12 +120,13 @@ app/
 ├── Mail/
 │   └── NewsletterCampaignMail.php
 ├── Models/               # Post, Page, GalleryImage, Category, Block, Technology,
-│                         # MenuItem, Config, User, Role,
-│                         # NewsletterArea, NewsletterSubscriber,
+│                         # Event, Testimonial, StackItem, MenuItem, Config,
+│                         # User, Role, NewsletterArea, NewsletterSubscriber,
 │                         # NewsletterCampaign, NewsletterSendLog
 ├── Services/             # PostService, PageService, TechnologyService,
-│                         # MenuService, RoleService, UserService,
-│                         # ConfigService, ActivityLogService, FileUploadService
+│                         # TestimonialService, MenuService, RoleService,
+│                         # UserService, ConfigService, ActivityLogService,
+│                         # FileUploadService
 └── Traits/
     └── HasActivityLog.php
 ```
@@ -132,6 +150,9 @@ O envio de e-mails para múltiplos inscritos é feito via Job enfileirado (Larav
 **Spatie Permission e Activity Log**
 Controle de acesso baseado em papéis (RBAC) e log de auditoria são problemas resolvidos. Os pacotes Spatie são padrão de mercado em projetos Laravel.
 
+**Soft delete com lixeira e autoria**
+Posts, categorias e páginas usam soft delete em vez de remoção física: a exclusão move o registro para uma lixeira de onde ele pode ser restaurado ou apagado em definitivo. Cada exclusão grava quem a fez (`deleted_by`), dando rastreabilidade sem depender só do log de atividades. Evita perda acidental de conteúdo — importante num CMS.
+
 **Redis para cache da API**
 Todos os endpoints da API têm a resposta cacheada no Redis usando `Cache::tags` — uma tag por recurso (posts, categories, menu, pages, technologies). A invalidação é automática via model events (`saved`/`deleted`): a cada create/update/delete, o cache da tag afetada é limpo. Dependências cruzadas são tratadas (ex.: salvar um post invalida `posts` e `categories`, pois a contagem de posts e a categoria embutida mudam; alterar uma imagem de galeria invalida `pages`). Reordenações feitas via `DB::table` — que não disparam events — invalidam as tags explicitamente no `ReorderController`. Cacheamos apenas o array já serializado pelo Resource, nunca models Eloquent. TTL de 1h como rede de segurança.
 
@@ -142,10 +163,16 @@ Os testes de feature cobrem comportamento de rotas e regras de negócio, não de
 
 ### Frontend público
 ![Homepage](docs/screenshots/homepage.png)
-*Homepage com hero, listagem de posts e captação de newsletter*
+*Homepage com hero, post em destaque, explorador de posts, eventos e depoimentos*
 
 ![Post individual](docs/screenshots/post.png)
 *Página de post com rich-text e metadados*
+
+![Agenda de eventos](docs/screenshots/agenda.png)
+*Agenda de eventos com filtros por status, datas, CTAs e indicação de vagas*
+
+![Página Sobre](docs/screenshots/sobre.png)
+*Página institucional com estatísticas e trilhas de conteúdo*
 
 ### Painel administrativo
 
@@ -160,6 +187,12 @@ Os testes de feature cobrem comportamento de rotas e regras de negócio, não de
 
 ![Editor de post](docs/screenshots/post-editor.png)
 *Edição de post com editor rich-text (TipTap), categoria, descrição e SEO*
+
+![Eventos](docs/screenshots/events-list.png)
+*Gerenciamento de eventos com filtros por período, tipo e status*
+
+![Lixeira](docs/screenshots/posts-trashed.png)
+*Lixeira (soft delete) com restauração, exclusão definitiva e registro de quem excluiu*
 
 ![Papéis e permissões](docs/screenshots/roles-permissions.png)
 *Controle de acesso por papéis (RBAC) — permissões por módulo e ação*
@@ -227,11 +260,14 @@ docker exec app php artisan db:seed
 ```
 
 Isso cria:
-- 1 usuário admin (`thiago@teste.com.br` / `Senha@123`)
-- 6 categorias e 6 posts com imagens
+- Usuário admin (`admin@teste.com.br` / `Senha@123`) e usuário demo somente-leitura (`demo@devhub.com` / `Demo@123`)
+- Papéis e permissões (RBAC)
+- Categorias e posts com imagens
 - Páginas "Sobre Nós" e "Política de Privacidade"
-- 8 tecnologias e áreas de newsletter
-- Configurações do site e menu de navegação completo
+- Tecnologias, itens de stack, depoimentos e eventos
+- Áreas de newsletter, configurações do site e menu de navegação completo
+
+> As senhas do seed podem ser sobrescritas por variáveis de ambiente (`SEED_*`); sem elas, valem os padrões de desenvolvimento acima.
 
 ### 6. Configure o host local
 
@@ -290,24 +326,27 @@ Os testes usam SQLite in-memory e não afetam o banco de desenvolvimento.
 docker exec app php artisan test
 ```
 
-**Resultado atual: 242 testes, 856 asserções — 100% passando**
+**Resultado atual: 420 testes, 1693 asserções — 100% passando**
 
 Cobertura por módulo:
 
 | Módulo | Testes |
 |--------|--------|
-| API (auth, posts, paginação, slug, 404) | `Api/PostApiTest`, `Api/ValidateApiTokenTest` |
-| Admin — Posts | CRUD completo, upload de banner, permissões |
+| API | Auth, Posts, Categories, Pages, Menu, Technologies, Events, Testimonials, Stack, Config, Health, Newsletter e validação de token |
+| Admin — Posts | CRUD completo, upload de banner, agendamento, soft delete e permissões |
 | Admin — Categories, Blocks, Pages, Technologies | CRUD, upload de imagens e permissões |
+| Admin — Events, Testimonials, Stack | CRUD, filtros, reordenação e permissões |
 | Admin — Menu | CRUD e reordenação |
-| Admin — Newsletter areas e subscribers | CRUD e conformidade |
+| Admin — Newsletter areas, subscribers e campanhas | CRUD, conformidade e envio |
 | Admin — Roles e Users | Criação, proteção de perfis de sistema, controle de super admin |
-| Admin — Reorder | Transações e validação de módulos |
+| Admin — Reorder e Toggle | Transações, validação de módulos e ativação |
 | Admin — ImageDelete | Remoção de imagens avulsas em Posts, Pages e Technologies |
+| Público | Home, Blog, Agenda, Sobre, Tecnologias, Stack e Sitemap |
 | Auth | Login, registro, reset de senha, verificação de e-mail |
 | Perfil | Atualização e exclusão de conta |
 | Models | Limpeza de arquivos em Posts, Pages e GalleryImages |
-| Services | PostService, PageService e TechnologyService (criação, atualização, deleção, upload) |
+| Services | PostService, PageService, TechnologyService, MenuService, ConfigService e UserService |
+| Console / Jobs | Despacho de newsletters agendadas e envio assíncrono de campanhas |
 
 ## Variáveis de ambiente relevantes
 
@@ -320,3 +359,4 @@ Cobertura por módulo:
 | `QUEUE_CONNECTION` | Driver de fila (`database` em produção) |
 | `MAIL_*` | Configuração SMTP para envio de newsletters |
 | `FILESYSTEM_DISK` | Disco para upload de arquivos (padrão: `public`) |
+| `SEED_*` | Credenciais dos usuários criados pelo seeder (admin e demo) |
