@@ -74,7 +74,7 @@ export default function Index({ testimonials, filter }) {
         });
     };
 
-    const isFiltering = !!data.q;
+    const isFiltering = !!data.q || !!data.status;
 
     return (
         <>

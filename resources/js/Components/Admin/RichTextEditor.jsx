@@ -65,6 +65,7 @@ export default function RichTextEditor({
     const setLink = useCallback(() => {
         const url = window.prompt("URL do link:");
         if (!url) return;
+        if (!/^(https?:\/\/|\/|#|mailto:)/i.test(url)) return;
         editor.chain().focus().setLink({ href: url }).run();
     }, [editor]);
     const addImage = useCallback(() => {

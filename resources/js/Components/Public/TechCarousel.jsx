@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { sanitizeHref } from '@/lib/utils';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
@@ -44,7 +45,7 @@ function TechCard({ tech, glyphBg }) {
     const cat = techCat(tech.name);
 
     return (
-        <a href={tech.url || '#'} target="_blank" rel="noopener noreferrer"
+        <a href={sanitizeHref(tech.url)} target="_blank" rel="noopener noreferrer"
             className="group flex flex-col h-full overflow-hidden transition-all duration-300 hover:-translate-y-1"
             style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 18 }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-h)'}

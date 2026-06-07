@@ -1,4 +1,5 @@
 import { ArrowRight, Clock, Globe, MapPin } from 'lucide-react';
+import { sanitizeHref } from '@/lib/utils';
 
 const TYPE_STYLES = {
     conf:     { color: '#9fe3ff', bg: 'rgba(60,189,248,0.12)' },
@@ -135,7 +136,7 @@ export default function EventCard({ event }) {
                             <ArrowRight size={14} />
                         </span>
                     ) : (
-                        <a href={event.cta_url}
+                        <a href={sanitizeHref(event.cta_url)}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-2 font-semibold text-sm transition-all hover:-translate-y-0.5"

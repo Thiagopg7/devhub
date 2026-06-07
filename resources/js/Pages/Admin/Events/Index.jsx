@@ -39,7 +39,7 @@ export default function Index({ events, filter }) {
         get(route("admin.events.index"), {
             preserveState: true,
             preserveScroll: true,
-            params: { q: data.q, type: data.type, event_status: data.event_status },
+            params: { q: data.q, type: data.type, event_status: data.event_status, period: data.period },
         });
     };
 
@@ -81,7 +81,7 @@ export default function Index({ events, filter }) {
         });
     };
 
-    const isFiltering = !!data.q;
+    const isFiltering = !!data.q || !!data.type || !!data.event_status;
 
     return (
         <>

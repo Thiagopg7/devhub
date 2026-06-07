@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { Menu, X, ChevronDown, ArrowRight } from 'lucide-react';
 import Logo from './Logo';
+import { sanitizeHref } from '@/lib/utils';
 
 function MenuLink({ href, openInNewTab, className, onClick, children }) {
-    const isExternal = /^https?:\/\//.test(href);
+    const safeHref = sanitizeHref(href);
+    const isExternal = /^https?:\/\//.test(safeHref);
     const extraProps = openInNewTab || isExternal
         ? { target: '_blank', rel: 'noopener noreferrer' }
         : {};
     if (isExternal) {
-        return <a href={href} className={className} onClick={onClick} {...extraProps}>{children}</a>;
+        return <a href={safeHref} className={className} onClick={onClick} {...extraProps}>{children}</a>;
     }
-    return <Link href={href} className={className} onClick={onClick} {...extraProps}>{children}</Link>;
+    return <Link href={safeHref} className={className} onClick={onClick} {...extraProps}>{children}</Link>;
 }
 
 function DesktopNavItem({ item }) {

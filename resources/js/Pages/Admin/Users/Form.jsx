@@ -146,7 +146,7 @@ export default function Form({ user = null, roles = [] }) {
                                                 <ToggleButton
                                                     checked={!!data.is_super_admin}
                                                     onChange={(e) => setData("is_super_admin", e.target.checked)}
-                                                    disabled={readonly}
+                                                    disabled={processing || readonly}
                                                 />
                                                 <span className="text-xs text-gray-500 dark:text-gray-400">
                                                     Acesso irrestrito ao painel; ignora permissões do perfil.
