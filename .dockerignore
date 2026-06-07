@@ -5,8 +5,11 @@ node_modules
 /public/hot
 /storage/*.key
 /vendor
+.env.testing
 .phpunit.result.cache
 /bootstrap/cache/*.php
 Dockerfile*
 docker-compose*
 .dockerignore
+tests/
+docs/

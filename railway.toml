@@ -2,7 +2,7 @@
 dockerfilePath = "Dockerfile.prod"
 
 [deploy]
-healthcheckPath = "/up"
+healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
 restartPolicyMaxRetries = 10

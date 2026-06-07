@@ -24,7 +24,7 @@ Route::prefix('auth')->group(function () {
 
 // Inscrição pública na newsletter. Rate limit agressivo por IP + honeypot +
 // e-mail único + validação anti-injeção evitam flood que derrubaria o site.
-Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:5,1');
+Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:5,60');
 
 Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
     Route::get('/posts', [PostController::class, 'index']);
