@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\ApiCache;
+use App\Traits\FlushesApiCache;
 use App\Traits\HasActivityLog;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
-    use HasActivityLog, HasFactory, Sluggable, SoftDeletes;
+    use FlushesApiCache, HasActivityLog, HasFactory, Sluggable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -53,6 +54,11 @@ class Category extends Model
         return $query->where('is_active', true);
     }
 
+    protected static function apiCacheTags(): array
+    {
+        return [ApiCache::CATEGORIES, ApiCache::POSTS];
+    }
+
     protected static function booted(): void
     {
         static::deleting(function (self $category) {
@@ -60,13 +66,7 @@ class Category extends Model
             $category->saveQuietly();
         });
 
-        static::saved(function () {
-            ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS);
-            Cache::forget('categories.active.footer');
-        });
-        static::deleted(function () {
-            ApiCache::flush(ApiCache::CATEGORIES, ApiCache::POSTS);
-            Cache::forget('categories.active.footer');
-        });
+        static::saved(fn () => Cache::forget('categories.active.footer'));
+        static::deleted(fn () => Cache::forget('categories.active.footer'));
     }
 }

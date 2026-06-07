@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Support\ApiCache;
+use App\Traits\FlushesApiCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class Config extends Model
 {
+    use FlushesApiCache;
     protected $primaryKey = 'key';
 
     public $incrementing = false;
@@ -34,15 +36,14 @@ class Config extends Model
         return static::where('group', $group)->get()->keyBy('key');
     }
 
+    protected static function apiCacheTags(): array
+    {
+        return [ApiCache::CONFIG];
+    }
+
     protected static function booted(): void
     {
-        static::saved(function () {
-            Cache::forget('configs.all');
-            ApiCache::flush(ApiCache::CONFIG);
-        });
-        static::deleted(function () {
-            Cache::forget('configs.all');
-            ApiCache::flush(ApiCache::CONFIG);
-        });
+        static::saved(fn () => Cache::forget('configs.all'));
+        static::deleted(fn () => Cache::forget('configs.all'));
     }
 }
