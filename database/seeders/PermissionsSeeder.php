@@ -17,9 +17,16 @@ class PermissionsSeeder extends Seeder
         $modules = array_keys(Config::get('permissions.modules', []));
         $actions = Config::get('permissions.actions', []);
 
+        $extras = Config::get('permissions.module_extras', []);
+
         $all = [];
         foreach ($modules as $module) {
             foreach ($actions as $action) {
+                $name = "{$module}.{$action}";
+                $all[] = $name;
+                Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+            }
+            foreach ($extras[$module] ?? [] as $action) {
                 $name = "{$module}.{$action}";
                 $all[] = $name;
                 Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);

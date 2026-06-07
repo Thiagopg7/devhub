@@ -20,6 +20,11 @@ trait Orderable
 
     protected static function orderScope($model): Builder
     {
+        // Inclui soft-deleted para evitar colisão de order ao restaurar registros
+        if (in_array(\Illuminate\Database\Eloquent\SoftDeletes::class, class_uses_recursive(static::class))) {
+            return static::withTrashed();
+        }
+
         return static::query();
     }
 }
