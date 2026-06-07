@@ -17,6 +17,8 @@ trait CreatesAdminUser
             $role->givePermissionTo($perm);
         }
 
+        $role->forgetCachedPermissions();
+
         $user = User::factory()->create();
         $user->assignRole($role);
 

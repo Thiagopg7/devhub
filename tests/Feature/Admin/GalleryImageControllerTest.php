@@ -80,6 +80,21 @@ class GalleryImageControllerTest extends TestCase
             ->assertSessionHas('toast.type', 'error');
     }
 
+    public function test_store_sem_permissao_redireciona_com_erro(): void
+    {
+        Storage::fake('public');
+        $user = $this->adminUser([]);
+        $page = $this->page();
+        $img = UploadedFile::fake()->create('foto.jpg', 512, 'image/jpeg');
+
+        $this->actingAs($user)
+            ->post(route('admin.pages.gallery.store', $page), ['images' => [$img]])
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'error');
+
+        $this->assertSame(0, $page->galleryImages()->count());
+    }
+
     public function test_sem_autenticacao_redireciona(): void
     {
         $page = $this->page();

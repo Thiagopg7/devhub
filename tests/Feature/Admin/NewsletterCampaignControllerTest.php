@@ -168,6 +168,20 @@ class NewsletterCampaignControllerTest extends TestCase
         Queue::assertNothingPushed();
     }
 
+    public function test_send_bloqueado_para_usuario_com_permissao_view_apenas(): void
+    {
+        Queue::fake();
+        $user = $this->adminUser(['newsletter_campaigns.view']);
+        $campaign = $this->campaign(['status' => 'draft']);
+
+        $this->actingAs($user)
+            ->post(route('admin.newsletter-campaigns.send', $campaign))
+            ->assertRedirect()
+            ->assertSessionHas('toast.type', 'error');
+
+        Queue::assertNothingPushed();
+    }
+
     public function test_send_bloqueado_para_campanha_ja_enviada(): void
     {
         Queue::fake();
